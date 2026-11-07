@@ -5,8 +5,11 @@ set -u
 KIT=$(cd "$(dirname "$0")/../.." && pwd -P)          # the .claude directory under test
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 REPO="$TMP/repo"; mkdir -p "$REPO"
-cp -R "$KIT" "$REPO/.claude"
-rm -rf "$REPO/.claude/delivery"
+# Copy only the kit itself: never a project's run state, worktrees (with node_modules) or local settings.
+mkdir -p "$REPO/.claude"
+for part in agents hooks rules skills settings.json; do
+  [ -e "$KIT/$part" ] && cp -R "$KIT/$part" "$REPO/.claude/"
+done
 export CLAUDE_PROJECT_DIR="$REPO"
 cd "$REPO" && git init -q && git config user.email t@t && git config user.name t
 H="$REPO/.claude/hooks"; S="$REPO/.claude/skills/deliver/scripts/delivery-state.sh"
