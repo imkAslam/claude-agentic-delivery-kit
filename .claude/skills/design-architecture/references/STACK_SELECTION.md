@@ -1,5 +1,13 @@
 # Stack selection
 
+## 0. The client's preference (read first)
+| Intake says | How to treat it |
+|---|---|
+| **Required** stack (contract, team, existing platform) | A constraint. Design within it; report any must-have it can't meet as a risk at G1 |
+| **Preferred** stack | Candidate A in the matrix, scored honestly. **Use it unless it fails a must-have driver** (an NFR, compliance, a hosting constraint, the budget). If it does, say so plainly at G1 with the consequence and the nearest alternative |
+| No preference | Recommend from the drivers and the defaults below |
+The client always confirms the main stack at G1 (§6). Libraries and tools within the stack stay agent decisions.
+
 ## 1. List the drivers (from the PRD and intake)
 Team skills · time to market · budget · expected scale · latency targets · realtime needs · offline/mobile needs · data sensitivity and compliance · hosting preference or constraint · integration ecosystem · long-term maintainability.
 
@@ -34,3 +42,15 @@ Microservices · NoSQL as the primary store for relational data · a self-manage
 | fly / railway / render | Containers + managed DB with little ops | Platform limits, regions, pricing at scale |
 | aws | Compliance, scale, the broadest services | Complexity and cost; IaC is required |
 | eas (mobile) | Expo/React Native store builds + OTA | Store review times; native modules need rebuilds |
+
+## 6. Presenting the stack at G1 (PRD §10, "Tech stack (to confirm at G1)")
+| Concern | Recommended | Client preference | Why (plain language) | Trade-off / cost |
+|---|---|---|---|---|
+| Frontend | … | … or — | … | … |
+| Backend | … | | | |
+| Database | … | | | |
+| Mobile (if any) | … | | | |
+| Hosting | … | | | |
+- Write for a business reader: what each choice means for cost, speed of delivery, hiring and maintenance, not framework internals.
+- If the client's preference differs from the recommendation, show both columns and the deciding driver. If their stack can't meet a must-have, say which one and what would change.
+- After G1: the stack ADR records `accepted (g1, <date>) · confirmed by <human>`, with the client's preference and any accepted risk. Changing the confirmed stack later is a change request on g1 (a major decision).

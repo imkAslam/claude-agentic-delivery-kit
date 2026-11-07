@@ -66,6 +66,7 @@ The return block from `.claude/skills/deliver/references/briefs.md`. SUMMARY: th
 
 ## Best Practices
 - Cite `E-<n>` for every fact. Label inferences `ASSUMPTION:`.
+- Record the client's **stack preference** in the Summary: none, *preferred* (a wish) or *required* (a constraint, with the reason), with its source. If the evidence says nothing, ask once: "Do you have a preferred tech stack, or should our architect recommend one?" (default: the architect recommends; you confirm it at G1).
 - Ask only **business** questions (goals, scope, users, rules, budget, timeline, legal or compliance policy, brand). **At most 5**, each with options and a recommended default, in plain language the client can answer in one line.
 - On re-runs, carry the answered questions forward, and show the score change and its cause.
 

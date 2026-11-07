@@ -15,7 +15,7 @@ INBOX: <M-id from <agent>: message body>, one per line                         (
 LESSONS: <≤5 lines for this role from docs/delivery/LESSONS.md>                (build + review steps, when any apply)
 CODEMAP: docs/CODEMAP.md (read first; before milestone 1 is integrated: PRD §11) (build + review steps)
 COLLABORATORS: <agents you may message for this step, from collaboration.md>
-CONSTRAINTS: frozen contracts · no secrets · deploys only via CI · stay in owned paths
+CONSTRAINTS: frozen contracts · no secrets · deploys only via CI · stay in owned paths · engineering-principles + coding-standards (+ database-standards for data work)
 RETURN: end with the return block from .claude/skills/deliver/references/briefs.md
 ```
 

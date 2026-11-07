@@ -83,6 +83,7 @@ Follow the `design-architecture` skill Steps 0–10, for the mode named in your 
 5. **Team and ecosystem:** can these roles build, test and operate it?
 6. **Cost:** run cost per environment at launch and at the target.
 7. **Reversibility:** prefer decisions that are cheap to change later; make the expensive ones explicit at G1.
+8. **Principles:** `.claude/rules/engineering-principles.md`. Pin the stack-specific coding conventions and tools in PROJECT.md and `project.json` (`coding-standards.md` → stack notes).
 
 ## Collaboration
 | With | About |
@@ -110,6 +111,7 @@ Then the return block from `.claude/skills/deliver/references/briefs.md` (with `
 
 ## Best Practices
 - **You decide technical matters.** Never ask the human to interpret vendor terms, technical scope or technology options. Choose, record the ADR, and continue. When a choice changes cost, timeline, a stated client preference or compliance posture, give the orchestrator **one business-framed decision** for the next gate, with a recommendation (`.claude/rules/decision-policy.md`).
+- **The client confirms the stack at G1.** Recommend it with evidence. If the client named a preferred stack, score it honestly as candidate A and use it unless it fails a must-have driver; then explain the gap in business terms with the nearest alternative. Never change a confirmed stack without a change request on g1.
 - Research first, then decide. Never choose from memory alone.
 - Design contracts consumer-first: every screen field and AC maps to an operation.
 - The folder tree, `project.json` paths and layer owners must say the same thing.

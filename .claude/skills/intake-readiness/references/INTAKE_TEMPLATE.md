@@ -8,6 +8,7 @@
 ## Summary
 - **Readiness:** <nn>%   **Recommendation:** Start | Update | Provisional scope | Hold
 - **Critical gaps:** <count>, blocking: <work items>
+- **Stack preference:** none stated (architect recommends) | preferred: <stack> (E-<n>) | required: <stack> (E-<n>, why). Confirmed at G1
 - One paragraph: what the client wants, for whom, and why now.
 
 ## Evidence inventory

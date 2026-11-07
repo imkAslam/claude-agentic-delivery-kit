@@ -11,7 +11,7 @@ Score each dimension 0–10 using the anchors (interpolate between them). Weight
 | 5 | Business rules & data | 10 | None | Some rules, entities named | Rules precise and testable; entities and their lifecycle known |
 | 6 | Integrations | 10 | Unknown | Systems named | Each integration has its owner, protocol, auth and data direction |
 | 7 | Non-functional needs | 10 | None | A few stated (e.g. "fast") | Targets for security, privacy, performance, availability, accessibility, compliance |
-| 8 | Constraints | 10 | None | Budget **or** timeline | Budget, timeline, hosting/region, team, existing contracts |
+| 8 | Constraints | 10 | None | Budget **or** timeline | Budget, timeline, hosting/region, team, existing contracts, stack preference (or "recommend one") |
 | 9 | Success metrics | 5 | None | Qualitative | Quantified, with a baseline and a target |
 | 10 | Brand & look and feel | 5 | Nothing known | A logo/colors, or a few likes and dislikes | Brand guidelines or assets provided, **or** the client agrees that agents propose directions; references, likes/dislikes and the tone are known |
 
@@ -33,6 +33,6 @@ Ask only **business** questions (see `.claude/rules/decision-policy.md`): **at m
 5. What exact rules apply (limits, approvals, calculations, state changes)?
 6. Which external systems are involved, who owns them, and do we have API access?
 7. Is there personal or payment data? Which regions? What uptime and response-time expectations?
-8. What are the budget, deadline, hosting preference and existing licenses?
+8. What are the budget, deadline, hosting preference and existing licenses? Do you have a preferred tech stack (languages, frameworks, database, hosting) or a team that will maintain it, or should our architect recommend one?
 9. Which number should move, and by how much?
 10. Is there an existing brand (logo, colors, fonts, guidelines)? Which products do you like or dislike the look of, and how should users feel?

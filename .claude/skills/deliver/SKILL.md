@@ -40,7 +40,8 @@ References (read only the part the current step needs):
 ## Start or resume
 1. `delivery-state.sh init` (does nothing if the state already exists), then `delivery-state.sh summary`. If `$ARGUMENTS` is `status`, show the summary and stop.
 2. **Preflight:** delegate to `system-detector`, unless `docs/delivery/SYSTEM-PROFILE.md` was written today. If the profile reports blocking gaps (no git, or no access to the tracker/CI chosen in `project.json`), show the user the exact commands to run and stop.
-3. For a new run, `docs/intake/` must contain evidence. If it's empty, ask the user to add briefs, notes or documents (or paste them so you can save them there), and stop.
+3. If the user states a preferred tech stack at any point, save it verbatim to `docs/intake/stack-preference.md` as evidence; the intake-agent and the architect pick it up.
+4. For a new run, `docs/intake/` must contain evidence. If it's empty, ask the user to add briefs, notes or documents (or paste them so you can save them there), and stop.
 
 ## Main loop
 Repeat until a gate or a stop condition:
