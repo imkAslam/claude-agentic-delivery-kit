@@ -51,7 +51,7 @@ Repeat until a gate or a stop condition:
 3a. **Relay messages:** log each `MESSAGES:` / `ANSWERS:` entry (`delivery-state.sh msg add|answer`), deliver it to the recipient (continue that agent with SendMessage, or add it to the INBOX of its next brief), and route the answers back. **Filter messages addressed to the human:** classify each `TO: human`, `decision-needed` or `NEEDS_HUMAN` item with the decision policy. Technical ones go back to the sender ("decide per decision-policy; record an ADR or ASSUMPTION"). Business ones are queued for the next gate, unless they're truly blocking with no reasonable default. Never advance a step or present a gate while `msg open` shows a blocking message. See [collaboration.md](references/collaboration.md).
 4. **Review:** send the output to the step's reviewer. On `CHANGES`, send the findings to the **same role**, then run `delivery-state.sh round <loop-id>`.
 5. **Join / triage:** reconcile the parallel outputs. Route any failures per [triage.md](references/triage.md).
-6. **Advance:** `delivery-state.sh set-step <lane> <step>`. Keep tickets in sync in the state (`delivery-state.sh ticket …`) and in the tracker (the `tracker` skill).
+6. **Advance:** `delivery-state.sh set-step <lane> <step>`. Keep tickets in sync in the state (`delivery-state.sh ticket …`) and in the tracker (the `tracker` skill). Every status change goes through `ticket status`, which rejects illegal transitions and records the history; defects after `mbr` become **bugs linked to their original ticket** (triage.md).
 7. **Gate:** at a gate step, follow the `gate-review` skill and stop until the human decides.
 
 ## Stop and report when

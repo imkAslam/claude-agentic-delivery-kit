@@ -155,12 +155,25 @@ echo "delivery-state"
 bash "$S" ticket add T-001 backend ms-1 "API" >/dev/null; bash "$S" ticket add T-002 frontend ms-1 "UI" T-001 >/dev/null
 r=$(bash "$S" ready ms-1 | cut -f1 | tr '\n' ' ')
 [ "$r" = "T-001 " ] && { pass=$((pass+1)); echo "  ok   ready respects depends_on"; } || { fail=$((fail+1)); echo "  FAIL ready respects depends_on (got '$r')"; }
-bash "$S" ticket status T-001 done >/dev/null
+for st in in_progress in_review approved done; do bash "$S" ticket status T-001 $st >/dev/null; done
 r=$(bash "$S" ready ms-1 | cut -f1 | tr '\n' ' ')
 [ "$r" = "T-002 " ] && { pass=$((pass+1)); echo "  ok   dependency done unlocks ticket"; } || { fail=$((fail+1)); echo "  FAIL dependency done unlocks ticket (got '$r')"; }
 bash "$S" ticket attempt T-002 >/dev/null; bash "$S" ticket attempt T-002 >/dev/null
 bash "$S" ticket attempt T-002 >/dev/null; c=$?
 [ $c -eq 3 ] && { pass=$((pass+1)); echo "  ok   attempt cap exits 3"; } || { fail=$((fail+1)); echo "  FAIL attempt cap exits 3 (got $c)"; }
+echo "ticket lifecycle and bugs"
+bash "$S" ticket add T-003 backend ms-1 "Auth API" --size L >/dev/null
+bash "$S" ticket status T-003 done >/dev/null 2>&1; c=$?
+[ $c -ne 0 ] && { pass=$((pass+1)); echo "  ok   rejects ready -> done"; } || { fail=$((fail+1)); echo "  FAIL rejects ready -> done"; }
+bash "$S" ticket show T-001 | grep -q "approved -> done" && { pass=$((pass+1)); echo "  ok   status history recorded"; } || { fail=$((fail+1)); echo "  FAIL status history recorded"; }
+bash "$S" ticket add T-004 backend ms-1 "Login fails" --type bug --severity P1 >/dev/null 2>&1; c=$?
+[ $c -ne 0 ] && { pass=$((pass+1)); echo "  ok   bug without original rejected"; } || { fail=$((fail+1)); echo "  FAIL bug without original rejected"; }
+bash "$S" ticket add T-004 backend ms-1 "Login fails on uppercase email" --type bug --of T-001 --severity P1 --found-in "acceptance TC-004" >/dev/null
+bash "$S" ticket show T-001 | grep -q "bugs: T-004" && { pass=$((pass+1)); echo "  ok   bug linked to original"; } || { fail=$((fail+1)); echo "  FAIL bug linked to original"; }
+bash "$S" bugs open | grep -q "T-004.*P1.*of:T-001" && { pass=$((pass+1)); echo "  ok   open bugs list"; } || { fail=$((fail+1)); echo "  FAIL open bugs list"; }
+bash "$S" ticket status T-001 reopened --note "regression T-004" >/dev/null && bash "$S" ticket status T-003 done --force "test correction" >/dev/null
+bash "$S" ticket show T-003 | grep -q "forced: test correction" && { pass=$((pass+1)); echo "  ok   forced transition needs and records a reason"; } || { fail=$((fail+1)); echo "  FAIL forced transition needs and records a reason"; }
+
 bash "$S" verify g1 >/dev/null; c=$?
 [ $c -eq 1 ] && { pass=$((pass+1)); echo "  ok   CR invalidates gate"; } || { fail=$((fail+1)); echo "  FAIL CR invalidates gate (got $c)"; }
 [ -f docs/delivery/GATE-LOG.md ] && { pass=$((pass+1)); echo "  ok   gate log written"; } || { fail=$((fail+1)); echo "  FAIL gate log written"; }

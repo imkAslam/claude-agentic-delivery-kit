@@ -38,3 +38,5 @@ Critical path: … Parallel batches (with no file overlap): {T-001, T-002, T-003
 ## Risks
 | Risk | Milestone | Mitigation |
 ```
+
+**Ticket count check (fill before publishing):** tickets per role per milestone (target 2–6, never more than 8) and the total (typically 20–60 for an MVP). If the count is higher, the slicing is too fine: merge siblings of the same module (TICKET_TEMPLATE → Sizing).
