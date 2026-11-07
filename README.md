@@ -38,7 +38,7 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 | | Count | Where |
 |---|---|---|
 | Role subagents | 32 | `.claude/agents/` |
-| Skills (orchestrator, gates, role skills, adapters, shared practices) | 30 | `.claude/skills/` |
+| Skills (orchestrator, gates, role skills, adapters, shared practices) | 31 | `.claude/skills/` |
 | Rules (always-on and path-scoped) | 13 | `.claude/rules/` |
 | Deterministic hooks + a test suite (85 checks) | 7 | `.claude/hooks/` |
 | Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack |
@@ -280,7 +280,7 @@ Reviewers are read-only. Engineers write only inside their role's owned paths. E
 | Verify & Release | `security-audit`, `release-docs` |
 | Documentation | `write-docs` |
 | Adapters | `tracker` (Linear, GitHub Issues, local files), `ci` (GitHub Actions, GitLab CI), `ship` (hosting targets), `setup-docker`, `detect-system` |
-| Shared practices | `tdd`, `role-boundaries`, `review-checklists` |
+| Shared practices | `tdd`, `role-boundaries`, `review-checklists`, `coding-foundations` (OOP, design patterns and stack guides) |
 
 Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, references loaded on demand, scripts under `scripts/`).
 
@@ -321,8 +321,9 @@ A hook that exits with code 2 blocks the tool call.
 | `coding-standards` (source files) | Naming; size and complexity limits (function ≤ 30 lines, ≤ 3 params, nesting ≤ 2, complexity ≤ 10); strict types and "parse, don't validate"; value types for money and ids; error handling; dependency injection and import boundaries; async, timeouts and resources; structured logging without PII; performance; formatting and lint hygiene; per-stack tooling (TS, Python, Go, JVM, .NET, Ruby/PHP, Rust, Swift/Dart) |
 | `database-standards` (data files) | Design principles: constraints in the database; 3NF by default; surrogate keys with natural uniqueness; correct types; enums; limited JSON; no EAV; soft delete only where needed; audit history. Also the model, zero-downtime migrations, queries, data protection, performance and operations (pooling, timeouts, restore-tested backups) and testing (migrations up/down in CI, real-engine tests) |
 | `secure-coding`, `testing`, `api-design`, `documentation` | OWASP-based controls; test first; API conventions; comments and ADRs |
+| **`coding-foundations` skill** (the foundation layer) | **OOP_AND_PATTERNS:** SOLID in practice, class design, domain modeling (value objects, entities, aggregates, repositories, use cases, events), 20+ design patterns with when to use and when to avoid, anti-patterns. **Stack guides:** TypeScript, Node.js, NestJS, React + Next.js, React Native/Expo, Python (FastAPI, Django, SQLAlchemy), Go, Java/Kotlin Spring, .NET. Each has musts, prefers and a review checklist |
 
-The architect pins the stack-specific formatter, linter (with the complexity limits) and strict type checker in `PROJECT.md` and `project.json`. `commit-gate.sh` runs them before every commit, and every reviewer checks against these rules.
+The architect picks the stack guides for each role (`project.json → roles.<role>.guides`; every build and review brief lists them) and pins the stack-specific formatter, linter (with the complexity limits) and strict type checker in `PROJECT.md` and `project.json`. `commit-gate.sh` runs them before every commit, and every reviewer checks against these rules.
 
 The non-negotiable rules (see `CLAUDE.md`):
 1. Ownership.
@@ -520,7 +521,7 @@ It runs 85 checks against throwaway fixtures, covering:
 .claude/
 ├── settings.json              hooks registration and DELIVERY_* settings
 ├── agents/                    32 role subagents
-├── skills/                    30 skills (each: SKILL.md + references/ + scripts/)
+├── skills/                    31 skills (each: SKILL.md + references/ + scripts/)
 │   └── deliver/
 │       ├── SKILL.md           the orchestrator
 │       ├── references/        workflow, gates, briefs, triage, collaboration, cost, memory, manifest, state schema

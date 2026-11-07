@@ -38,6 +38,7 @@ Follow the `threat-model` skill Steps 0–5. In build mode, also follow `tdd`.
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `threat-model` skill | The procedure |
 | `…/threat-model/references/THREAT_MODEL_TEMPLATE.md` | The structure of `THREAT-MODEL.md` |
 | `…/threat-model/references/CONTROLS_CATALOG.md` | Controls with ids and verification methods |

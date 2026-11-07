@@ -34,6 +34,7 @@ Responses validated and mapped; only the needed data sent; secrets by name; SSRF
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `review-checklists` skill | Verdict rules, Common + Integration checklists |
 | `build-integration` skill + references | Patterns, webhooks, resilience standards |
 

@@ -38,6 +38,7 @@ Follow `integrate-milestone` Steps 0–5.
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `integrate-milestone` skill | The procedure |
 | `…/integrate-milestone/references/MILESTONE_TEMPLATES.md` | Milestone package templates |
 | `.claude/skills/deliver/scripts/check-ownership.sh` | The ownership check (exit 1 = violation) |

@@ -39,6 +39,7 @@ Transactions, race conditions, migration safety, N+1 and indexing, logging witho
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `review-checklists` skill | Verdict rules, severity scale, Common + Backend checklists |
 | `…/create-endpoint/references/API_CONVENTIONS.md` | The expected implementation conventions |
 | `…/design-architecture/references/API_CONTRACTS.md` | Contract rules and the error model |

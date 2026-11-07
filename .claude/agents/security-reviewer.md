@@ -38,6 +38,7 @@ None in code, config, fixtures or logs (`gitleaks` if installed, regex review ot
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `review-checklists` skill | Verdict rules, Security checklist |
 | `threat-model` skill | `…/references/CONTROLS_CATALOG.md`, `THREAT_MODEL_TEMPLATE.md` |
 | `.claude/rules/security.md` | Always-on rules |

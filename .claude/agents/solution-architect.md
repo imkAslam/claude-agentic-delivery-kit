@@ -61,6 +61,7 @@ Follow the `design-architecture` skill Steps 0–10, for the mode named in your 
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | Pick the stack guides per role (`roles.<role>.guides`); pin the tools they name |
 | `design-architecture` skill | The procedure for each mode |
 | `…/references/REFERENCE_SOURCES.md` | Authoritative sources, search queries, evidence rules |
 | `…/references/ARCHITECTURE_PATTERNS.md` | Styles, frameworks, data stores, API/realtime, scalability, design patterns, worked decisions |

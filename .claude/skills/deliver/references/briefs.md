@@ -14,6 +14,7 @@ PRIOR FINDINGS: <numbered findings from the last round, verbatim>               
 INBOX: <M-id from <agent>: message body>, one per line                         (when messages are waiting)
 LESSONS: <≤5 lines for this role from docs/delivery/LESSONS.md>                (build + review steps, when any apply)
 CODEMAP: docs/CODEMAP.md (read first; before milestone 1 is integrated: PRD §11) (build + review steps)
+GUIDES: .claude/skills/coding-foundations/references/OOP_AND_PATTERNS.md + <GUIDE>.md for each roles.<role>.guides  (build + review steps)
 COLLABORATORS: <agents you may message for this step, from collaboration.md>
 CONSTRAINTS: frozen contracts · no secrets · deploys only via CI · stay in owned paths · engineering-principles + coding-standards (+ database-standards for data work)
 RETURN: end with the return block from .claude/skills/deliver/references/briefs.md

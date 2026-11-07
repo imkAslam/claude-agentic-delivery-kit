@@ -22,6 +22,8 @@ paths:
 
 These apply to every language. The stack-specific conventions (formatter, linter, type checker, their configuration) are pinned by the solution-architect in `.claude/PROJECT.md` and enforced by `project.json → commands.lint` / `typecheck`. Principles: `engineering-principles.md`.
 
+**Foundation layer:** the `coding-foundations` skill holds the how-to for each stack and for design. Read `OOP_AND_PATTERNS.md` (SOLID, class design, domain modeling, design patterns and anti-patterns) and the stack guides listed in your brief's `GUIDES:` line: TypeScript, Node.js, NestJS, React/Next.js, React Native, Python (FastAPI, Django), Go, Java/Kotlin Spring, .NET. Each ends with a review checklist that engineers run before returning and reviewers apply.
+
 ## Readability and naming
 - Names say what a thing is or does, in the domain's language (the PRD glossary): `invoiceTotal`, not `val2`. Booleans read as questions (`isActive`, `hasAccess`). Functions are verbs; types and modules are nouns.
 - One naming convention per language, as its standard style guide says; no mixed casing in one codebase.
@@ -84,7 +86,7 @@ These apply to every language. The stack-specific conventions (formatter, linter
 - Test first, behavior from the AC, no weakened tests (`testing.md`). New logic has unit tests; boundaries have integration tests; critical journeys have E2E.
 - A diff is review-ready when: it does one ticket, builds, passes lint/typecheck/tests locally with the `project.json` commands, and its report explains any new dependency, pattern or deviation (with an ADR when it's significant).
 
-## Stack notes (the architect fills the actual tools into PROJECT.md)
+## Stack notes (the architect fills the actual tools into PROJECT.md; details in the stack guides)
 | Stack | Typical enforcement |
 |---|---|
 | TypeScript / JavaScript | `tsc --strict`, ESLint (incl. import boundaries, complexity), Prettier |

@@ -41,6 +41,7 @@ Screen-reader labels, dynamic type, touch targets; secure token storage; no secr
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `create-screen` skill | The procedure |
 | `…/create-screen/references/MOBILE_TEMPLATES.md` | Expo/React Native and Flutter screen + test skeletons |
 | `…/create-screen/references/MOBILE_PATTERNS.md` | Offline/sync, lifecycle, permissions, deep links, push, performance |
