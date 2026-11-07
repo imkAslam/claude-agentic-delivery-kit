@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "lane": "understand",
+  "step": "intake",
+  "milestone": null,
+  "rounds": {},
+  "gates": {
+    "intake":     { "status": "pending", "decision": null, "approver": null, "ts": null, "notes": null, "package": {} },
+    "g1":         { "status": "pending", "decision": null, "approver": null, "ts": null, "notes": null, "package": {} },
+    "g2":         { "status": "pending", "decision": null, "approver": null, "ts": null, "notes": null, "package": {} },
+    "acceptance": { "status": "pending", "decision": null, "approver": null, "ts": null, "notes": null, "package": {} },
+    "g3":         { "status": "pending", "decision": null, "approver": null, "ts": null, "notes": null, "package": {} },
+    "ops_ack":    { "status": "pending", "decision": null, "approver": null, "ts": null, "notes": null, "package": {} }
+  },
+  "change_requests": [],
+  "tickets": {},
+  "failures": [],
+  "notes": [],
+  "messages": [],
+  "agents": {},
+  "release": { "name": null, "artifact": null, "environment": null },
+  "validated_at": null,
+  "updated_at": null
+}

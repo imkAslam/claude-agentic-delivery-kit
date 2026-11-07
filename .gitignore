@@ -1,0 +1,23 @@
+# OS and editor clutter
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Secrets: names only are tracked (.env.example); values never
+.env
+.env.*
+!.env.example
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Delivery run state (local cursor; the audit trail is docs/delivery/GATE-LOG.md)
+.claude/delivery/
+
+# Agent worktrees
+.claude/worktrees/
+
+# Dependencies
+node_modules/
