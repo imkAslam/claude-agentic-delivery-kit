@@ -530,4 +530,8 @@ Created during a run, in the target project:
 - Token counts in the ledger are recorded from each agent's result, so the ledger is as complete as the orchestrator's recording.
 - Optional tools (SonarQube, CodeRabbit, dynamic scanners) are used only when detected, never assumed to be installed.
 - Dynamic security testing runs only against environments the project owns and has authorized, never production.
-- **License:** none has been chosen yet. Until a `LICENSE` file is added, the default copyright applies.
+
+---
+
+## License
+[MIT](LICENSE) © 2026 Kamran Aslam. You may use, copy, modify and distribute the kit, including commercially, as long as the copyright and license notice stay with it. It comes with no warranty.
