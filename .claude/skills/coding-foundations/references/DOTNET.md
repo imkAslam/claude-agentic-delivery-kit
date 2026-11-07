@@ -18,7 +18,7 @@ With: OOP_AND_PATTERNS.md.
 - Async all the way: no `.Result`, `.Wait()` or `async void` (except event handlers); pass `CancellationToken` through every I/O call; `ConfigureAwait(false)` in library code.
 
 ## API
-- Minimal APIs or controllers, thin; validation with FluentValidation or data annotations; responses are DTOs; errors as `ProblemDetails` through one exception handler (`IExceptionHandler`/`UseExceptionHandler`).
+- Minimal APIs or controllers, thin; validation with FluentValidation or data annotations; responses are DTOs; errors as `ProblemDetails` through one exception handler (`IExceptionHandler`/`UseExceptionHandler`). The server rules mirror the form rules exactly (FORMS_AND_VALIDATION.md).
 - Authorization policies plus resource-based checks in handlers/services.
 
 ## Data (EF Core)

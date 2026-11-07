@@ -30,7 +30,7 @@ export function messageFor(err: ApiError): string {
 Map `validation_failed.details[]` to field errors. On `unauthenticated`, redirect to sign-in and keep the return URL.
 
 ## Forms
-- Use the project's form library if it has one (or native form handling + schema validation). Share the validation schema with the contract types where codegen provides it.
+- Use the project's form library and schema library (PROJECT.md → Coding guides: React Hook Form or Formik with zod or yup, VeeValidate, Angular Reactive Forms, Superforms…) and the shared or contract-generated schema. Full rules: `coding-foundations` → FORMS_AND_VALIDATION.md.
 - Validate on blur, then on change; on submit, focus the first invalid field.
 - Disable submit only while submitting; keep the input on error; prevent double submission; send an `Idempotency-Key` on create operations that the contract marks idempotent.
 - Optimistic updates only when the operation is reversible and its failure is rare. Roll back and show an error on failure.

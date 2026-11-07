@@ -1,6 +1,6 @@
 ---
 name: coding-foundations
-description: "Foundation layer for writing code the same way across the team: object-oriented design, SOLID, class design, domain modeling and a catalog of design patterns with when to use and avoid each, plus stack guides with best practices and review checklists for TypeScript, Node.js, NestJS, React and Next.js, React Native, Python (FastAPI, Django), Go, Java/Kotlin (Spring) and .NET."
+description: "Foundation layer for writing code the same way across the team: object-oriented design, SOLID, class design, domain modeling and a catalog of design patterns with when to use and avoid each, form and input validation across stacks (React Hook Form or Formik with zod or yup, and the equivalents elsewhere), plus stack guides with best practices and review checklists for TypeScript, Node.js, NestJS, React and Next.js, React Native, Python (FastAPI, Django), Go, Java/Kotlin (Spring) and .NET."
 when_to_use: "Use before implementing or reviewing code in a stack for the first time in a session, when choosing a design pattern or structuring classes and modules, when the architect pins the coding conventions for a stack, and when a reviewer needs the stack checklist."
 user-invocable: false
 ---
@@ -15,6 +15,7 @@ The solution-architect lists them per role in `.claude/project.json → roles.<r
 | Guide | Read it for |
 |---|---|
 | [OOP_AND_PATTERNS.md](references/OOP_AND_PATTERNS.md) | **Every role that writes code.** SOLID, class design, domain modeling, design patterns, anti-patterns |
+| [FORMS_AND_VALIDATION.md](references/FORMS_AND_VALIDATION.md) | **Every role that builds forms or validates input** (frontend, mobile, backend): one schema per rule shared by client and server, the library per stack (React Hook Form or Formik with zod or yup, VeeValidate, Angular Reactive Forms, Superforms, Pydantic, class-validator, Bean Validation, FluentValidation…), field rules, accessible errors, server-error mapping, tests |
 | [TYPESCRIPT.md](references/TYPESCRIPT.md) | Any TypeScript code (frontend, backend, mobile) |
 | [NODE.md](references/NODE.md) | Node.js services and scripts (Express, Fastify, Hono, workers) |
 | [NESTJS.md](references/NESTJS.md) | NestJS services (read with NODE and TYPESCRIPT) |

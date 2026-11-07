@@ -11,7 +11,7 @@ With: OOP_AND_PATTERNS.md.
 
 ## Spring (must)
 - **Constructor injection only** (no field `@Autowired`); `final` fields (Java) or `val` (Kotlin).
-- Controllers thin: validate (`@Valid` + Bean Validation on DTOs), call one application service, return response DTOs (Java `record`s / Kotlin `data class`es). Never return entities.
+- Controllers thin: validate (`@Valid` + Bean Validation on DTOs), call one application service, return response DTOs (Java `record`s / Kotlin `data class`es). Never return entities. The server rules mirror the form rules exactly (FORMS_AND_VALIDATION.md).
 - `@Transactional` on application-service public methods (Spring proxies don't apply to self-invocation or private methods); read-only transactions for queries; no remote calls inside transactions.
 - One `@RestControllerAdvice` mapping domain exceptions to the contract's error body (ProblemDetails where the contract uses it).
 - Typed configuration with `@ConfigurationProperties` + validation; profiles per environment; secrets from the environment.

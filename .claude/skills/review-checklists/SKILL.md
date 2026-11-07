@@ -28,9 +28,11 @@ user-invocable: false
 - [ ] Loading, empty, error, success and no-permission states all exist.
 - [ ] Accessibility: labels, focus order and visibility, keyboard operation, contrast, ARIA only where needed.
 - [ ] API calls use the generated client, handle every contract error, and don't trust client-side checks for security.
+- [ ] Forms (FORMS_AND_VALIDATION.md): the project's form and schema library, the shared/contract schema, validation on blur and submit, first-invalid focus, accessible errors, server field errors mapped, no double submit, schema tests with boundary values.
 - [ ] No needless re-renders, waterfalls or unbounded lists. Assets are sized.
 
 ## Backend
+- [ ] Every input rule is enforced server-side and matches the form rules exactly (FORMS_AND_VALIDATION.md); unknown fields rejected; validation errors use the contract's `validation_failed` body with per-field details.
 - [ ] It conforms to the contract: paths, schemas, status codes, error model, pagination, idempotency.
 - [ ] Authorization is checked server-side on every operation (object-level, not just route-level).
 - [ ] Inputs are validated. Queries are parameterized. No N+1 queries. Indexes exist for new filters.

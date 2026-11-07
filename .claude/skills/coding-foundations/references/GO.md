@@ -24,7 +24,7 @@ With: OOP_AND_PATTERNS.md (structs + small interfaces instead of classes).
 - Protect shared state with a mutex or confine it to one goroutine; run tests with `-race`.
 
 ## HTTP and data
-- `http.Server` with read/write/idle timeouts; `http.Client` with a timeout (never the zero-value default client for remote calls); graceful shutdown with `Shutdown(ctx)`.
+- `http.Server` with read/write/idle timeouts; `http.Client` with a timeout (never the zero-value default client for remote calls); graceful shutdown with `Shutdown(ctx)`. The server rules mirror the form rules exactly (FORMS_AND_VALIDATION.md).
 - `database/sql` (or sqlc/pgx) with parameterized queries, `defer rows.Close()`, checked `rows.Err()`, transactions scoped to the use case.
 - Structured logging with `log/slog`.
 

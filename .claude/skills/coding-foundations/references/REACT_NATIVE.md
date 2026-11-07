@@ -11,6 +11,9 @@ With: REACT.md (components, state, hooks), TYPESCRIPT.md. Templates: `create-scr
 - No heavy work on the JS thread during gestures or animations; use the native-driven animation library (Reanimated) for animations.
 - Images sized and cached; avoid re-renders from inline objects/functions in hot list rows.
 
+## Forms
+Same libraries and shared schemas as the web app (FORMS_AND_VALIDATION.md); next-field focus with `returnKeyType`, keyboard avoidance, `textContentType`/`autoComplete` for autofill, errors announced to screen readers.
+
 ## Offline, network and lifecycle
 - Assume poor networks: request timeouts, retries for idempotent calls, cached server state that persists across launches, optimistic updates with rollback, and a visible offline state.
 - Handle app state changes (background/foreground): pause timers and subscriptions, refresh stale data on resume.

@@ -21,7 +21,7 @@ With: OOP_AND_PATTERNS.md. Templates: `create-endpoint/references/BACKEND_TEMPLA
 
 ## FastAPI
 - Routers per feature, thin; logic in services/use cases; dependencies (`Depends`) for the DB session, the current user and permissions.
-- Request and response models (`response_model`) from Pydantic; never return ORM objects directly; schemas match the contract.
+- Request and response models (`response_model`) from Pydantic; never return ORM objects directly; schemas match the contract. The server rules mirror the form rules exactly (FORMS_AND_VALIDATION.md).
 - Lifespan handler for startup/shutdown (pools, clients); one exception handler mapping domain errors to the contract error body.
 - Sync `def` endpoints run in a thread pool (fine for sync drivers); `async def` only when everything inside is async.
 - `BackgroundTasks` only for best-effort trivia; real jobs go to a queue (Celery, RQ, Dramatiq, arq) with idempotent tasks.
