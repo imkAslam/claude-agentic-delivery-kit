@@ -15,6 +15,7 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 - [How it works](#how-it-works)
 - [Quick start](#quick-start)
 - [The five lanes](#the-five-lanes)
+- [Tickets, bugs and status tracking](#tickets-bugs-and-status-tracking)
 - [The seven human gates](#the-seven-human-gates)
 - [Who decides what](#who-decides-what)
 - [The agent team](#the-agent-team)
@@ -40,7 +41,7 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 | Role subagents | 32 | `.claude/agents/` |
 | Skills (orchestrator, gates, role skills, adapters, shared practices) | 30 | `.claude/skills/` |
 | Rules (always-on and path-scoped) | 11 | `.claude/rules/` |
-| Deterministic hooks + a test suite (85 checks) | 7 | `.claude/hooks/` |
+| Deterministic hooks + a test suite (91 checks) | 7 | `.claude/hooks/` |
 | Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack |
 
 Main features:
@@ -182,6 +183,40 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | `deploy`, `smoke` | devops-engineer | Deploys through CI only, smoke-tests, runs the approved rollback if checks fail |
 | `handoff` | devops-engineer | `DEPLOYMENT-RESULT.md`, final handoff |
 | `ops_ack` | **you** | Operations acknowledges the handoff. This does not authorize another deploy |
+
+---
+
+## Tickets, bugs and status tracking
+(`plan-delivery` → TICKET_TEMPLATE.md, `tracker` skill, `triage.md`)
+
+**Real, right-sized tickets.** One ticket is one cohesive capability of one module, for one role. Tickets are sliced by capability, never by layer.
+
+| Size | Effort | Example |
+|---|---|---|
+| S | ≤ 1 day | A bug fix, a chore, a small change |
+| M | 1–2 days (default) | Profile & settings API (4 operations) |
+| L | 2–4 days (maximum, with a checklist) | **Auth API**: signup, login, logout, refresh, email verification, OTP, forgot/reset password, all in one ticket |
+
+- **Too small** (one endpoint per ticket, a ticket per config file): merge.
+- **Too big** (more than about 8 operations or 6 screens, or more than one module): split by capability.
+- **Typical counts:** 2–6 tickets per role per milestone, 20–60 for an MVP.
+- **Ticket types:** `feature`, `chore`, `spike` and `bug`.
+- **Checklists:** M and L tickets carry a checklist of their operations or screens, so progress is visible inside the ticket.
+
+**Status lifecycle**, enforced by the state helper and recorded in each ticket's history:
+```
+backlog → ready → in_progress → in_review → approved → done → verified
+                     ↑   ↓          ↓   ↑        ↓        ↓
+                     └ changes_requested ┘    reopened ←──┘     (+ blocked, cancelled)
+```
+Illegal jumps such as `ready → done` are rejected. `ticket show <id>` prints a ticket's full history; `--force "<reason>"` only corrects a wrongly set status, and the reason is kept.
+
+**Bugs are linked to their original ticket:**
+- **Found before the milestone review approves the work:** the original ticket is reopened.
+- **Found after it** (in QA, acceptance, scans, staging or production): a **bug ticket** is created with `bug_of: <original>`, a severity (P1/P2/P3), where it was found, the steps to reproduce, and a regression test that must fail before the fix. The original lists its bugs.
+- **Where the link appears:** in the local tracker, GitHub (labels, a "Bug of: #n" line, sub-issues) and Linear (a "related" relation), and in `TICKETS.md`, `OPEN-ISSUES.md` and `docs/FEATURES.md` (the open bugs per feature).
+- **When a bug is closed:** QA re-runs the reproduction on the candidate and marks the bug `verified`.
+- **Where to see open bugs:** `delivery-state.sh bugs open` and `/delivery-status`.
 
 ---
 
@@ -463,7 +498,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 | `approve`, `reject`, `verify <gate>` | Human gate decisions tied to file hashes; verify the hashes still match |
 | `cr-open <gate> "<reason>" --approved-by "<human>" <paths…>`, `cr-close <id>` | Change requests on approved gates |
 | `release "<name>" "<artifact>" "<env>"` | Release identity, required before G3 |
-| `ticket add/status/set`, `ready <ms>` | Tickets and ready-to-start lists |
+| `ticket add/status/show/set`, `ready <ms>`, `bugs [open\|all]` | Tickets (type, size, bug links), validated status changes with history, ready-to-start lists, open bugs |
 | `msg add/answer/close/open` | Agent-to-agent messages |
 | `agent set/get` | Saved agent ids for continuing agents |
 | `usage add/summary` | The token ledger (exit 4 when the budget is reached) |
@@ -475,7 +510,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 85 checks against throwaway fixtures, covering:
+It runs 91 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;
@@ -483,6 +518,7 @@ It runs 85 checks against throwaway fixtures, covering:
 - role boundaries and frozen contracts;
 - red and green commits;
 - the usage ledger and budget;
+- the ticket lifecycle (illegal transitions, history, bugs linked to their original);
 - checkpoints;
 - ownership.
 

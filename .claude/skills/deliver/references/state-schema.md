@@ -17,8 +17,11 @@ This is the run cursor. The tracker holds the ticket details; this file holds po
     }
   },
   "change_requests": [],         // { id, gate, paths[], reason, status: open|closed, ts }
-  "tickets": {},                 // "<id>": { title, role, milestone, status, attempts, depends_on[], branch, tracker_ref }
-                                 // status: ready | in_progress | in_review | approved | done | blocked
+  "tickets": {},                 // "<id>": { title, type, role, milestone, size, status, attempts, depends_on[], branch, tracker_ref,
+                                 //           bug_of, bugs[], severity, found_in, history[{from, to, ts, note?, forced?}] }
+                                 // type: feature | chore | spike | bug   size: S | M | L
+                                 // status: backlog | ready | in_progress | in_review | changes_requested | approved | done | verified
+                                 //         | reopened | blocked | cancelled   (transitions: tracker skill → "Status lifecycle")
   "failures": [],                // { ticket, role, attempts, report, ts }
   "notes": [],                   // { ts, text }, e.g. skipped steps and their reasons
   "messages": [],                // { id: "M-n", from, to, type, re, body, blocking, status: open|answered|closed, answer: {from, body, ts}, ts }

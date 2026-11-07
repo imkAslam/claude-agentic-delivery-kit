@@ -31,9 +31,9 @@ Every AC has at least one executed TC: yes / no (list the gaps)
 ```markdown
 > Status: in-review · Owner: qa-agent (+ quality-security-agent) · Updated: <ISO>
 
-| Id | Title | Severity | Area / suspected role | TC / finding | Status | Decision |
-|---|---|---|---|---|---|---|
-| OI-3 | Postcode error not announced to screen readers | P2 | UI / frontend | TC-002 | open | fix before release |
+| Id | Title | Severity | Area / suspected role | TC / finding | Bug ticket → original | Status | Decision |
+|---|---|---|---|---|---|---|---|
+| OI-3 | Postcode error not announced to screen readers | P2 | UI / frontend | TC-002 | T-077 → T-041 | open | fix before release |
 
 ### OI-3 Postcode error not announced to screen readers
 - **Steps:** 1. … 2. …
