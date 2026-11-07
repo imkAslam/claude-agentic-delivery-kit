@@ -15,7 +15,7 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md (components are composition, not inheri
 | Derived values | Computed during render (no state, no effect) |
 | Server data | A query library (TanStack Query, SWR, RTK Query) or Server Components; never copied into global state |
 | URL state (filters, tabs, pagination) | The router's search params |
-| Form state | A form library (React Hook Form) + the boundary schema |
+| Form state | **React Hook Form or Formik** (one per project) + a **zod or yup** schema shared with the server ([FORMS_AND_VALIDATION.md](FORMS_AND_VALIDATION.md)) |
 | Truly global client state | Context for rarely-changing values; a small store (Zustand, Redux Toolkit) only when needed |
 
 ## Hooks and effects (must)
@@ -40,7 +40,7 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md (components are composition, not inheri
 
 ## Next.js (App Router)
 - **Server Components by default;** `"use client"` only at the smallest interactive leaf. Never import server-only code (DB, secrets) into client components (`server-only` package).
-- **Server Actions and Route Handlers are public endpoints:** validate input with the schema, authenticate and authorize every call, and return contract-shaped errors.
+- **Server Actions and Route Handlers are public endpoints:** validate input with the **same schema the form uses** (`safeParse`), return field errors to the form, authenticate and authorize every call, and return contract-shaped errors.
 - Be explicit about caching and revalidation (`fetch` cache options, `revalidate`, `revalidatePath/Tag`); defaults differ between versions, so follow the pinned version's docs.
 - `loading.tsx`, `error.tsx` and `not-found.tsx` per route segment; metadata API for SEO; middleware only for cheap checks (auth redirect, locale), not business logic.
 
@@ -52,5 +52,6 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md (components are composition, not inheri
 - [ ] State in the smallest right place; no server data in global stores; no derived state in effects.
 - [ ] Effects have correct deps and cleanup; no silenced hook lint.
 - [ ] Loading, empty, error and success states all handled.
+- [ ] Forms follow FORMS_AND_VALIDATION.md: the project's form + schema library, shared schema, server errors mapped to fields, accessible errors.
 - [ ] Accessible: semantic elements, labels, focus, keyboard.
 - [ ] Next.js: client boundary minimal; server actions/route handlers validate and authorize; caching explicit.

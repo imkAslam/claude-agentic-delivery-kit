@@ -13,7 +13,7 @@ With: NODE.md, TYPESCRIPT.md, OOP_AND_PATTERNS.md. Templates: `create-endpoint/r
 - Custom providers (`useFactory`, `useClass`) for configuration-dependent wiring; interface tokens as `Symbol`/string constants, not classes from other layers.
 
 ## Validation and DTOs
-- Global `ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })` (class-validator), or a zod pipe if the project chose zod. DTOs live at the edge; never expose ORM entities in responses.
+- Global `ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })` (class-validator), or a zod pipe if the project chose zod. DTOs live at the edge; never expose ORM entities in responses. The server rules mirror the form rules exactly (FORMS_AND_VALIDATION.md).
 - Response DTOs (or serializers) control output; `ClassSerializerInterceptor` with `@Exclude`/`@Expose` where class-transformer is used.
 - Swagger decorators must match the frozen contract; if codegen from the contract exists, implement the generated interfaces instead of hand-writing them.
 

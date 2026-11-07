@@ -15,7 +15,7 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md. NestJS adds NESTJS.md. Templates: `cre
 - **Streams:** use `pipeline()` for streams (handles errors and backpressure); stream large uploads/downloads instead of buffering.
 
 ## HTTP layer
-- Validate body, params, query and headers against the contract schema; reject unknown fields; limit body size.
+- Validate body, params, query and headers against the contract schema; reject unknown fields; limit body size. The server rules mirror the form rules exactly (FORMS_AND_VALIDATION.md).
 - One error-mapping middleware: domain errors → the contract's error body and status; unknown errors → 500 with a request id, no stack trace.
 - Security middleware: secure headers (helmet or equivalent), CORS allow-list, rate limiting on auth and expensive routes, `trust proxy` set correctly behind a load balancer.
 - Request id generated or propagated (`x-request-id`) and attached to every log line (AsyncLocalStorage).
