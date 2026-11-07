@@ -16,6 +16,8 @@ The principles every role designs and builds by. The detailed rules are in `codi
 12. **Evolve without breaking.** Additive changes, expand → migrate → contract for data and APIs, feature flags for risky releases, and a rollback for every change. Prefer decisions that are cheap to reverse; make the expensive ones explicit in an ADR.
 13. **Configuration in the environment.** Build once, deploy many: the same artifact runs in every environment; config and secrets come from environment variables, validated at startup.
 14. **Automate what repeats.** Format, lint, typecheck, test, scan and deploy run in CI. A check that only runs on one laptop doesn't exist.
-15. **Consistency beats preference.** Follow the patterns already in the codebase (`docs/CODEMAP.md`) and the conventions in `PROJECT.md`. Changing a convention is a decision with an ADR, not a drive-by edit.
+15. **Consistency beats preference.** Follow the patterns already in the codebase and the project's conventions. Changing a convention is a decision with an ADR, not a drive-by edit. Where they're written down (both are created during a run, not shipped with the kit):
+    - `.claude/PROJECT.md`: the stack, coding conventions and tools, written by the solution-architect at the `boundaries` step after G1. Before that, use PRD §10–§11 and `ARCHITECTURE.md`.
+    - `docs/CODEMAP.md`: where the code lives, written by the docs-writer after each milestone is integrated. Before the first one, use the planned folder structure in PRD §11 and search the code (`grep`).
 16. **Small, reviewable increments.** One ticket, one concern, one commit. Leave the code you touch a little better, but refactor beyond the ticket only through a ticket.
 17. **Few, deliberate dependencies.** Add a library only when it saves real work, is maintained, licensed compatibly and free of known critical vulnerabilities, and say why in the ticket report.
