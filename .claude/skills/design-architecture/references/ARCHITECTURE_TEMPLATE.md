@@ -23,8 +23,9 @@ See PRD §10 · D1.
 |---|---|---|---|
 
 ## 4. Stack
-| Concern | Choice | Alternatives considered | ADR |
-|---|---|---|---|
+> Confirmed at g1 by <human> on <date> · Client preference: <none | preferred | required: …>
+| Concern | Choice | Client preference | Alternatives considered | ADR |
+|---|---|---|---|---|
 
 ## 5. Deployment topology
 The chosen target (`deploy.target`), environments (dev/staging/prod), regions, managed services, and network boundaries. Diagram: PRD §12 · D3.

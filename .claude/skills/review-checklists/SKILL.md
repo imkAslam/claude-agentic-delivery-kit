@@ -18,6 +18,8 @@ user-invocable: false
 - [ ] Errors are handled at the boundaries. No swallowed exceptions or silent fallbacks.
 - [ ] No dead code, debug output, commented-out blocks or TODOs without a ticket.
 - [ ] Comments explain the why (constraints, gotchas, BR-/ADR refs), public APIs have doc comments, and any significant technical decision in the diff has an ADR (`documentation` rule).
+- [ ] The **Review checklist** of OOP_AND_PATTERNS.md and of each stack guide in the brief's `GUIDES:` line (`coding-foundations`). A violated *must* is P2 (P1 when it affects correctness, security or data); a *prefer* is P3.
+- [ ] Follows `engineering-principles.md` and `coding-standards.md`: domain naming, size and complexity limits, typed and validated boundaries, no swallowed errors, timeouts on remote calls, structured logs without PII, no magic values, no new lint suppressions without a reason and a ticket.
 - [ ] The commit message follows the git rules and references the ticket.
 
 ## Frontend
@@ -54,6 +56,7 @@ user-invocable: false
 - [ ] The INTEGRATIONS.md entry is updated with the chosen timeouts, retries and breaker settings
 
 ## Database (database-reviewer, plus the backend-reviewer for data-access code)
+- [ ] Design principles (`database-standards.md`): constraints in the database, normalized unless an ADR says otherwise, correct types, no EAV or JSON for queried fields, soft delete only where required, migrations tested up/down on a fresh database.
 - [ ] `check-migrations.sh` passes: no blocking findings, or justified `migration:allow` markers in contract-phase migrations only.
 - [ ] Schema changes match the approved `DATA-MODEL.md` (tables, columns, types, keys, relationships); deviations have a CR.
 - [ ] Constraints enforce the invariants: PK, FK with explicit `ON DELETE`, UNIQUE (partial with soft delete), CHECK, NOT NULL.

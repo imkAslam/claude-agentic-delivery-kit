@@ -42,6 +42,7 @@ Tests first, typed code, performance appropriate to the data volume.
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `create-component` skill | Stack detection, the input table, file location, generation, tokens, a11y, performance |
 | `…/create-component/references/FRAMEWORK_TEMPLATES.md` | React/Next, Vue/Nuxt, Angular, Svelte, Solid, Astro templates + test skeletons |
 | `…/create-component/references/DATA_AND_STATE.md` | Fetching, error mapping, forms, state placement, realtime |

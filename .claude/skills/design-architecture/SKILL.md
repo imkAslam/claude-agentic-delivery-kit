@@ -24,6 +24,7 @@ Lane `understand`: research, technical review, layered architecture and folder s
 
 ### Step 1: Research the architecture (round 1, then whenever the drivers change)
 Follow [REFERENCE_SOURCES.md](references/REFERENCE_SOURCES.md):
+0. Read the client's **stack preference** (Intake-Readiness Summary, `docs/intake/`). A *required* stack is a constraint; a *preferred* one is candidate A in the matrix, scored honestly ([STACK_SELECTION.md](references/STACK_SELECTION.md) §0).
 1. List the PRD **drivers** with weights.
 2. Shortlist **3 candidates** from [ARCHITECTURE_PATTERNS.md](references/ARCHITECTURE_PATTERNS.md), one of them the simplest that could work.
 3. Search and **fetch at least 5 authoritative sources**: at least 2 cloud architecture frameworks, at least 1 pattern source, plus the official docs for each chosen technology. Record the claim each one supports.
@@ -34,7 +35,7 @@ Follow [REFERENCE_SOURCES.md](references/REFERENCE_SOURCES.md):
 Return findings `[P1|P2|P3] §section — technical issue — proposed requirement change` covering feasibility, hidden complexity, NFR conflicts, cost drivers and integration risk. Questions for the PM or BA go out as `MESSAGES:`. Never edit the PM's sections.
 
 ### Step 3: Choose the technology per concern
-Using the catalog in ARCHITECTURE_PATTERNS §2–§6, choose the frontend, backend and mobile frameworks, the data stores, the API style, the realtime approach and the scalability tactics, and write one ADR per significant choice. Default bias: a **modular monolith** on managed services, with an explicit evolution path.
+Using the catalog in ARCHITECTURE_PATTERNS §2–§6, choose the frontend, backend and mobile frameworks, the data stores, the API style, the realtime approach and the scalability tactics, and write one ADR per significant choice. Default bias: a **modular monolith** on managed services, with an explicit evolution path. Then write the main stack into PRD §10 as **Tech stack (to confirm at G1)**: the recommendation, the client's preference if any, and the trade-offs in plain language ([STACK_SELECTION.md](references/STACK_SELECTION.md) §6). The client confirms it, or names their own, at G1.
 
 ### Step 4: Design layer by layer
 Fill [LAYERED_BLUEPRINT.md](references/LAYERED_BLUEPRINT.md): blocks L0–L7 and X1–X3 (responsibility, components, technology/ADR, owner role, folders, talks-to, scaling, failure handling, key NFRs), the **dependency rule**, a **request-flow** sequence for each critical journey, and the **scaling stages**. Draw the **D2 diagrams** (overview + one per layer) and the **D5 sequence diagrams** for the critical journeys ([DIAGRAMS.md](references/DIAGRAMS.md)), with the same node names as D1, **directly into PRD §12**. Write the full text version to `ARCHITECTURE.md §12`, which references the diagrams by id. Never create separate diagram files.
@@ -50,7 +51,7 @@ Then run `bash ${CLAUDE_SKILL_DIR}/scripts/check-diagrams.sh --require "D0 D1 D2
 [ARCHITECTURE_TEMPLATE.md](references/ARCHITECTURE_TEMPLATE.md) §0–§6: the overview (linking PRD §10 · D1 and the rationale), drivers, context and containers (referencing D0 and D1), stack, deployment topology for `deploy.target` (D3), scale/cost/risks. ARCHITECTURE.md contains **no diagrams**; it references the PRD ids ([DIAGRAMS.md](references/DIAGRAMS.md) → "Single home").
 
 ### Step 8: Shared boundaries (lane plan, first step)
-Write `.claude/project.json` per `.claude/skills/deliver/references/manifest.md`. The roles' `paths` and `shared_files` **must match the §13 folder tree exactly**. Use real `commands`, including the import-boundary lint rule. Also write the `.claude/PROJECT.md` summary (stack, layers, roles → folders, commands, ADR links). Send a `handoff` message to the design runners.
+Write `.claude/project.json` per `.claude/skills/deliver/references/manifest.md`. The roles' `paths` and `shared_files` **must match the §13 folder tree exactly**. Use real `commands`, including the import-boundary lint rule and the formatter, linter (complexity limits) and strict type checker per `.claude/rules/coding-standards.md`, and set `roles.<role>.guides` to the `coding-foundations` stack guides that apply (write a short guide in the same format into PROJECT.md for a stack without one). Also write the `.claude/PROJECT.md` summary (the confirmed stack, the **coding conventions and tools for this stack** and the "Coding guides" per role, layers, roles → folders, commands, ADR links). Send a `handoff` message to the design runners.
 
 ### Step 9: Detailed design (lane plan)
 The **database-architect** owns the data model (`DATA-MODEL.md`, via the `design-database` skill) and hands you the ERD for ARCHITECTURE §7. You design the modules mapped to layers and folders, on top of that model, and complete contracts in `contracts.paths` per [API_CONTRACTS.md](references/API_CONTRACTS.md), with a `codegen_cmd`. Fill ARCHITECTURE §7–§11.

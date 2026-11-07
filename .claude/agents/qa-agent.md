@@ -38,6 +38,7 @@ Follow the `write-tests` skill for the mode in your brief (Steps 1, 2 or 3).
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `write-tests` skill | Design, automation and execution procedures |
 | `…/write-tests/references/TEST_CASE_TEMPLATE.md` | `TEST-CASES.md` + the coverage checklist |
 | `…/write-tests/references/E2E_PATTERNS.md` | Web and mobile E2E structure, selectors, data, flakiness rules |

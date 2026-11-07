@@ -44,6 +44,7 @@ Structured logs without PII, metrics, a healthy health endpoint.
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `create-endpoint` skill | The procedure |
 | `…/create-endpoint/references/BACKEND_TEMPLATES.md` | Fastify/Express/Hono, NestJS, FastAPI, Django/DRF, Go, jobs, test skeleton |
 | `…/create-endpoint/references/API_CONVENTIONS.md` | Validation, authz, errors, pagination, idempotency, transactions, logging, rate limits |

@@ -6,7 +6,7 @@ A role-based **agent team for Claude Code** that takes a greenfield product from
 
 The main Claude Code session becomes the **Orchestrator**. It delegates every artifact and every line of product code to specialist subagents (product manager, architect, designers, engineers, QA, security, DevOps, …). Each one's work goes to an independent reviewer, and the run stops at **7 human gates** where you, the client and business owner, decide. Deterministic hooks enforce the rules the agents can't be trusted to follow on their own: no coding before approval, no secrets, no production deploy without a named release approval, and no edits to approved documents without a change request.
 
-The kit is generic. It contains no project-specific names, stacks or commands. The architect chooses the stack per project and pins it in `.claude/project.json`.
+The kit is generic. It contains no project-specific names, stacks or commands. The architect recommends a stack for each project, or evaluates the one you prefer, and **you confirm it at G1**. It is then pinned in `.claude/project.json`.
 
 ---
 
@@ -38,8 +38,8 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 | | Count | Where |
 |---|---|---|
 | Role subagents | 32 | `.claude/agents/` |
-| Skills (orchestrator, gates, role skills, adapters, shared practices) | 30 | `.claude/skills/` |
-| Rules (always-on and path-scoped) | 11 | `.claude/rules/` |
+| Skills (orchestrator, gates, role skills, adapters, shared practices) | 31 | `.claude/skills/` |
+| Rules (always-on and path-scoped) | 13 | `.claude/rules/` |
 | Deterministic hooks + a test suite (85 checks) | 7 | `.claude/hooks/` |
 | Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack |
 
@@ -49,6 +49,8 @@ Main features:
 - **Test-first build** in parallel git worktrees, one ticket = one Conventional Commit with red → green evidence.
 - **Hash-tied approvals:** a gate approval is bound to the sha256 of every file in its package. If an approved file changes without a change request, the approval is invalid and the hooks block further progress.
 - **No coding without approval:** code, scaffolding, code commits and build agents are blocked until you approve G2.
+- **Your stack or ours:** you can name a preferred tech stack at any time (in the evidence, at intake, or at G1). The architect scores it honestly and uses it unless it fails a must-have requirement. Otherwise the architect recommends one. Either way, you confirm the stack at G1.
+- **Engineering standards for every role:** engineering principles, coding standards (naming, size and complexity limits, typed boundaries, error handling, logging, async, performance), database design rules, secure coding, testing and documentation. Reviewers check against them.
 - **Brand and design system:** visual directions, brand guidelines, W3C design tokens (contrast-checked), component specs, mockups of every state, and design QA per milestone.
 - **Complete documentation:** PRD with every architecture diagram inline, ADRs, data model, feature catalog, database document, code map, README, CHANGELOG.
 - **Free-first development:** every dev and test service runs locally in Docker.
@@ -144,7 +146,7 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | `research` (conditional) | researcher-agent | `RESEARCH.md`: 5 comparable products, table stakes, pitfalls |
 | `ba` | ba-agent | `BA-ANALYSIS.md`: personas, permissions, journeys, business rules, entities, NFRs, Given/When/Then AC |
 | `discovery` | product-manager ⇄ product-owner-reviewer, solution-architect, cybersecurity-agent (cond.), uiux-agent (brand) ⇄ design-reviewer | `PRD.md` (complete, with every diagram D0–D8 inline), `ARCHITECTURE-RESEARCH.md`, `ARCHITECTURE.md`, `THREAT-MODEL.md`, `BRAND-DIRECTIONS.md`, ADRs |
-| `g1` | **you** | Approve the PRD and architecture direction, and **pick the visual direction**. Does not start coding |
+| `g1` | **you** | Approve the PRD and architecture direction, **confirm the tech stack** (or name your own), and **pick the visual direction**. Does not start coding |
 
 ### 2 · Plan & Design (lane `plan`)
 | Step | Who | Output |
@@ -189,7 +191,7 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | Gate | Decides | Approval unlocks |
 |---|---|---|
 | `intake` | Is the evidence ready enough to start? | Research and analysis |
-| `g1` | PRD + architecture direction + visual direction | Detailed planning (**no coding**) |
+| `g1` | PRD + architecture direction + tech stack + visual direction | Detailed planning (**no coding**) |
 | `g2` | Implementation scope: **approval to start coding** | The build lane; contracts, data model and design frozen |
 | `mbr:<ms>` | Milestone Build Review | Merging the milestone; the next milestone or verification |
 | `acceptance` | Client acceptance + quality | The release lane |
@@ -208,7 +210,8 @@ Agents are the technical team; you are the client and business owner (`.claude/r
 
 | You decide | Agents decide (and record an ADR or `ASSUMPTION:`) |
 |---|---|
-| Business goals, scope, MVP, priorities | Languages, frameworks, libraries |
+| Business goals, scope, MVP, priorities | The stack recommendation; libraries and tools within the confirmed stack |
+| **Tech stack:** confirm the recommendation at G1, or name your own preferred stack | How the engineering principles and coding standards apply to that stack |
 | Pricing and monetization | Architecture style, layers, patterns, folder structure |
 | Budget and any paid service | Data model, indexes, migrations |
 | Legal, compliance, privacy policy | API design and contracts |
@@ -218,6 +221,7 @@ Agents are the technical team; you are the client and business owner (`.claude/r
 | Timeline, go-live, every gate | Accessibility measures, performance tactics |
 
 Questions reach you only at gates, at most 5 per gate, in plain language, each with a recommended default. **Major decisions** are the exception, and are asked immediately:
+- Confirm the tech stack (g1), or change it later.
 - Start coding (g2).
 - Change anything already approved (a change request).
 - New or changed scope.
@@ -276,7 +280,7 @@ Reviewers are read-only. Engineers write only inside their role's owned paths. E
 | Verify & Release | `security-audit`, `release-docs` |
 | Documentation | `write-docs` |
 | Adapters | `tracker` (Linear, GitHub Issues, local files), `ci` (GitHub Actions, GitLab CI), `ship` (hosting targets), `setup-docker`, `detect-system` |
-| Shared practices | `tdd`, `role-boundaries`, `review-checklists` |
+| Shared practices | `tdd`, `role-boundaries`, `review-checklists`, `coding-foundations` (OOP, design patterns and stack guides) |
 
 Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, references loaded on demand, scripts under `scripts/`).
 
@@ -308,7 +312,18 @@ A hook that exits with code 2 blocks the tool call.
 `check-ownership.sh` runs again at merge time as a deterministic second check.
 
 ### Rules (`.claude/rules/`)
-`decision-policy` · `testing` · `security` · `secure-coding` · `git` · `contracts` · `api-design` · `integrations` · `delivery-artifacts` · `database-standards` · `documentation`. Some are always on; others are path-scoped to the files they govern.
+`decision-policy` · `engineering-principles` · `coding-standards` · `testing` · `security` · `secure-coding` · `git` · `contracts` · `api-design` · `integrations` · `delivery-artifacts` · `database-standards` · `documentation`. Some are always on; others are path-scoped to the files they govern.
+
+### Engineering standards
+| Rule | Covers |
+|---|---|
+| `engineering-principles` (always on) | 17 principles, in priority order. Correct → secure → simple → fast; KISS and YAGNI; single responsibility; dependencies point inward; explicit contracts; DRY by knowledge (rule of three); fail fast; design for failure (timeouts, bounded retries, idempotency, outbox); observable by default; evolve without breaking; config in the environment; automate what repeats; consistency beats preference; small increments; few dependencies |
+| `coding-standards` (source files) | Naming; size and complexity limits (function ≤ 30 lines, ≤ 3 params, nesting ≤ 2, complexity ≤ 10); strict types and "parse, don't validate"; value types for money and ids; error handling; dependency injection and import boundaries; async, timeouts and resources; structured logging without PII; performance; formatting and lint hygiene; per-stack tooling (TS, Python, Go, JVM, .NET, Ruby/PHP, Rust, Swift/Dart) |
+| `database-standards` (data files) | Design principles: constraints in the database; 3NF by default; surrogate keys with natural uniqueness; correct types; enums; limited JSON; no EAV; soft delete only where needed; audit history. Also the model, zero-downtime migrations, queries, data protection, performance and operations (pooling, timeouts, restore-tested backups) and testing (migrations up/down in CI, real-engine tests) |
+| `secure-coding`, `testing`, `api-design`, `documentation` | OWASP-based controls; test first; API conventions; comments and ADRs |
+| **`coding-foundations` skill** (the foundation layer) | **OOP_AND_PATTERNS:** SOLID in practice, class design, domain modeling (value objects, entities, aggregates, repositories, use cases, events), 20+ design patterns with when to use and when to avoid, anti-patterns. **Stack guides:** TypeScript, Node.js, NestJS, React + Next.js, React Native/Expo, Python (FastAPI, Django, SQLAlchemy), Go, Java/Kotlin Spring, .NET. Each has musts, prefers and a review checklist |
+
+The architect picks the stack guides for each role (`project.json → roles.<role>.guides`; every build and review brief lists them) and pins the stack-specific formatter, linter (with the complexity limits) and strict type checker in `PROJECT.md` and `project.json`. `commit-gate.sh` runs them before every commit, and every reviewer checks against these rules.
 
 The non-negotiable rules (see `CLAUDE.md`):
 1. Ownership.
@@ -506,12 +521,12 @@ It runs 85 checks against throwaway fixtures, covering:
 .claude/
 ├── settings.json              hooks registration and DELIVERY_* settings
 ├── agents/                    32 role subagents
-├── skills/                    30 skills (each: SKILL.md + references/ + scripts/)
+├── skills/                    31 skills (each: SKILL.md + references/ + scripts/)
 │   └── deliver/
 │       ├── SKILL.md           the orchestrator
 │       ├── references/        workflow, gates, briefs, triage, collaboration, cost, memory, manifest, state schema
 │       └── scripts/           delivery-state.sh, check-ownership.sh
-├── rules/                     11 rules
+├── rules/                     13 rules
 └── hooks/                     guards, session context, lib.sh, test/run.sh
 CLAUDE.md                      project instructions loaded by every session
 ```

@@ -10,6 +10,7 @@ Agents are the technical team. **They decide technical matters themselves.** The
 | Budget and recurring costs | Any paid service or tier, any cost above the approved budget, a new vendor contract |
 | Legal, compliance, privacy policy | Retention periods, accepting a vendor's DPA or terms, which regulations apply, consent wording |
 | Brand and content | Name; **choosing the visual direction** (agents propose 2–3 with a recommendation at G1); approving the logo; trademark checks; paid fonts or stock imagery; legal and marketing copy |
+| **Tech stack** | **Confirming the main stack at G1**: languages, frameworks, database, hosting. The client may name their own preferred stack at any time (at intake, in the evidence, or at G1); agents recommend and explain the trade-offs |
 | Risk acceptance | Shipping with known issues, accepting a security or availability risk |
 | Accounts and access | Creating accounts, providing credentials or remote service URLs, DNS, store listings |
 | Timeline and go-live | Release dates, launch windows, and every gate approval |
@@ -19,6 +20,7 @@ These are never decided by an agent and never wait silently for a later gate. Th
 | Major decision | When it comes up | Enforced by |
 |---|---|---|
 | **Start coding** | The PRD, design and plan are complete: gate g2, "approval to start coding" | `guard-coding.sh` blocks code, scaffolding, code commits and build agents until g2 is approved |
+| **Tech stack** | Asked at intake ("any preferred stack?") and confirmed at G1: the recommended stack or the client's own | gate-review g1; changing it later is a change request on g1 |
 | Change an approved decision | Any change request on an approved gate (scope, PRD, contracts, data model, design, release) | `cr-open` refuses without `--approved-by` |
 | New or changed scope | A finding or request that no agreed AC covers | triage → discovery only after the human agrees |
 | Spend money | A paid service, plan upgrade, paid asset, or a cost above the approved budget | decision policy |
@@ -29,7 +31,7 @@ These are never decided by an agent and never wait silently for a later gate. Th
 | Reversing a G1 choice | Changing the architecture style, stack, hosting or the visual direction after G1 | change request on g1 |
 
 ## Agents decide (never ask the human)
-Languages, frameworks, libraries · the architecture style, layers and patterns · the data model, indexes and migrations · API design and contracts · the folder structure · coding, testing and security standards · CI/CD design · environment setup (the local Docker services) · hosting configuration within the approved budget and constraints · performance and scaling tactics · turning the chosen direction into tokens, type scales, spacing, components and themes · UX details, layouts and product microcopy that stay within the brand, the voice and the approved mockups · accessibility measures · the technical interpretation of requirements.
+The stack **recommendation** (the client confirms it at G1) · libraries and tools within the confirmed stack · the architecture style, layers and patterns · the data model, indexes and migrations · API design and contracts · the folder structure · coding, testing and security standards · CI/CD design · environment setup (the local Docker services) · hosting configuration within the approved budget and constraints · performance and scaling tactics · turning the chosen direction into tokens, type scales, spacing, components and themes · UX details, layouts and product microcopy that stay within the brand, the voice and the approved mockups · accessibility measures · the technical interpretation of requirements.
 
 ## How to handle uncertainty (agents)
 1. **Technical uncertainty → decide.** Choose the documented default or the conservative option, record it (an ADR, or `ASSUMPTION:` in the artifact), and continue. Ask other agents through `MESSAGES:` if they own the answer. **Never** ask the human to interpret technical documents, vendor terms or a technical scope.

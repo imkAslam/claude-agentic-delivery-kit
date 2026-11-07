@@ -39,6 +39,7 @@ Tokens in secure storage, no secrets in the bundle, no PII in logs.
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `review-checklists` skill | Verdict rules, Common + Mobile checklists |
 | `design-inspiration` skill | Design fidelity |
 | `…/create-screen/references/MOBILE_PATTERNS.md` | The expected platform patterns |

@@ -45,6 +45,7 @@ Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in b
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `build-integration` skill | The procedure |
 | `…/build-integration/references/INTEGRATION_PATTERNS.md` | Adapter/ACL, sync vs. async, outbox, polling, CDC, reconciliation |
 | `…/build-integration/references/WEBHOOKS.md` | Inbound verification, idempotency, outbound signing, retries, delivery logs |

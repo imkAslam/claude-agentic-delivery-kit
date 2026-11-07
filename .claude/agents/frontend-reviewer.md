@@ -40,6 +40,7 @@ Labels, focus, keyboard, announced errors; generated-client use; performance for
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `review-checklists` skill | Verdict rules, severity scale, Common + Frontend checklists |
 | `design-inspiration` skill + references | What "matches the design" means |
 | `…/create-component/references/DATA_AND_STATE.md` | The expected data and error patterns |
