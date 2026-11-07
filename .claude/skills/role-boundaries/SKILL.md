@@ -28,5 +28,7 @@ Stop working on that part and add a line to your return block:
 Finish everything else in the ticket that doesn't depend on the request, and state clearly what remains blocked.
 
 ## Also
+- Find code through `docs/CODEMAP.md` (before milestone 1 is integrated: PRD §11) and `grep`. Open only the files you need; never read whole directories.
+- Apply the `LESSONS:` lines in your brief; they are mistakes the team already made once.
 - Use generated contract clients and mocks. Never copy types by hand across roles.
 - Stage only your own paths. Never `git add -A` in a shared tree.

@@ -12,6 +12,8 @@ OWNED PATHS: <the globs from project.json roles.<role>.paths>                   
 WORKTREE / BASE: <path or "isolated">, base branch <ms-n/integration>           (build + review steps)
 PRIOR FINDINGS: <numbered findings from the last round, verbatim>               (correction rounds)
 INBOX: <M-id from <agent>: message body>, one per line                         (when messages are waiting)
+LESSONS: <≤5 lines for this role from docs/delivery/LESSONS.md>                (build + review steps, when any apply)
+CODEMAP: docs/CODEMAP.md (read first; before milestone 1 is integrated: PRD §11) (build + review steps)
 COLLABORATORS: <agents you may message for this step, from collaboration.md>
 CONSTRAINTS: frozen contracts · no secrets · deploys only via CI · stay in owned paths
 RETURN: end with the return block from .claude/skills/deliver/references/briefs.md
@@ -33,6 +35,7 @@ EVIDENCE: <test output excerpts, screenshot paths, command + exit code>
 FINDINGS:                               (reviewers, the integrator, QA, quality/security)
   - [P1|P2|P3 or CRITICAL|HIGH|MEDIUM|LOW] <file:line or artifact §> — <problem> — <required change>
 NEEDS: <dependency/shared-file/contract/human requests, one per line>   (optional)
+LESSON: <one reusable rule, phrased as what to do, with the finding ids>  (optional; memory.md §7)
 MESSAGES:                               (optional; to other agents through the orchestrator)
   - TO: <agent|role|human> | TYPE: question|request|handoff|finding|info|decision-needed | RE: <id> | BLOCKING: yes|no
     BODY: <one focused message>
@@ -49,6 +52,7 @@ Message types, routing and rules: [collaboration.md](collaboration.md). In a fre
 | `DONE` with no evidence | Treat it as `BLOCKED: no evidence` and re-brief once, then go to triage |
 | `CHANGES_REQUESTED` (reviewer) | Send the FINDINGS to the same role, then `delivery-state.sh round <loop>` |
 | `CONTRACT_CHANGE_NEEDED` | Pause the dependent tickets and **ask the human** (one question: the change, why, the impact, the recommendation). On yes: `cr-open g2 … --approved-by "<human>"` and a ticket for the api-designer. On no: send it back to the engineer to work within the contract |
+| `LESSON` line | Add it to `docs/delivery/LESSONS.md` when it recurs or is P1/CRITICAL ([memory.md](memory.md) §7) |
 | `NEEDS` lines | Shared-file/dependency requests become a ticket for the owner listed in `shared_files` |
 | `BLOCKED` | Fix the cause if it's within the kit (missing input, wrong path), otherwise stop and ask the human |
 | `NEEDS_HUMAN` | Apply the decision policy. A **technical** question goes back to the agent to decide and record. A **business** question with a reasonable default: continue on the default, and queue it for the next gate. Only a blocking business question with no default: ask the human now (AskUserQuestion, plain language, options + recommendation) |

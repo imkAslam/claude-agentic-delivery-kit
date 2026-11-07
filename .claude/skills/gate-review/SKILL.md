@@ -29,6 +29,7 @@ State helper: `bash ${CLAUDE_PROJECT_DIR}/.claude/skills/deliver/scripts/deliver
    - For `g3`, run `delivery-state.sh release "<name>" "<artifact>" "<environment>"` **before** approving, so the release identity is part of the record.
    - For a revise/hold/fixes/bug-feedback decision: `delivery-state.sh reject <gate> <decision> "<approver>" "<notes>"`, then hand the human's notes to the orchestrator as findings for the correction loop named in `workflow.md`.
 7. **Confirm** by running `delivery-state.sh verify <gate>` after an approval. Report the result.
+8. **End** the gate message with one line: "The run state is saved; this is a good moment to run `/compact`." (memory.md §5)
 
 ## Change requests (`cr-open` / `cr-close`)
 - Open one when an approved artifact must change, **only after the human says yes** (AskUserQuestion: what changes, why, the impact on scope, cost and timeline, the recommendation): `delivery-state.sh cr-open <gate> "<reason>" --approved-by "<human>" <paths…>`. This invalidates the gate. The owning agent edits the files, and then this gate is presented again (steps 2–6).

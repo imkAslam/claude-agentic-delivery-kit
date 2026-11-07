@@ -6,7 +6,7 @@
 
 ## Start here
 - **What we're building:** [PRD](delivery/PRD.md) (approved at g1) · [Features](FEATURES.md)
-- **How it's built:** [Architecture](delivery/ARCHITECTURE.md) · diagrams in [PRD §10–§12](delivery/PRD.md) · [Decisions (ADRs)](adr/README.md)
+- **How it's built:** [Architecture](delivery/ARCHITECTURE.md) · diagrams in [PRD §10–§12](delivery/PRD.md) · [Decisions (ADRs)](adr/README.md) · [Code map](CODEMAP.md)
 - **Data:** [Database](database/DATABASE.md) · [Data model (approved design)](delivery/DATA-MODEL.md)
 - **APIs:** [API guidelines](delivery/API-GUIDELINES.md) · contracts: <contracts.paths> · [Integrations](delivery/INTEGRATIONS.md)
 - **Design:** [Brand](delivery/BRAND-BRIEF.md) · [Design system](delivery/DESIGN-SYSTEM.md) · [UI/UX](delivery/UI-UX.md) · [Mockups](delivery/mockups/)
@@ -19,6 +19,8 @@
 | FEATURES.md | Feature catalog and progress | docs-writer | living | — |
 | database/DATABASE.md | Database design + as-built dictionary | docs-writer (from database-architect) | living | — |
 | adr/README.md | Decision index | docs-writer | living | — |
+| CODEMAP.md | Where the code lives (read before opening code) | docs-writer | living | — |
+| delivery/LESSONS.md | Recurring mistakes turned into rules | orchestrator | living | — |
 | … | | | | |
 ```
 Status values: `draft`, `in-review`, `approved (<gate>)`, `living` (updated continuously, never in a gate package), `superseded`.

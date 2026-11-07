@@ -132,6 +132,9 @@ bash "$S" usage summary | grep -q "Tokens: 4200" && { pass=$((pass+1)); echo "  
 DELIVERY_TOKEN_BUDGET=5000 bash "$S" usage add qa-agent sonnet 900 >/dev/null; c=$?
 [ $c -eq 4 ] && { pass=$((pass+1)); echo "  ok   budget reached stops"; } || { fail=$((fail+1)); echo "  FAIL budget reached stops (got $c)"; }
 
+bash "$S" note "checkpoint: build-fork done T-001; next T-002" >/dev/null
+bash "$S" summary | grep -q "Last note: checkpoint: build-fork" && { pass=$((pass+1)); echo "  ok   summary shows last checkpoint"; } || { fail=$((fail+1)); echo "  FAIL summary shows last checkpoint"; }
+
 echo "commit-gate"
 echo "y" >> api/b.ts; git add api/b.ts
 check "blocks red backend commit"          2 commit-gate.sh "$(bash_json "git commit -m 'feat(api): x'" backend-engineer)"

@@ -27,12 +27,14 @@ The profile never changes the gates, the hooks, test-first or the evidence rules
 2. **Agents read only what their step needs:** the sections named in INPUTS, plus the references their skill points to for this step. Preloaded skills are limited to each agent's primary skill; the others are listed under Skills & Resources and read on demand.
 3. **Return blocks stay short** (SUMMARY ≤ 5 lines). The work lives in files; the orchestrator keeps only return blocks in context.
 4. **The orchestrator never reads whole artifacts** to decide routing. It reads return blocks, `delivery-state.sh summary`, and at gates only the summary sections it presents.
-5. **Continue, don't respawn.** For correction rounds and follow-up questions, continue the same agent (SendMessage with the id from `delivery-state.sh agent get`); it keeps its context and doesn't re-read everything.
+5. **Continue, don't respawn.** For correction rounds and follow-up questions, continue the same agent (SendMessage with the id from `delivery-state.sh agent get`); it keeps its context and doesn't re-read everything. If the id can't be reached (an earlier session), start a fresh agent with the original brief, its last return block and the open findings ([memory.md](memory.md) §6).
 6. **Re-review only what changed.** A correction round's reviewer gets the diff since its last verdict and the open findings, not the whole package again.
 7. **Batch small work:** one agent call for related small tickets of the same role in the same files (max 3), instead of one call each.
 8. **Skip conditional steps** whose condition doesn't hold, and record why (`delivery-state.sh note`).
 9. **Scripts before agents:** deterministic checks (check-tokens, check-diagrams, check-migrations, check-ownership, lint/test commands) run as commands, not as agent reasoning.
-10. **Compact at boundaries:** after each gate, the orchestrator's context can be compacted; the SessionStart hook restores the run summary.
+10. **Compact at boundaries:** each gate summary ends by suggesting `/compact` to the human (the orchestrator can't run it); automatic compaction covers the rest. The SessionStart hook restores the run summary and the last checkpoint ([memory.md](memory.md) §5).
+11. **Query logs, never read them whole:** MESSAGES.md, GATE-LOG.md, LESSONS.md, `failures/` and `git log` only grow; use `msg open`, `grep -n <id>`, `tail` ([memory.md](memory.md) §3).
+12. **Code map before code:** build briefs point to `docs/CODEMAP.md`; engineers open only the files it names and search with `grep` instead of reading directories ([memory.md](memory.md) §8).
 
 ## 4. Usage ledger and budget
 After every Agent result, record its token count (shown in the tool result) and model:

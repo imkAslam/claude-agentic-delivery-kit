@@ -23,6 +23,7 @@ Triage turns failures (from the integrator, QA, quality/security, a gate's "requ
 3. **Reopen or create:** if the finding is inside an existing ticket's AC, reopen it (`delivery-state.sh ticket status <id> ready`) and add the finding to its brief. Otherwise create a new ticket `T-<next>` with `role`, `depends_on`, AC refs and owned paths (the `tracker` skill + `delivery-state.sh ticket add`).
 4. **Overlap check before the fork:** two tickets in the same `build-fork` batch must not touch the same files. Compare their `owned_paths` and the files they're expected to touch. If they overlap, run them one after the other.
 5. **Attempts:** every engineer run increments `attempts` (`delivery-state.sh ticket attempt <id>`). At `$DELIVERY_MAX_ROUNDS` (3), write a failure report and **stop and ask the human**.
+6. **Lessons:** when a finding of the same kind has appeared in 2 or more tickets, or is P1/CRITICAL, or a root cause is found, add one line to `docs/delivery/LESSONS.md` and include it in that role's next briefs ([memory.md](memory.md) §7). Also add the root cause of every failure report.
 
 ## Failure report — `docs/delivery/failures/<ticket-or-loop>.md`
 ```

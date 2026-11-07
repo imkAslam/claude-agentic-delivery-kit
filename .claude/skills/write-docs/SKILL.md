@@ -1,6 +1,6 @@
 ---
 name: write-docs
-description: "Project documentation toolkit: the documentation map and index (docs/README.md), the feature catalog (docs/FEATURES.md), the database design and as-built data dictionary (docs/database/DATABASE.md), ADR authoring, lifecycle and index (docs/adr/README.md), the root README and CHANGELOG, and inline-documentation rules. Documents decisions and the why, not just the what, so future engineers and agents can work without re-deciding."
+description: "Project documentation toolkit: the documentation map and index (docs/README.md), the feature catalog (docs/FEATURES.md), the database design and as-built data dictionary (docs/database/DATABASE.md), ADR authoring, lifecycle and index (docs/adr/README.md), the code map (docs/CODEMAP.md), the root README and CHANGELOG, and inline-documentation rules. Documents decisions and the why, not just the what, so future engineers and agents can work without re-deciding."
 when_to_use: "Use when creating or updating the feature list, the database document, ADRs or the ADR index, the README, the CHANGELOG or the docs index; after G1, after planning, after each milestone and at release; and when a significant technical decision needs an ADR."
 argument-hint: "[init | plan | milestone <ms> | release <version> | adr]"
 ---
@@ -14,7 +14,7 @@ Living documentation, kept current at fixed points of the workflow. **Approved a
 |---|---|---|
 | `init` | After **g1** is approved (lane plan, first step) | `docs/README.md` (index), `docs/FEATURES.md` (from PRD §4/§7), `docs/adr/README.md` (ADR index) |
 | `plan` | After `planning`, before **g2** | FEATURES.md + milestones, tickets, screens, operations; `docs/database/DATABASE.md` (design, from DATA-MODEL); ADR index |
-| `milestone` | After `integrate` passes, before **mbr** | FEATURES.md status; DATABASE.md as built (from the real migrations); CHANGELOG `[Unreleased]`; README quick start and commands; ADR index |
+| `milestone` | After `integrate` passes, before **mbr** | FEATURES.md status; DATABASE.md as built (from the real migrations); `docs/CODEMAP.md` (from the real tree); CHANGELOG `[Unreleased]`; README quick start and commands; ADR index |
 | `release` | Lane release, `release-prep` | CHANGELOG version section; README badges/links; final docs index |
 | `adr` | Any agent making a significant technical decision | `docs/adr/ADR-<nnn>-<slug>.md` + index row |
 
@@ -37,6 +37,9 @@ Follow [ADR_GUIDE.md](references/ADR_GUIDE.md): when an ADR is required, the tem
 
 ### Step 5: README and CHANGELOG
 Use [README_CHANGELOG.md](references/README_CHANGELOG.md). The README's commands come **only** from `project.json`, and its quick start is tested against `RUN-GUIDE.md`. The CHANGELOG follows Keep a Changelog, one line per user-visible change with the ticket id.
+
+### Step 5b: Code map (`milestone` mode)
+Rebuild `docs/CODEMAP.md` with [CODEMAP_TEMPLATE.md](references/CODEMAP_TEMPLATE.md) from `git ls-files`, the entry points and PRD §11: modules with owners, features → code, shared files, conventions. About 150 lines; every path must exist. Engineers read it before opening code, so a stale map wastes every later ticket's context.
 
 ### Step 6: Verify
 Every link resolves; every feature, table and ADR in the sources appears in the documents; nothing contradicts an approved artifact. Report the counts in the return block.
@@ -63,5 +66,6 @@ Every link resolves; every feature, table and ADR in the sources appears in the 
     ├── FEATURES_TEMPLATE.md      # docs/FEATURES.md: the feature catalog
     ├── DATABASE_DOC_TEMPLATE.md  # docs/database/DATABASE.md: design summary + as-built dictionary + operations
     ├── ADR_GUIDE.md              # when to write an ADR, template, lifecycle, index
-    └── README_CHANGELOG.md       # root README.md and CHANGELOG.md formats
+    ├── README_CHANGELOG.md       # root README.md and CHANGELOG.md formats
+    └── CODEMAP_TEMPLATE.md       # docs/CODEMAP.md: modules, features → code, shared files
 ```

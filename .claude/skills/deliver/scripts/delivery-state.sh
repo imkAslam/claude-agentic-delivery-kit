@@ -130,6 +130,7 @@ case "$cmd" in
       (if (.failures | length) > 0 then "Last failure: \(.failures[-1].ticket) [\(.failures[-1].role)] -> \(.failures[-1].report)" else empty end),
       (([(.messages // [])[] | select(.status == "open")]) as $m | if ($m | length) > 0 then "Open messages: \($m | length)" + (if ([$m[] | select(.blocking)] | length) > 0 then " (\([$m[] | select(.blocking)] | length) blocking)" else "" end) else empty end),
       (if (.rounds | length) > 0 then "Rounds: " + ([.rounds | to_entries[] | "\(.key)=\(.value)/\($max)"] | join("  ")) else empty end),
+      (if ((.notes // []) | length) > 0 then "Last note: \(.notes[-1].text)" else empty end),
       (if ((.usage // []) | length) > 0 then "Usage: \(.usage | length) agent runs, \([.usage[].tokens] | add) tokens" else empty end),
       "Validated: \(.validated_at // "no")   Updated: \(.updated_at // "-")"' "$STATE"
     ;;

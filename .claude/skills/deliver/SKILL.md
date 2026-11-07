@@ -22,6 +22,7 @@ References (read only the part the current step needs):
 - [state-schema.md](references/state-schema.md): the run state at `.claude/delivery/state.json`
 - [collaboration.md](references/collaboration.md): how agents message each other through you (questions, requests, handoffs)
 - [cost.md](references/cost.md): profiles, model policy, context discipline, the usage ledger and budget
+- [memory.md](references/memory.md): what is remembered where, checkpoints, compaction, agent fallback, the lessons log and the code map
 
 ## Standing rules
 1. Gates are passed **only by the human**, through the `gate-review` skill and AskUserQuestion. Never infer an approval.
@@ -31,7 +32,7 @@ References (read only the part the current step needs):
 5. Edits to approved artifacts need a change request, and **the human approves every change request first** (`cr-open … --approved-by "<human>"`).
 6. **Decision policy** (`.claude/rules/decision-policy.md`): the human is asked only about business, scope, pricing and budget, legal and compliance, brand, risk, accounts and timing, **at gates only, at most 5 questions per gate**, each with a recommended default. Technical questions to the human are sent back to the owning agent to decide. Technical decisions are listed at the gate for information only.
 7. **Free-first dev environment:** local Docker services by default. Ask the human once for remote service URLs only when Docker is unavailable or a service has no local substitute.
-8. Keep only short summaries in context. The artifacts live on disk; briefs pass paths and IDs, not pasted documents.
+8. Keep only short summaries in context. The artifacts live on disk; briefs pass paths and IDs, not pasted documents. **Files are the memory** ([memory.md](references/memory.md)): update state when each event happens, checkpoint long steps with `delivery-state.sh note`, query logs instead of reading them, and keep `docs/delivery/LESSONS.md`.
 9. **No coding before g2.** Nothing outside docs, the kit and the contracts is written, scaffolded or committed, and no build agent starts, until the human approves g2 ("approval to start coding"). `guard-coding.sh` enforces it.
 10. **Major decisions go to the human immediately** (decision-policy → "Major decisions"): change requests, new scope, spending, risk acceptance, production, stuck work, the token budget, reversing a G1 choice.
 11. **Cost:** follow [cost.md](references/cost.md): the `DELIVERY_PROFILE`, the model policy, at most `DELIVERY_MAX_PARALLEL` agents at once, continue agents instead of respawning, re-review only diffs, and record every run with `delivery-state.sh usage add <agent> <model> <tokens>` (exit 4 = budget reached → ask the human).
@@ -45,7 +46,7 @@ References (read only the part the current step needs):
 Repeat until a gate or a stop condition:
 1. Read the state and find the current step in [workflow.md](references/workflow.md).
 2. **Delegate:** write one brief per agent ([briefs.md](references/briefs.md)). For a `[fork]` step, send the runners' Agent calls **in one message**, at most `DELIVERY_MAX_PARALLEL` at a time. In lane `build`, start each engineer with `isolation: "worktree"`.
-3. **Collect:** record the run (`delivery-state.sh usage add <agent> <model> <tokens>`), then parse each return block. A `DONE` with no artifacts or evidence counts as `BLOCKED`. Record each agent's id (`delivery-state.sh agent set <key> <id>`) so you can continue it later with its context intact.
+3. **Collect:** record the run (`delivery-state.sh usage add <agent> <model> <tokens>`), then parse each return block. A `DONE` with no artifacts or evidence counts as `BLOCKED`. Record each agent's id (`delivery-state.sh agent set <key> <id>`) so you can continue it later with its context intact. If a saved id can't be reached later, start a fresh agent of the same type with the original brief, its last return block and the open findings, and save the new id ([memory.md](references/memory.md) §6). A `LESSON:` line, or a finding of a kind already seen in another ticket, goes into LESSONS.md (§7).
 3a. **Relay messages:** log each `MESSAGES:` / `ANSWERS:` entry (`delivery-state.sh msg add|answer`), deliver it to the recipient (continue that agent with SendMessage, or add it to the INBOX of its next brief), and route the answers back. **Filter messages addressed to the human:** classify each `TO: human`, `decision-needed` or `NEEDS_HUMAN` item with the decision policy. Technical ones go back to the sender ("decide per decision-policy; record an ADR or ASSUMPTION"). Business ones are queued for the next gate, unless they're truly blocking with no reasonable default. Never advance a step or present a gate while `msg open` shows a blocking message. See [collaboration.md](references/collaboration.md).
 4. **Review:** send the output to the step's reviewer. On `CHANGES`, send the findings to the **same role**, then run `delivery-state.sh round <loop-id>`.
 5. **Join / triage:** reconcile the parallel outputs. Route any failures per [triage.md](references/triage.md).
@@ -60,4 +61,4 @@ Repeat until a gate or a stop condition:
 - A hook blocked an action that no role can fix inside its own paths.
 
 ## After compaction or in a new session
-The SessionStart hook prints the run summary. Re-read the current step in [workflow.md](references/workflow.md) and continue. Don't redo completed steps.
+The SessionStart hook prints the run summary and the last checkpoint note. Re-read only the current step in [workflow.md](references/workflow.md) and continue from the checkpoint. Don't redo completed steps or re-read whole artifacts to rebuild context: the return blocks you need are summarized in the state and the files.

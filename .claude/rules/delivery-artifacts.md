@@ -18,3 +18,4 @@ paths:
 - An artifact in an approved gate package changes only through a change request (`.claude/skills/deliver/scripts/delivery-state.sh cr-open … --approved-by "<human>"`), and only after the human said yes. `guard-gates.sh` enforces this.
 - Acceptance criteria are Given/When/Then with stable IDs (`AC-<area>-<n>`), business rules are `BR-<n>`, and test cases are `TC-<n>`. Tickets, tests and reports cite these IDs.
 - Evidence (screenshots, logs, reports) lives under `docs/delivery/evidence/` or `docs/delivery/milestones/<ms>/evidence/`, named `<id>-<what>.<ext>`.
+- **Append-only logs** (`MESSAGES.md`, `GATE-LOG.md`, `LESSONS.md`, `failures/`) are never rewritten and never read whole: query them with `grep -n <id>` or `tail` (`.claude/skills/deliver/references/memory.md` §3). `LESSONS.md` is the exception that gets curated: at most 30 active lines, retired lines kept under `## Retired`.
