@@ -6,6 +6,10 @@
 #   - the required semantic tokens exist ($extensions."delivery.required", or the default list below)
 #   - every contrast pair passes ($extensions."delivery.contrastPairs": [{fg, bg, min}], or the defaults),
 #     for the base tokens and again for each --theme override (e.g. tokens.dark.json)
+#   - every distinctness pair is far enough apart in OKLab (ΔE) so brand colors never read as status colors
+#     ($extensions."delivery.distinctPairs": [{a, b, min, cvdMin?}], or the defaults): below min = FAIL;
+#     below cvdMin (default 0.05) under simulated protanopia/deuteranopia (Machado 2009) = WARN
+#     (status colors must then never rely on color alone: icon + text)
 # --css prints CSS custom properties instead (:root, plus [data-theme="<name>"] and a prefers-color-scheme
 #       block for each theme) for mockups and the web theme. Names: color.text.default -> --color-text-default;
 #       aliases become var(--…) so component tokens follow the active theme. Run the checks first.
@@ -20,7 +24,7 @@ while [ $# -gt 0 ]; do
 "; shift 2 ;;
     --css) css=1; shift ;;
     --quiet) quiet=1; shift ;;
-    -h|--help) sed -n 2,13p "$0"; exit 0 ;;
+    -h|--help) sed -n 2,17p "$0"; exit 0 ;;
     *) base="$1"; shift ;;
   esac
 done
@@ -50,6 +54,17 @@ def lin: (. / 255) as $c | if $c <= 0.04045 then $c / 12.92 else pow(($c + 0.055
 def lum: rgb | map(lin) | (.[0] * 0.2126 + .[1] * 0.7152 + .[2] * 0.0722);
 def ratio($a; $b): ([($a | lum), ($b | lum)] | sort) as $l | (($l[1] + 0.05) / ($l[0] + 0.05));
 def r2: (. * 100 | round) / 100;
+def r3: (. * 1000 | round) / 1000;
+def mmul($m): . as $v | $m | map(.[0] * $v[0] + .[1] * $v[1] + .[2] * $v[2]);
+def clamp01: map(if . < 0 then 0 elif . > 1 then 1 else . end);
+def cbrt: if . < 0 then -(-. | pow(.; 1 / 3)) else pow(.; 1 / 3) end;
+def cvd($k): if $k == "protanopia" then mmul([[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]]) | clamp01
+             elif $k == "deuteranopia" then mmul([[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.011820, 0.042940, 0.968881]]) | clamp01
+             else . end;
+def oklab: mmul([[0.4122214708, 0.5363325363, 0.0514459929], [0.2119034982, 0.6806995451, 0.1073969566], [0.0883024619, 0.2817188376, 0.6299787005]])
+           | map(cbrt) | mmul([[0.2104542553, 0.7936177850, -0.0040720468], [1.9779984951, -2.4285922050, 0.4505937099], [0.0259040371, 0.7827717662, -0.8086757660]]);
+def deltaE($a; $b; $k): ($a | rgb | map(lin) | cvd($k) | oklab) as $x | ($b | rgb | map(lin) | cvd($k) | oklab) as $y
+                        | [range(3) as $i | ($x[$i] - $y[$i]) | . * .] | add | sqrt;
 def cssval: if type == "array" and length == 4 and all(.[]; type == "number") then "cubic-bezier(\(map(tostring) | join(", ")))"
             elif type == "array" then map(tostring | if test(" ") then "\"" + . + "\"" else . end) | join(", ")
             elif type == "object" and has("offsetX") then "\(.offsetX) \(.offsetY) \(.blur // "0") \(.spread // "0") \(.color)"
@@ -59,8 +74,10 @@ def cssname: "--" + gsub("\\."; "-");
 def cssref: if type == "string" and test("^\\{[^{}]+\\}$") then "var(\(.[1:-1] | cssname))" else cssval end;
 '
 
-DEFAULT_REQUIRED='["color.bg.default","color.surface.default","color.border.default","color.border.strong","color.text.default","color.text.muted","color.primary.default","color.primary.hover","color.primary.on","color.danger.default","color.danger.on","color.success.default","color.warning.default","color.info.default","color.focus.ring","font.family.sans","font.size.base","space.4","radius.md"]'
-DEFAULT_PAIRS='[{"fg":"color.text.default","bg":"color.bg.default","min":4.5},{"fg":"color.text.default","bg":"color.surface.default","min":4.5},{"fg":"color.text.muted","bg":"color.bg.default","min":4.5},{"fg":"color.text.muted","bg":"color.surface.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.hover","min":4.5},{"fg":"color.primary.default","bg":"color.bg.default","min":3},{"fg":"color.danger.default","bg":"color.bg.default","min":4.5},{"fg":"color.danger.on","bg":"color.danger.default","min":4.5},{"fg":"color.border.strong","bg":"color.bg.default","min":3},{"fg":"color.focus.ring","bg":"color.bg.default","min":3}]'
+DEFAULT_REQUIRED='["color.bg.default","color.surface.default","color.border.default","color.border.strong","color.text.default","color.text.muted","color.primary.default","color.primary.hover","color.primary.on","color.secondary.default","color.secondary.on","color.danger.default","color.danger.on","color.success.default","color.warning.default","color.info.default","color.focus.ring","font.family.sans","font.size.base","space.4","radius.md"]'
+DEFAULT_PAIRS='[{"fg":"color.text.default","bg":"color.bg.default","min":4.5},{"fg":"color.text.default","bg":"color.surface.default","min":4.5},{"fg":"color.text.muted","bg":"color.bg.default","min":4.5},{"fg":"color.text.muted","bg":"color.surface.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.hover","min":4.5},{"fg":"color.primary.default","bg":"color.bg.default","min":3},{"fg":"color.secondary.on","bg":"color.secondary.default","min":4.5},{"fg":"color.danger.default","bg":"color.bg.default","min":4.5},{"fg":"color.danger.on","bg":"color.danger.default","min":4.5},{"fg":"color.border.strong","bg":"color.bg.default","min":3},{"fg":"color.focus.ring","bg":"color.bg.default","min":3}]'
+# Brand colors vs status colors need a clear gap (0.10); status vs status a smaller one (0.08).
+DEFAULT_DISTINCT='[{"a":"color.primary.default","b":"color.danger.default","min":0.1},{"a":"color.primary.default","b":"color.success.default","min":0.1},{"a":"color.primary.default","b":"color.warning.default","min":0.1},{"a":"color.secondary.default","b":"color.danger.default","min":0.1},{"a":"color.secondary.default","b":"color.success.default","min":0.1},{"a":"color.secondary.default","b":"color.warning.default","min":0.1},{"a":"color.success.default","b":"color.danger.default","min":0.08},{"a":"color.warning.default","b":"color.danger.default","min":0.08}]'
 
 theme_name() { b=$(basename "$1" .json); b=${b#tokens.}; b=${b#tokens-}; printf '%s' "$b"; }
 
@@ -83,10 +100,11 @@ fi
 out=""
 run_set() { # $1 = label, $2 = override file or ""
   if [ -n "$2" ]; then ov="$2"; else ov=$(mktemp "${TMPDIR:-/tmp}/tok.XXXXXX"); echo '{}' > "$ov"; fi
-  jq -r --arg t "$1" --slurpfile o "$ov" --argjson dreq "$DEFAULT_REQUIRED" --argjson dpairs "$DEFAULT_PAIRS" "$LIB"'
+  jq -r --arg t "$1" --slurpfile o "$ov" --argjson dreq "$DEFAULT_REQUIRED" --argjson dpairs "$DEFAULT_PAIRS" --argjson ddist "$DEFAULT_DISTINCT" "$LIB"'
     . as $root | (flat + ($o[0] | flat)) as $m
     | ($root["$extensions"]["delivery.required"] // $dreq) as $req
     | ($root["$extensions"]["delivery.contrastPairs"] // $dpairs) as $pairs
+    | ($root["$extensions"]["delivery.distinctPairs"] // $ddist) as $dist
     | ( $m | to_entries[] | .key as $k | (.value["$value"] | try resolve($m) catch ("ERR:" + .)) as $v
         | if ($v | type) == "string" and ($v | startswith("ERR:")) then "FAIL\t\($t)\t\($k): \($v[4:])"
           elif ($k | startswith("color.")) and (($v | ishex) | not) then "FAIL\t\($t)\t\($k) = \($v | tojson) is not a hex color"
@@ -100,6 +118,18 @@ run_set() { # $1 = label, $2 = override file or ""
             else ratio($c[0]; $c[1]) as $r
             | if $r + 0.0001 < $p.min then "FAIL\t\($t)\tcontrast \($p.fg) \($c[0]) on \($p.bg) \($c[1]) = \($r | r2):1 (needs \($p.min):1)"
               else "OK\t\($t)\tcontrast \($p.fg) on \($p.bg) = \($r | r2):1 (min \($p.min))" end
+            end
+          end ),
+      ( $dist[] | . as $p | ($p.cvdMin // 0.05) as $cm
+        | if (($m | has($p.a)) and ($m | has($p.b))) | not then "FAIL\t\($t)\tdistinct pair \($p.a) ~ \($p.b): token missing"
+          else (try ([($m[$p.a]["$value"] | resolve($m)), ($m[$p.b]["$value"] | resolve($m))]) catch null) as $c
+          | if $c == null or (($c[0] | ishex) and ($c[1] | ishex) | not) then "FAIL\t\($t)\tdistinct pair \($p.a) ~ \($p.b): not resolvable to hex colors"
+            else deltaE($c[0]; $c[1]; "normal") as $d
+            | (if $d + 0.0001 < $p.min then "FAIL\t\($t)\tdistinct \($p.a) \($c[0]) ~ \($p.b) \($c[1]) = ΔE \($d | r3) (needs \($p.min)): the colors read as the same"
+               else "OK\t\($t)\tdistinct \($p.a) ~ \($p.b) = ΔE \($d | r3) (min \($p.min))" end),
+              ( ("protanopia", "deuteranopia") as $k | deltaE($c[0]; $c[1]; $k) as $dk
+                | select($dk + 0.0001 < $cm)
+                | "WARN\t\($t)\tdistinct \($p.a) ~ \($p.b) under \($k) = ΔE \($dk | r3) (below \($cm)): never rely on color alone, add an icon and text" )
             end
           end )
   ' "$base"
@@ -118,5 +148,6 @@ EOF2
 if [ "$quiet" = 1 ]; then printf '%s\n' "$out" | grep -v '^OK' | grep . ; else printf '%s\n' "$out" | grep .; fi
 fails=$(printf '%s\n' "$out" | grep -c '^FAIL' || true)
 oks=$(printf '%s\n' "$out" | grep -c '^OK' || true)
-echo "tokens: ${oks} contrast pairs pass, ${fails} failures"
+warns=$(printf '%s\n' "$out" | grep -c '^WARN' || true)
+echo "tokens: ${oks} checks pass (contrast + distinctness), ${fails} failures, ${warns} warnings"
 [ "$fails" -eq 0 ]

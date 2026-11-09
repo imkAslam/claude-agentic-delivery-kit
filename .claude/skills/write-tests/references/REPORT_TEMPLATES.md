@@ -59,6 +59,9 @@ Scope (milestones, features), the candidate commit, and the environment it ran i
 ## Quality and security
 A summary from QUALITY-SECURITY-REPORT.md: tools run, findings by severity, accepted risks.
 
+## Landing page changes (only if `F-LANDING`)
+The features added to or removed from the landing page in this candidate, the changed copy (`CLIENT COPY (draft)` strings for the client to approve) and the Lighthouse scores, with screenshots.
+
 ## Open issues
 The P1/P2 items with the decision requested from the client.
 

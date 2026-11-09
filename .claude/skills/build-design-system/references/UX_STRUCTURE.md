@@ -48,6 +48,7 @@ Mobile: the nav collapses into a bottom bar; the table becomes a card list; acti
 ## 5. Screen inventory
 | Screen id | Name | Persona | Journey | States (mockup files) | AC covered | Contract operations | Components |
 |---|---|---|---|---|---|---|---|
+When the PRD has `F-LANDING`, add `S-LANDING` (public, no authenticated data) with its sections from LANDING_PAGE.md §1. Every screen row also notes its 60/30/10 split (define-brand → COLOR_METHOD §4).
 
 ## 6. States matrix
 | Screen | default | loading | empty | error | no-permission | offline (mobile) | partial / long content |

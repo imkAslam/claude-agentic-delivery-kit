@@ -10,10 +10,10 @@
 | planned · in progress · built · accepted · released · deferred | n · n · n · n · n · n |
 
 ## Catalog
-| Id | Feature | For (persona) | Priority | Release / milestone | AC | Screens | API operations | Tickets | Open bugs | Status |
-|---|---|---|---|---|---|---|---|---|---|---|
-| F-1 | Invite a guest to a project | Project owner | Must | MVP / ms-1 | AC-INV-1..4 | S-04, S-12 | createInvite, acceptInvite | T-010, T-011, T-012 | T-077 (P2) | built |
-| F-2 | Export tasks as CSV | Admin | Could | Later | AC-EXP-1 | — | — | — | — | deferred (g1 decision D-7) |
+| Id | Feature | For (persona) | Priority | Release / milestone | AC | Screens | API operations | Tickets | Open bugs | Landing | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| F-1 | Invite a guest to a project | Project owner | Must | MVP / ms-1 | AC-INV-1..4 | S-04, S-12 | createInvite, acceptInvite | T-010, T-011, T-012 | T-077 (P2) | shown | built |
+| F-2 | Export tasks as CSV | Admin | Could | Later | AC-EXP-1 | — | — | — | — | — | deferred (g1 decision D-7) |
 
 ## Feature details (one block per feature, short)
 ### F-1 · Invite a guest to a project
@@ -25,3 +25,4 @@
 ```
 
 Rules: priority uses MoSCoW from the PRD; status moves only forward on evidence (built = the ticket is merged after the milestone review; accepted = the acceptance gate; released = g3 + deployment result). A deferred feature keeps its row and the decision that deferred it.
+**Landing** (only when the PRD has `F-LANDING`): `shown` (on the landing page once released), `hidden: <reason>` (e.g. admin-only), or `—` (not user-visible yet). The landing refresh ticket reads this column (build-design-system → LANDING_PAGE.md §6).

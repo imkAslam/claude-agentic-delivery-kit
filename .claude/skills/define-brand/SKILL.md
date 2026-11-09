@@ -30,7 +30,7 @@ Follow [BRAND_DISCOVERY.md](references/BRAND_DISCOVERY.md).
 Write the brand foundation (purpose, audience, personality traits with "is / is not", personality sliders, the competitor landscape, differentiation, constraints). Missing brand inputs never block the run: use the documented defaults and label them `ASSUMPTION:`.
 
 ### Step 2: Visual directions (for G1)
-Fill [BRAND_DIRECTIONS_TEMPLATE.md](references/BRAND_DIRECTIONS_TEMPLATE.md) → `docs/delivery/BRAND-DIRECTIONS.md`. For each direction, build one self-contained HTML board in `docs/delivery/brand/directions/<A|B|C>-board.html` (mood words, palette with contrast results, type pairing, shape and density, iconography, imagery, a wordmark proposal, one key screen and a component strip), and render it to PNG at 1440×900 (same render commands as the mockups). Check each palette with `bash .claude/skills/build-design-system/scripts/check-tokens.sh <direction-tokens.json>` and show the result on the board.
+Fill [BRAND_DIRECTIONS_TEMPLATE.md](references/BRAND_DIRECTIONS_TEMPLATE.md) → `docs/delivery/BRAND-DIRECTIONS.md`. For each direction, build one self-contained HTML board in `docs/delivery/brand/directions/<A|B|C>-board.html` (mood words, palette with contrast results, type pairing, shape and density, iconography, imagery, a wordmark proposal, one key screen and a component strip), and render it to PNG at 1440×900 (same render commands as the mockups). Choose each palette with [COLOR_METHOD.md](references/COLOR_METHOD.md): hue from the domain meaning, personas and competitor gap; status hues reserved; the **60-30-10** split (60% dominant, 30% secondary, 10% accent); OKLCH scales; the rationale recorded. Check each palette with `bash .claude/skills/build-design-system/scripts/check-tokens.sh <direction-tokens.json>` (contrast + distinctness) and show the result on the board.
 
 ### Step 3: Queue the client decision
 Queue **one business question** for G1: "Which visual direction?" with the options, one line on what each says about the product, and a **recommended** direction tied to the personas and the goals. Queue client-only items separately (product name, ownership of an existing logo, trademark checks, paid fonts or stock imagery: each is a cost or legal decision). Never ask the client about tokens, scales or component details.
@@ -45,10 +45,11 @@ Apply [VOICE_AND_TONE.md](references/VOICE_AND_TONE.md): the voice traits, the t
 Produce the assets in [BRAND_ASSETS.md](references/BRAND_ASSETS.md) as SVG/HTML sources in `docs/delivery/brand/assets/`, with the export list. The frontend and mobile engineers wire them in during the design-foundation tickets of `ms-1`.
 
 ### Step 7: Verify
-Every board and asset renders (PNG next to the HTML/SVG); every palette passes `check-tokens.sh`; every font has a recorded license that allows web and app embedding. If rendering fails, keep the source and say so. Never fabricate a PNG.
+Every board and asset renders (PNG next to the HTML/SVG); every palette passes `check-tokens.sh` (contrast and distinctness; warnings explained) and states its color rationale and 60/30/10 split; every font has a recorded license that allows web and app embedding. If rendering fails, keep the source and say so. Never fabricate a PNG.
 
 ## Rules
 - Never copy or imitate another company's logo, name, distinctive palette or trade dress. Competitors are analyzed for patterns, not reused.
+- Colors follow COLOR_METHOD.md: 60-30-10 per screen, brand colors never mistakable for status colors, status never shown by color alone. A client's existing brand color is never changed silently; the status color moves instead.
 - Fonts: prefer open licenses (SIL OFL, Apache) or system stacks. Store font files with their license in `docs/delivery/brand/fonts/`. A paid font is a business decision for the gate.
 - Logos made by agents are **proposals** (typographic wordmarks and simple marks). The client approves the final logo and owns trademark clearance.
 - Boards, mockups and assets load nothing from the network; they must render offline.
@@ -68,6 +69,7 @@ Every board and asset renders (PNG next to the HTML/SVG); every palette passes `
     ├── BRAND_DISCOVERY.md            # cases A/B/C, foundation, personality sliders, landscape, defaults
     ├── BRAND_DIRECTIONS_TEMPLATE.md  # BRAND-DIRECTIONS.md + the direction board skeleton
     ├── BRAND_GUIDELINES_TEMPLATE.md  # BRAND-BRIEF.md (full brand guidelines)
+    ├── COLOR_METHOD.md               # how colors are chosen: hue by meaning + gap, reserved status hues, 60-30-10, OKLCH scales, CVD
     ├── VOICE_AND_TONE.md             # voice traits, tone by context, microcopy patterns, word list
     └── BRAND_ASSETS.md               # logo set, favicon, app icons, social images, email, splash: sizes and formats
 ```

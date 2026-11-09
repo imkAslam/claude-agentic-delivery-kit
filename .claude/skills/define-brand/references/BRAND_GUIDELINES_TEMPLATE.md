@@ -16,14 +16,17 @@ Purpose · audience · personality traits (is / is not) · positioning · the 3 
 - Status: proposal by agents · approved by <client> on <date> · trademark clearance: client responsibility
 
 ## 3. Color
-| Role | Token (tokens.json) | Light | Dark (if in scope) | Use for | Never use for |
+Chosen with COLOR_METHOD.md. Rationale: <why these hues: meaning, personas, competitor gap; what they avoid>.
+| Role (60-30-10) | Token (tokens.json) | Light | Dark (if in scope) | Use for | Never use for |
 |---|---|---|---|---|---|
-| Primary | color.primary.default | #… | #… | the main action, links, selection | large backgrounds, body text |
+| Dominant · 60% | color.bg.default, color.surface.default (neutrals 50 … 950) | #… | #… | page backgrounds, large surfaces, content areas | saturated fills |
+| Secondary · 30% | color.secondary.default | #… | #… | navigation, app bar, headers, section bands, cards, secondary buttons | the main call to action, status |
+| Text on secondary | color.secondary.on | #… | #… | labels and icons on secondary surfaces | |
+| Accent · 10% (the loud color) | color.primary.default | #… | #… | the main action, links, selection, focus | large backgrounds, body text |
 | Text on primary | color.primary.on | #… | #… | labels on primary buttons | |
-| Accent | color.accent.default | | | highlights, charts | errors |
-| Neutrals | color.neutral.50 … 950 | | | surfaces, borders, text | |
-| Success / warning / danger / info | color.<status>.default | | | status only, always with an icon or text | decoration |
-Contrast results: the `check-tokens.sh` output (every pair, both themes). Proportion: ~70% neutrals, ~20% primary, ~10% accent.
+| Accent highlight (optional) | color.accent.default | | | highlights, badges, charts | errors |
+| Success / warning / danger / info | color.<status>.default | | | status only, always with an icon or text (outside the 60-30-10 split) | decoration |
+Proportion: **60% dominant, 30% secondary, 10% accent** per screen; text and status sit outside the split (COLOR_METHOD §4). Checks: the `check-tokens.sh` output (contrast and distinctness, every pair, both themes; warnings explained).
 Charts and data visualization: a categorical sequence of 6–8 colors that stays distinguishable with color-vision deficiency.
 
 ## 4. Typography

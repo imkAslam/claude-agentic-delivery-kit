@@ -36,3 +36,4 @@ Ask only **business** questions (see `.claude/rules/decision-policy.md`): **at m
 8. What are the budget, deadline, hosting preference and existing licenses? Do you have a preferred tech stack (languages, frameworks, database, hosting) or a team that will maintain it, or should our architect recommend one?
 9. Which number should move, and by how much?
 10. Is there an existing brand (logo, colors, fonts, guidelines)? Which products do you like or dislike the look of, and how should users feel?
+11. Do you want a public landing page that presents the product (who it's for, the features, sign-up or contact)? Default if unanswered: **yes** for a public product with self sign-up, **no** for an internal or invite-only tool, recorded as `ASSUMPTION:` and confirmed at G1 (a yes becomes PRD feature `F-LANDING`, build-design-system → LANDING_PAGE.md).

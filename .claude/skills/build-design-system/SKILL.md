@@ -39,7 +39,7 @@ Follow the design-inspiration MOCKUP_TEMPLATE. Generate each mockup's `:root` fr
 bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.png 1440x900
 bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.mobile.png 390x844
 ```
-Exit 3 means no renderer was available: keep the HTML and report "not rendered". Finish UI-UX.md §7–§10 (behavior, responsive, accessibility, copy deck).
+Exit 3 means no renderer was available: keep the HTML and report "not rendered". Finish UI-UX.md §7–§10 (behavior, responsive, accessibility, copy deck). Keep the 60-30-10 color split on every screen (define-brand → COLOR_METHOD §4). If the PRD has `F-LANDING`, design the landing page with [LANDING_PAGE.md](references/LANDING_PAGE.md) (every section, both sizes, copy marked `CLIENT COPY (draft)`).
 
 ### Step 5: Design review loop
 The orchestrator sends the package to the design-reviewer (loop id `design-review`, cap 3). Fix every P1/P2 finding, re-run both scripts, and report what changed.
@@ -69,8 +69,9 @@ Follow [DESIGN_QA.md](references/DESIGN_QA.md) §B and write `milestones/<ms>/DE
 │   ├── UX_STRUCTURE.md            # UI-UX.md: IA, flows, wireframes, inventory, states matrix, copy deck
 │   ├── DESIGN_TOKENS.md           # DTCG tokens: tiers, naming, required tokens, contrast pairs, themes, platform mapping, templates
 │   ├── DESIGN_SYSTEM_TEMPLATE.md  # DESIGN-SYSTEM.md: foundations, component specs, patterns, governance
+│   ├── LANDING_PAGE.md            # opt-in landing page (F-LANDING): section sources, copy, SEO/perf baseline, refresh per release
 │   └── DESIGN_QA.md               # design-review checklists + milestone design QA + DESIGN-QA.md template
 └── scripts/
-    ├── check-tokens.sh            # validates tokens.json, resolves aliases, WCAG contrast per theme, --css export
+    ├── check-tokens.sh            # validates tokens.json, resolves aliases, WCAG contrast + OKLab distinctness (with CVD simulation) per theme, --css export
     └── render-png.sh              # HTML → PNG (Playwright, else installed Chrome/Chromium); exit 3 = not rendered
 ```
