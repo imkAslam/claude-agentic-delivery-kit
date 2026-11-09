@@ -26,6 +26,15 @@ Personas and jobs-to-be-done (link to the BA §1).
 - Business rules: BR-1, BR-4
 - Journeys: J-1, J-1e1
 
+### F-LANDING Public landing page (only if the client wants one: Intake-Readiness "Landing page")
+- **US-L.1** As a prospective <primary persona> I want to understand what <product> does for me so that I decide to sign up or get in touch.
+  - AC-LAND-1 Given the page, Then every section comes from its source in build-design-system → LANDING_PAGE.md §1, and only released (or accepted-for-this-release) features are shown
+  - AC-LAND-2 Given a crawler or a link preview, Then the title, meta description, canonical URL, Open Graph image, JSON-LD, sitemap and robots are present (LANDING_PAGE §4)
+  - AC-LAND-3 Given a mobile Lighthouse run, Then performance, accessibility, best practices and SEO are each ≥ 90
+  - AC-LAND-4 Given the primary CTA, When it is used, Then the visitor reaches the sign-up or contact journey
+  - AC-LAND-5 Given the footer, Then the legal links (privacy, terms) open the client-provided pages; marketing and legal copy is client-approved
+- Refreshed at every release from `docs/FEATURES.md` (LANDING_PAGE §6)
+
 ## 5. UX principles
 Key flows, tone, accessibility target (WCAG 2.2 AA), supported devices and locales.
 

@@ -29,7 +29,7 @@ Classify the starting point (full brand → audit; partial → extend; none → 
 Information architecture, a flow per journey, low-fidelity text wireframes, the screen inventory and the states matrix, reviewed **before** any high-fidelity work.
 
 ### 3. Visual system (Steps 2–3)
-DTCG tokens in three tiers with themes, checked for contrast by the script; a component specification for everything the screens use.
+Colors chosen with define-brand → COLOR_METHOD.md (hue by meaning and gap, the 60-30-10 split, status hues reserved). DTCG tokens in three tiers with themes, checked for contrast and distinctness by the script; a component specification for everything the screens use.
 
 ### 4. Mockups (Step 4)
 Self-contained HTML for every screen and **every state**, built only from tokens and specified components, rendered to PNG at 1440×900 and 390×844 with `render-png.sh`.

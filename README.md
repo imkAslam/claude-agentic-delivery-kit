@@ -321,7 +321,7 @@ Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, referen
 
 Bundled scripts:
 - `check-diagrams.sh`: every required diagram exists in the PRD and renders.
-- `check-tokens.sh`: validates the DTCG token file, resolves aliases, checks WCAG contrast per theme and emits CSS variables.
+- `check-tokens.sh`: validates the DTCG token file, resolves aliases, checks WCAG contrast and OKLab distinctness (brand vs status colors, with protanopia/deuteranopia simulation) per theme, and emits CSS variables.
 - `render-png.sh`: mockups to PNG with Playwright, falling back to Chrome headless.
 - `check-migrations.sh`: migration safety checks.
 - `check-ownership.sh`: every changed file belongs to the role that changed it.
@@ -408,7 +408,9 @@ Two rules hold across these documents:
 - **At G1 the client chooses the look.** With no brand, the uiux-agent proposes 2–3 visual directions (safe, evolved, bold) as boards. With a partial brand it extends what exists. With a full brand it audits it.
 - **In Plan & Design the chosen direction becomes a system:**
   - brand guidelines and voice and tone;
-  - W3C DTCG design tokens in three tiers (primitive → semantic → component), with light and dark themes and WCAG contrast pairs checked by `check-tokens.sh`;
+  - W3C DTCG design tokens in three tiers (primitive → semantic → component), with light and dark themes, WCAG contrast pairs and brand-vs-status distinctness checked by `check-tokens.sh`;
+  - a color method (`COLOR_METHOD.md`): hue by domain meaning and competitor gap, the 60-30-10 split (60% dominant, 30% secondary, 10% accent), OKLCH scales, reserved status hues;
+  - an opt-in public landing page (`F-LANDING`, asked at intake): built from approved artifacts, refreshed in the last milestone of every release (`LANDING_PAGE.md`);
   - a component specification;
   - text wireframes and flows;
   - HTML mockups of every screen and state, rendered to PNG;

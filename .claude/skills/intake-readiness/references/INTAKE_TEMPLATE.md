@@ -9,6 +9,7 @@
 - **Readiness:** <nn>%   **Recommendation:** Start | Update | Provisional scope | Hold
 - **Critical gaps:** <count>, blocking: <work items>
 - **Stack preference:** none stated (architect recommends) | preferred: <stack> (E-<n>) | required: <stack> (E-<n>, why). Confirmed at G1
+- **Landing page:** requested (E-<n>) | not wanted (E-<n>) | ASSUMPTION: yes/no (public self sign-up → yes; internal tool → no). Confirmed at G1; yes → PRD `F-LANDING`
 - One paragraph: what the client wants, for whom, and why now.
 
 ## Evidence inventory

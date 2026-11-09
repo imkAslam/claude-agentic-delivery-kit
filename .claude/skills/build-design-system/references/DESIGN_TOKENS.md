@@ -16,10 +16,13 @@ The tokens are the **single source of truth for every visual value**. They live 
 `<category>.<role>.<variant>` in lowercase; `default` for the base variant; `on` for content placed on that color (`color.primary.on`); states as variants (`hover`, `active`, `disabled`, `subtle`). Numeric scales for primitives (`50`–`950`, `1`–`16`). The CSS name is the path joined with dashes: `color.text.muted` → `--color-text-muted`.
 
 ## 4. Required semantic tokens (checked)
-`color.bg.default`, `color.surface.default`, `color.border.default`, `color.border.strong`, `color.text.default`, `color.text.muted`, `color.primary.default`, `color.primary.hover`, `color.primary.on`, `color.danger.default`, `color.danger.on`, `color.success.default`, `color.warning.default`, `color.info.default`, `color.focus.ring`, `font.family.sans`, `font.size.base`, `space.4`, `radius.md`. Add project-specific ones under `$extensions."delivery.required"` (a JSON array of paths).
+`color.bg.default`, `color.surface.default`, `color.border.default`, `color.border.strong`, `color.text.default`, `color.text.muted`, `color.primary.default`, `color.primary.hover`, `color.primary.on`, `color.secondary.default`, `color.secondary.on`, `color.danger.default`, `color.danger.on`, `color.success.default`, `color.warning.default`, `color.info.default`, `color.focus.ring`, `font.family.sans`, `font.size.base`, `space.4`, `radius.md`. Add project-specific ones under `$extensions."delivery.required"` (a JSON array of paths).
 
 ## 5. Contrast pairs (checked, per theme)
-The defaults cover text on backgrounds and surfaces (4.5:1), muted text (4.5:1), labels on primary and danger (4.5:1), the primary color, input borders and the focus ring against the background (3:1, WCAG 1.4.11). Add more under `$extensions."delivery.contrastPairs"`: `[{"fg": "color.accent.default", "bg": "color.bg.default", "min": 3}]` (this list replaces the defaults, so copy them in).
+The defaults cover text on backgrounds and surfaces (4.5:1), muted text (4.5:1), labels on primary, secondary and danger (4.5:1), the primary color, input borders and the focus ring against the background (3:1, WCAG 1.4.11). Add more under `$extensions."delivery.contrastPairs"`: `[{"fg": "color.accent.default", "bg": "color.bg.default", "min": 3}]` (this list replaces the defaults, so copy them in).
+
+## 5a. Distinctness pairs (checked, per theme)
+Contrast says a color is readable; distinctness says it **doesn't look like another role**. The checker measures the perceptual difference ΔE in OKLab between pairs: by default primary and secondary vs danger, success and warning (min **0.10**), and success and warning vs danger (min **0.08**). Below the min is a failure (e.g. a rose brand color next to a red danger color). Each pair is also simulated for protanopia and deuteranopia (Machado 2009); below `cvdMin` (0.05) is a **warning**: the pair is fine for most users, but status must then never be shown by color alone (icon + text, which the design system already requires). Override with `$extensions."delivery.distinctPairs"`: `[{"a": "color.accent.default", "b": "color.danger.default", "min": 0.1}]` (this list replaces the defaults, so copy them in). How the colors are chosen in the first place: define-brand → COLOR_METHOD.md.
 
 ## 6. Themes
 - A theme file overrides **semantic** tokens only (same paths), never primitives or component tokens.
@@ -29,7 +32,7 @@ The defaults cover text on backgrounds and surfaces (4.5:1), muted text (4.5:1),
 ## 7. Commands
 ```bash
 S=.claude/skills/build-design-system/scripts
-bash $S/check-tokens.sh --theme docs/delivery/tokens.dark.json docs/delivery/tokens.json      # checks (exit 1 on failure)
+bash $S/check-tokens.sh --theme docs/delivery/tokens.dark.json docs/delivery/tokens.json      # contrast + distinctness checks (exit 1 on failure; WARN lines don't fail)
 bash $S/check-tokens.sh --css --theme docs/delivery/tokens.dark.json docs/delivery/tokens.json > /tmp/tokens.css   # CSS variables
 ```
 The CSS output: primitives as literal values, aliases as `var(--…)` (so component tokens follow the active theme), a `[data-theme="dark"]` block and a `prefers-color-scheme` block. Paste it into each mockup's `<style>`, and generate the web theme from it.
@@ -72,6 +75,7 @@ The generated theme is checked in under the role's owned paths; a test (or lint 
       "300": { "$value": "#93c5fd" },
       "200": { "$value": "#bfdbfe" }
     },
+    "violet": { "50": { "$value": "#f5f3ff" }, "200": { "$value": "#ddd6fe" }, "300": { "$value": "#c4b5fd" }, "700": { "$value": "#6d28d9" }, "800": { "$value": "#5b21b6" }, "900": { "$value": "#4c1d95" } },
     "red":    { "600": { "$value": "#dc2626" }, "700": { "$value": "#b91c1c" }, "300": { "$value": "#fca5a5" } },
     "green":  { "700": { "$value": "#15803d" }, "300": { "$value": "#86efac" } },
     "amber":  { "700": { "$value": "#b45309" }, "300": { "$value": "#fcd34d" } },
@@ -82,6 +86,7 @@ The generated theme is checked in under the role's owned paths; a test (or lint 
     "border":  { "default": { "$value": "{color.neutral.200}" }, "strong": { "$value": "{color.neutral.500}" } },
     "text":    { "default": { "$value": "{color.neutral.900}" }, "muted": { "$value": "{color.neutral.600}" }, "inverse": { "$value": "{color.neutral.0}" } },
     "primary": { "default": { "$value": "{color.brand.600}" },  "hover": { "$value": "{color.brand.700}" }, "on": { "$value": "{color.neutral.0}" } },
+    "secondary": { "default": { "$value": "{color.violet.700}" }, "hover": { "$value": "{color.violet.800}" }, "on": { "$value": "{color.neutral.0}" }, "subtle": { "$value": "{color.violet.50}" } },
     "danger":  { "default": { "$value": "{color.red.700}" },    "on": { "$value": "{color.neutral.0}" } },
     "success": { "default": { "$value": "{color.green.700}" } },
     "warning": { "default": { "$value": "{color.amber.700}" } },
@@ -115,6 +120,7 @@ The generated theme is checked in under the role's owned paths; a test (or lint 
     "border":  { "default": { "$value": "{color.neutral.700}" }, "strong": { "$value": "{color.neutral.400}" } },
     "text":    { "default": { "$value": "{color.neutral.50}" },  "muted": { "$value": "{color.neutral.400}" }, "inverse": { "$value": "{color.neutral.900}" } },
     "primary": { "default": { "$value": "{color.brand.300}" },   "hover": { "$value": "{color.brand.200}" }, "on": { "$value": "{color.neutral.950}" } },
+    "secondary": { "default": { "$value": "{color.violet.300}" }, "hover": { "$value": "{color.violet.200}" }, "on": { "$value": "{color.neutral.950}" }, "subtle": { "$value": "{color.violet.900}" } },
     "danger":  { "default": { "$value": "{color.red.300}" },     "on": { "$value": "{color.neutral.950}" } },
     "success": { "default": { "$value": "{color.green.300}" } },
     "warning": { "default": { "$value": "{color.amber.300}" } },

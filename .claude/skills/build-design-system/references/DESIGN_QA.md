@@ -5,7 +5,8 @@
 
 ### Brand directions (before G1)
 - [ ] Each direction is distinct (at least 2 sliders apart) and traceable to the foundation and the personas
-- [ ] Every palette passes `check-tokens.sh`; the result is shown on each board
+- [ ] Every palette passes `check-tokens.sh` (contrast and distinctness); the result is shown on each board and every warning is explained
+- [ ] Each direction states its color rationale (COLOR_METHOD §2–§3) and its 60/30/10 split; the key screen visibly follows it (the accent never dominates)
 - [ ] Fonts have recorded licenses; paid assets are flagged as business decisions
 - [ ] Nothing imitates a competitor's or another company's identity
 - [ ] The boards render (real PNGs); the recommendation is justified in business terms
@@ -20,10 +21,12 @@
 - [ ] Copy follows the voice and the word list; product terms match the BA glossary; legal/marketing copy is marked `CLIENT COPY`
 - [ ] Accessibility: contrast, visible focus, target sizes, labels, headings and landmarks, no color-only meaning, 320 px reflow
 - [ ] Desktop and mobile renders exist for every screen state; the asset kit exists (logo set, favicon, app icons if mobile, social image)
+- [ ] Every mockup keeps the 60-30-10 split (dominant / secondary / accent); status colors never appear as decoration
+- [ ] If `F-LANDING`: the landing mockups follow LANDING_PAGE.md §1–§4 (section sources, only released features, `CLIENT COPY` marked, no unbacked claims, SEO and social image planned)
 
 ## B. Milestone design QA (uiux-agent, before `mbr:<ms>`)
 1. Take the integrator's screenshots (`milestones/<ms>/evidence/`) of every screen and state the milestone delivered, at the mockup sizes (1440×900 and 390×844); add missing ones with `render-png.sh` against the running app or Playwright.
-2. Compare each one with its approved mockup: layout and spacing, typography, color and tokens, component variants and states, copy, icons, responsive behavior, focus states.
+2. Compare each one with its approved mockup: layout and spacing, typography, color and tokens (including the 60-30-10 split), component variants and states, copy, icons, responsive behavior, focus states.
 3. Grep the UI paths for raw color literals and hardcoded sizes that tokens cover (e.g. `#[0-9a-fA-F]{3,8}\b`, `rgb(`) outside the generated theme files.
 4. Run an automated accessibility scan if one is available (axe through Playwright) and note what was and wasn't checked.
 5. Write `docs/delivery/milestones/<ms>/DESIGN-QA.md`. P1/P2 findings go to triage (UI → frontend or mobile); P3 are listed.

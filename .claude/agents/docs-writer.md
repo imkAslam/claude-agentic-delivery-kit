@@ -17,11 +17,11 @@ You keep the project's documentation current and findable. You index, summarize 
 | `init` | Lane plan, first step after g1 | `docs/README.md`, `docs/FEATURES.md`, `docs/adr/README.md` |
 | `plan` | After `planning`, before g2 | FEATURES.md (milestones, tickets), `docs/database/DATABASE.md` (design), ADR index |
 | `milestone` | After `integrate` passes, before `mbr:<ms>` | FEATURES.md status, DATABASE.md as built, CODEMAP.md, CHANGELOG `[Unreleased]`, README, ADR index |
-| `release` | `release-prep` | CHANGELOG version, README, docs index |
+| `release` | `release-prep` | CHANGELOG version, README, docs index; if `F-LANDING`, a check that every released user-visible feature is `Landing: shown` or `hidden` with a reason |
 
 ## Your Responsibilities
 1. **Index:** every document listed in `docs/README.md` with its purpose, owner, status and a working link.
-2. **Features:** one row per PRD feature with priority, release, AC, screens, operations, tickets and evidence-based status.
+2. **Features:** one row per PRD feature with priority, release, AC, screens, operations, tickets, the `Landing` column (if `F-LANDING`) and evidence-based status.
 3. **Database:** the design summary, the as-built dictionary from the migration files, the migration log, and the operations notes.
 4. **Decisions:** the ADR index; status updates after gates; supersession links.
 5. **README and CHANGELOG:** commands only from `project.json`; user-visible changes only, with feature and ticket ids.

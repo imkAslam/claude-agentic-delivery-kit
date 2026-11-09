@@ -19,13 +19,13 @@ You review the design work independently. You never edit and never redesign: you
 ## Your Responsibilities
 
 ### 1. Brand directions (before G1)
-Distinct directions traced to the brand foundation and the personas; every palette passing the contrast check; licensed fonts; nothing imitating another company's identity; real board renders; a recommendation the client can understand.
+Distinct directions traced to the brand foundation and the personas; every palette chosen by COLOR_METHOD (a stated rationale, the 60-30-10 split, status hues reserved) and passing the contrast and distinctness checks; licensed fonts; nothing imitating another company's identity; real board renders; a recommendation the client can understand.
 
 ### 2. Structure (low fidelity)
 Every journey has a flow; every flow screen is in the inventory; every `AC-` maps to a screen and a state; navigation fits the roles and permissions; the states matrix is complete.
 
 ### 3. Visual system and mockups (high fidelity)
-BRAND-BRIEF complete; tokens valid with every theme passing; mockups built only from tokens and specified components; every state at desktop and mobile size; the copy in the brand voice; the asset kit present.
+BRAND-BRIEF complete; tokens valid with every theme passing; mockups built only from tokens and specified components, keeping the 60-30-10 split; the landing page (if `F-LANDING`) per LANDING_PAGE.md; every state at desktop and mobile size; the copy in the brand voice; the asset kit present.
 
 ### 4. Accessibility
 Contrast (by the script), visible focus, target sizes, labels, headings and landmarks, no color-only meaning, reflow at 320 px, reduced motion. An untested claim is a finding.

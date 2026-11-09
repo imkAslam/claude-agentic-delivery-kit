@@ -21,6 +21,8 @@
 | T-005 | backend | <operation> (AC-…) | T-002 | M |
 | T-006 | frontend | <screen> against mocks (AC-…) | T-003 | M |
 | T-007 | qa | E2E TC-… for J-1 | T-005, T-006 | S |
+| T-0xx | frontend | Landing page (only if `F-LANDING`; in the sign-up milestone) | design foundation | M |
+| T-0yy | frontend | Landing page refresh for <release> (only if `F-LANDING`; last milestone of each later release) | every feature ticket of the release | S |
 
 ## Dependency graph
 ```mermaid

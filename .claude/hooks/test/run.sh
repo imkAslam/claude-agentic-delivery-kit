@@ -212,6 +212,24 @@ mig notnull_default 0 "NOT NULL with default passes"
 mig warn 0 "non-concurrent index only warns"
 bash "$CM" "$MD/allowed.sql" | grep -q '^ALLOWED' && { pass=$((pass+1)); echo "  ok   allowed finding is reported"; } || { fail=$((fail+1)); echo "  FAIL allowed finding is reported"; }
 
+echo "check-tokens"
+CT="$REPO/.claude/skills/build-design-system/scripts/check-tokens.sh"; TD="$TMP/tok"; mkdir -p "$TD"
+DT="$REPO/.claude/skills/build-design-system/references/DESIGN_TOKENS.md"
+tpl() { awk -v n="$1" 'index($0, "## " n ".") == 1 {f=1} f && /^```json/ {g=1; next} g && /^```/ {exit} g' "$DT"; }
+tpl 9 > "$TD/tokens.json"; tpl 10 > "$TD/tokens.dark.json"
+jq '.color.brand["600"]["$value"] = "#e11d48"' "$TD/tokens.json" > "$TD/rose.json"                 # brand reads as danger
+jq '.color.neutral["600"]["$value"] = "#cbd5e1"' "$TD/tokens.json" > "$TD/lowcontrast.json"       # muted text too light
+jq 'del(.color.secondary)' "$TD/tokens.json" > "$TD/nosecondary.json"
+tok() { out=$(bash "$CT" "$@" 2>&1); c=$?; }
+expect() { [ "$c" -eq "$1" ] && { pass=$((pass+1)); echo "  ok   $2"; } || { fail=$((fail+1)); echo "  FAIL $2 (exit $c)"; printf '%s\n' "$out" | grep -v '^OK' | sed 's/^/       /'; }; }
+tok --theme "$TD/tokens.dark.json" "$TD/tokens.json"; expect 0 "templates pass contrast and distinctness (light + dark)"
+printf '%s\n' "$out" | grep -q '^WARN.*deuteranopia' && { pass=$((pass+1)); echo "  ok   red/green status pair warns under deuteranopia"; } || { fail=$((fail+1)); echo "  FAIL red/green status pair warns under deuteranopia"; }
+tok "$TD/rose.json"; expect 1 "brand color too close to danger fails"
+printf '%s\n' "$out" | grep -q '^FAIL.*distinct color.primary.default.*color.danger.default' && { pass=$((pass+1)); echo "  ok   distinctness failure names the pair"; } || { fail=$((fail+1)); echo "  FAIL distinctness failure names the pair"; }
+tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
+tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
+tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
+
 echo "check-ownership"
 git checkout -qb ms-1/frontend/T-9; echo z > api/sneaky.ts; echo z > web/ok.ts; git add -A; git commit -qm t --no-verify
 git checkout -q -
