@@ -230,6 +230,24 @@ tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
 
+echo "sync-diagrams"
+SD="$REPO/.claude/skills/design-architecture/scripts/sync-diagrams.sh"; CD="$REPO/.claude/skills/design-architecture/scripts/check-diagrams.sh"
+DD="$TMP/diag"; mkdir -p "$DD"
+printf '# PRD\n## 10. Solution\n<!-- architect:begin -->\n### D1 · Main system\nPurpose: whole app.\n```mermaid\nflowchart TB\n  web --> api\n```\n**What to notice:** one.\n\n## 12. Architecture diagrams\n### D0 · Context\n```mermaid\nflowchart LR\n  user --> sys\n```\n#### D2-L3 · Application layer\n```mermaid\nflowchart LR\n  a --> b\n```\n<!-- architect:end -->\n## 13. Other\nnot a diagram\n' > "$DD/PRD.md"
+printf '# Architecture\n## 12. Layers\nkeep this text\n' > "$DD/ARCH.md"
+dg() { out=$("$@" 2>&1); c=$?; }
+dg bash "$SD" --check "$DD/PRD.md" "$DD/ARCH.md"; expect 1 "architecture without the diagrams fails the check"
+dg bash "$SD" "$DD/PRD.md" "$DD/ARCH.md"; expect 0 "sync copies the PRD diagrams into ARCHITECTURE"
+dg bash "$CD" --no-render --require "D0 D1 D2" --mirror "$DD/ARCH.md" "$DD/PRD.md"; expect 0 "mirror check passes after sync"
+grep -q 'keep this text' "$DD/ARCH.md" && grep -q '^## 14. Architecture diagrams' "$DD/ARCH.md" && ! grep -q 'not a diagram' "$DD/ARCH.md" && { pass=$((pass+1)); echo "  ok   sync keeps the architecture text and copies only diagram sections"; } || { fail=$((fail+1)); echo "  FAIL sync keeps the architecture text and copies only diagram sections"; }
+cp "$DD/ARCH.md" "$DD/ARCH.first"; bash "$SD" "$DD/PRD.md" "$DD/ARCH.md" >/dev/null
+cmp -s "$DD/ARCH.md" "$DD/ARCH.first" && { pass=$((pass+1)); echo "  ok   sync is idempotent"; } || { fail=$((fail+1)); echo "  FAIL sync is idempotent"; }
+sed 's/web --> api/web --> gateway/' "$DD/ARCH.md" > "$DD/ARCH.tmp" && mv "$DD/ARCH.tmp" "$DD/ARCH.md"
+dg bash "$CD" --no-render --require "D0 D1" --mirror "$DD/ARCH.md" "$DD/PRD.md"; expect 1 "a diagram edited in ARCHITECTURE fails the mirror check"
+printf '%s\n' "$out" | grep -q '^DIFFERS   D1 ' && { pass=$((pass+1)); echo "  ok   the mirror check names the diagram that differs"; } || { fail=$((fail+1)); echo "  FAIL the mirror check names the diagram that differs"; }
+bash "$SD" "$DD/PRD.md" "$DD/ARCH.md" >/dev/null
+dg bash "$SD" --check "$DD/PRD.md" "$DD/ARCH.md"; expect 0 "re-sync restores the copy"
+
 echo "kit consistency"
 CFD="$REPO/.claude/skills/coding-foundations"; miss=""
 for g in $(grep -o 'references/[A-Z_]*\.md' "$CFD/SKILL.md" | sort -u); do [ -f "$CFD/$g" ] || miss="$miss $g"; done

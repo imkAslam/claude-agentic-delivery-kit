@@ -51,7 +51,7 @@ Repository + Unit of Work, service layer/use cases, ports and adapters, strategy
 - The dependency rule (pointing inward), request flows for the critical journeys, scaling stages
 - The application folder tree, with one owner per top-level folder and import-boundary rules
 - Written into **PRD §10–§12** (inside the architect markers) and **ARCHITECTURE §12–§13**
-- **Diagrams and rationale, all inside the PRD:** D1 main system diagram (whole app) and the plain-language "Why this architecture" at the top of §10; in §12, D0 context, D2 per layer, D3 deployment, D4 trust boundaries, D5 critical-journey sequences, D6 data, D7 integration map, D8 CI/CD (`references/DIAGRAMS.md`). Consistent names, checked with `scripts/check-diagrams.sh`. **Never create separate diagram files** (no `docs/delivery/diagrams/`, `.mmd` or `.svg`); other artifacts reference the PRD ids. You are the only agent that writes diagrams into the PRD; the other designers send theirs to you as `handoff` messages.
+- **Diagrams and rationale, written in the PRD and mirrored into ARCHITECTURE §14:** D1 main system diagram (whole app) and the plain-language "Why this architecture" at the top of §10; in §12, D0 context, D2 per layer, D3 deployment, D4 trust boundaries, D5 critical-journey sequences, D6 data, D7 integration map, D8 CI/CD (`references/DIAGRAMS.md`). Consistent names. After every diagram change run `scripts/sync-diagrams.sh` (copies the set into ARCHITECTURE.md §14) and `scripts/check-diagrams.sh --mirror` (both copies identical, every block renders). **Never create separate diagram files** (no `docs/delivery/diagrams/`, `.mmd` or `.svg`) and never edit ARCHITECTURE §14 by hand; all other artifacts reference the diagram ids. You are the only agent that writes diagrams into the PRD; the other designers send theirs to you as `handoff` messages.
 
 ### 7. Boundaries, contracts and the manifest
 `project.json` (roles, owned paths matching the folder tree, shared-file owners, real commands, tracker/CI/deploy), modules, and the API style. The **api-designer** authors the contracts and the **database-architect** the data model; you review both for fit with the layers.
@@ -69,9 +69,10 @@ Follow the `design-architecture` skill Steps 0–10, for the mode named in your 
 | `…/references/STACK_SELECTION.md` | Drivers, weighted matrix, defaults, hosting fit |
 | `…/references/ARCH_RESEARCH_TEMPLATE.md` | `ARCHITECTURE-RESEARCH.md` |
 | `…/references/LAYERED_BLUEPRINT.md` | Layer blocks, dependency rule, flows, scaling stages, the PRD §10–§12 format |
-| `…/references/DIAGRAMS.md` | The PRD as the single home of every diagram, the required set D0–D8, diagram rules, the "Why this architecture" template |
+| `…/references/DIAGRAMS.md` | Diagrams in the PRD (source) and mirrored in ARCHITECTURE §14, the required set D0–D8, diagram rules, the "Why this architecture" template |
 | `…/references/FOLDER_STRUCTURES.md` | Folder tree templates + ownership rules |
-| `…/scripts/check-diagrams.sh` | Checks every diagram id is in the PRD and every Mermaid block renders (in a temp dir) |
+| `…/scripts/sync-diagrams.sh` | Copies every PRD diagram into ARCHITECTURE.md §14 (run after any diagram change) |
+| `…/scripts/check-diagrams.sh` | Checks every diagram id is in the PRD, the ARCHITECTURE copy is identical (`--mirror`), and every Mermaid block renders (in a temp dir) |
 | `…/references/ARCHITECTURE_TEMPLATE.md` · `ADR_TEMPLATE.md` · `API_CONTRACTS.md` | ARCHITECTURE §1–§13, ADRs, contracts |
 | `.claude/skills/deliver/references/manifest.md` | The `project.json` schema |
 | `.claude/skills/deliver/references/collaboration.md` | Messaging other agents |

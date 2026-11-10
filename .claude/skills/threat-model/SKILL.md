@@ -20,7 +20,7 @@ For the **cybersecurity-agent** (design input in lane understand, security ticke
 `PRD.md` (data, users, NFRs), `BA-ANALYSIS.md` (entities and their data classes), `ARCHITECTURE.md` (containers, topology), contracts (auth on each operation), and `DEVOPS-PLAN.md` (environments and secrets) if it exists.
 
 ### Step 1: Model the system
-Follow [THREAT_MODEL_TEMPLATE.md](references/THREAT_MODEL_TEMPLATE.md): assets and data classes, actors, the data flow with its **trust boundaries**, and entry points. The diagram is **PRD §12 · D4**: send your boundary and data-class corrections to the solution-architect in a `handoff` message. Never create a separate diagram file or a copy here (`design-architecture/references/DIAGRAMS.md` → "Single home").
+Follow [THREAT_MODEL_TEMPLATE.md](references/THREAT_MODEL_TEMPLATE.md): assets and data classes, actors, the data flow with its **trust boundaries**, and entry points. The diagram is **PRD §12 · D4**: send your boundary and data-class corrections to the solution-architect in a `handoff` message. Never create a separate diagram file or a copy here (`design-architecture/references/DIAGRAMS.md` → "Two homes, one source").
 
 ### Step 2: Enumerate the threats (STRIDE per boundary-crossing flow)
 Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege. Rate each threat's likelihood and impact (L/M/H) → its priority.

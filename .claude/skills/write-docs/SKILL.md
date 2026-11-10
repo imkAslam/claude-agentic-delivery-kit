@@ -48,7 +48,7 @@ Every link resolves; every feature, table and ADR in the sources appears in the 
 - Document the **why**: decisions, constraints, trade-offs and rejected alternatives. Don't restate code.
 - Never edit approved artifacts (PRD, DATA-MODEL, contracts, accepted ADRs). Supersede an ADR with a new one.
 - No secrets, personal data or internal hostnames in any document.
-- Diagrams stay in the PRD; documents link to them by id.
+- Diagrams stay in the PRD and its mirror, ARCHITECTURE §14; the living documents link to them by id and never redraw them.
 - Keep it short. A table row beats a paragraph.
 
 ## Integration with Other Skills

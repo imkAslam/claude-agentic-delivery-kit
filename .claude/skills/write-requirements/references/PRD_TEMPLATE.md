@@ -71,7 +71,7 @@ The folder tree (from FOLDER_STRUCTURES.md, adapted) plus a folder → owner-rol
 ## 12. Architecture diagrams
 The complete visual set, inline as Mermaid (design-architecture/references/DIAGRAMS.md): a diagrams index, then D0 context · D2 layers (overview + one per layer) · D3 deployment ·
 D4 trust boundaries · D5 critical-journey sequences · D6 data · D7 integration map · D8 CI/CD flow. Each one has a heading `### D<n> · <title>`, a purpose line and legend,
-and "What to notice". These are the only copies of the diagrams; there are no separate diagram files.
+and "What to notice". The PRD is the source of the diagrams; ARCHITECTURE.md §14 carries an identical generated copy, and there are no separate diagram files.
 <!-- architect:end -->
 The product-manager never edits between the architect markers. To change them, send the architect a MESSAGES request.
 

@@ -1,6 +1,6 @@
 # docs/database/DATABASE.md: database design and as-built reference
 
-Two halves: the **design** (summarized from the approved `DATA-MODEL.md`, written at `plan`) and the **as-built** reference (generated from the real migrations at every milestone). The ERD lives in the PRD (§12 · D6-erd); link to it.
+Two halves: the **design** (summarized from the approved `DATA-MODEL.md`, written at `plan`) and the **as-built** reference (generated from the real migrations at every milestone). The ERD lives in the PRD (§12 · D6-erd, mirrored in ARCHITECTURE §14); link to it.
 
 ```markdown
 # Database

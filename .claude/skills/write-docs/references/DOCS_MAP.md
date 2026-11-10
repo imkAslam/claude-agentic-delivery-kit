@@ -6,7 +6,7 @@
 
 ## Start here
 - **What we're building:** [PRD](delivery/PRD.md) (approved at g1) · [Features](FEATURES.md)
-- **How it's built:** [Architecture](delivery/ARCHITECTURE.md) · diagrams in [PRD §10–§12](delivery/PRD.md) · [Decisions (ADRs)](adr/README.md) · [Code map](CODEMAP.md)
+- **How it's built:** [Architecture](delivery/ARCHITECTURE.md) · diagrams in [PRD §10–§12](delivery/PRD.md) and [Architecture §14](delivery/ARCHITECTURE.md) · [Decisions (ADRs)](adr/README.md) · [Code map](CODEMAP.md)
 - **Data:** [Database](database/DATABASE.md) · [Data model (approved design)](delivery/DATA-MODEL.md)
 - **APIs:** [API guidelines](delivery/API-GUIDELINES.md) · contracts: <contracts.paths> · [Integrations](delivery/INTEGRATIONS.md)
 - **Design:** [Brand](delivery/BRAND-BRIEF.md) · [Design system](delivery/DESIGN-SYSTEM.md) · [UI/UX](delivery/UI-UX.md) · [Mockups](delivery/mockups/)
