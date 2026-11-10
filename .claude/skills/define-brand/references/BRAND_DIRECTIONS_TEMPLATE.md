@@ -8,6 +8,11 @@
 ## 1. Starting point and foundation
 Case A / B / C (BRAND_DISCOVERY.md) and why. Purpose · audience · personality (is / is not) · positioning · the competitor landscape summary and the gap.
 
+## 1a. Design research (DESIGN_RESEARCH.md)
+| # | Source (URL, date seen) | What it is | What works | Fits our personas? | Used in direction |
+|---|---|---|---|---|---|
+Trends seen · table stakes and clichés · what we take (patterns only). Or: "not performed (no web access)".
+
 ## 2. Directions at a glance
 | | A · <name> (safe) | B · <name> (evolved) | C · <name> (bold) |
 |---|---|---|---|
@@ -16,6 +21,7 @@ Case A / B / C (BRAND_DISCOVERY.md) and why. Purpose · audience · personality 
 | Sliders (classic→modern, serious→playful, calm→energetic, minimal→rich) | 2·2·2·1 | | |
 | Dominant 60 / secondary 30 / accent 10 | neutral-0 / #… / #… | | |
 | Color rationale (COLOR_METHOD) | why these hues, what they avoid | | |
+| Research references (§1a) | #2, #5: the pattern taken from each | | |
 | Type (headings / body) | <font> / <font> (license) | | |
 | Shape and density | radius, borders, spacing | | |
 | Iconography / imagery | | | |

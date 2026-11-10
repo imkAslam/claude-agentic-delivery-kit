@@ -18,8 +18,9 @@ For the **frontend-engineer** in lane `build`. Every component traces to a ticke
 ### Step 0: Detect the stack (don't guess)
 1. Read `.claude/project.json`: `stack.frontend`, `stack.languages`, `roles.frontend.paths`, `roles.frontend.commands`, `contracts.codegen_cmd`.
 2. Inside the owned paths, detect the component library (e.g. a `components.json` → a copy-in component system; a material, chakra, mantine, antd, vuetify or primevue dependency), the styling (utility CSS, CSS modules, CSS-in-JS, SCSS), and the token source (theme config, CSS custom properties, theme provider).
-3. Find the existing conventions: the folder layout (`ui/`, `features/`, `layouts/`), naming, test location, and the story/preview setup. **Follow them over the defaults below.**
-4. If anything is ambiguous, report `NEEDS_HUMAN` with the options. Don't pick one silently.
+3. **Library first:** if the project's UI library has the component, add it with the library's command (e.g. `shadcn add <component>`) and compose it. Write a custom base component only when the library has none and DESIGN-SYSTEM.md specifies it (coding-foundations → REACT.md).
+4. Find the existing conventions: the folder layout (`ui/`, `features/`, `layouts/`), naming, test location, and the story/preview setup. **Follow them over the defaults below.**
+5. If anything is ambiguous, report `NEEDS_HUMAN` with the options. Don't pick one silently.
 
 ### Step 1: Resolve the inputs from artifacts (subagents don't ask the user)
 | Question | Where the answer lives |
@@ -33,7 +34,7 @@ For the **frontend-engineer** in lane `build`. Every component traces to a ticke
 | Which behavior must pass? | The ticket's `AC-` ids → your tests |
 
 ### Step 2: Decide the file location
-Use the existing structure. If there's none, use: `<frontend-root>/src/components/ui/` (reusable), `…/components/features/<feature>/` (feature), `…/components/layouts/`, and pages/routes per the framework's routing convention. Tests sit next to the component, or in the project's test folder.
+Use the existing structure and the tree in PRD §11 (Next.js: design-architecture → FOLDER_STRUCTURES §A1, with every route inside a route group). If there's none, use: `<frontend-root>/src/components/ui/` (library and base components), `…/components/shared/` (reused across features), `…/components/features/<feature>/` (feature), `…/components/layout/`, and pages/routes per the framework's routing convention. Tests sit next to the component, or in the project's test folder.
 
 ### Step 3: Write the tests first (tdd skill)
 One test per AC: rendering of each state (loading, empty, error, success, no-permission), the user interactions (with role- and label-based queries), validation messages, calls to the API client (mocked through the generated mocks), and keyboard operation.

@@ -46,6 +46,21 @@ The CSS output: primitives as literal values, aliases as `var(--…)` (so compon
 | React Native / Expo | A generated `theme.ts` (light/dark objects keyed by semantic name), with `useColorScheme` | mobile |
 | Flutter | A generated `ThemeData` / `ColorScheme` + `ThemeExtension` for the extra semantic tokens | mobile |
 | Native iOS / Android | Asset-catalog colors / `colors.xml` + `values-night` generated from the tokens | mobile |
+**Copy-in component libraries themed by CSS variables (shadcn/ui and its Vue and Svelte ports):** map the library's variables to the semantic tokens in the generated theme file, for the base and for each theme. The brand then drives every library component, and the 60-30-10 roles stay intact.
+| Library variable | Semantic token |
+|---|---|
+| `--background` / `--foreground` | `color.bg.default` / `color.text.default` |
+| `--card`, `--popover` (+ `-foreground`) | `color.surface.default`, `color.surface.raised` / `color.text.default` |
+| `--primary` / `--primary-foreground` | `color.primary.default` / `color.primary.on` |
+| `--secondary` / `--secondary-foreground` | `color.secondary.default` / `color.secondary.on` |
+| `--muted` / `--muted-foreground` | `color.bg.subtle` / `color.text.muted` |
+| `--accent` / `--accent-foreground` (hover and selected surfaces) | `color.secondary.subtle` (or `color.bg.subtle`) / `color.text.default` |
+| `--destructive` (+ `-foreground`) | `color.danger.default` / `color.danger.on` |
+| `--border`, `--input` / `--ring` | `color.border.default`, `color.border.strong` / `color.focus.ring` |
+| `--radius` | `radius.md` |
+| Chart variables | The chart palette from BRAND-BRIEF §3 |
+Use the color format the pinned library version expects, generated from the token hex values. Never keep the library's default palette, and never edit colors inside a component file.
+
 The generated theme is checked in under the role's owned paths; a test (or lint rule) fails on raw color literals outside the theme files.
 
 ## 9. tokens.json template (passes check-tokens.sh)

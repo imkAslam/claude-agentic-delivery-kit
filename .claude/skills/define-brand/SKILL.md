@@ -29,6 +29,9 @@ Follow [BRAND_DISCOVERY.md](references/BRAND_DISCOVERY.md).
 | **C. No brand** | Nothing, or only likes/dislikes | **Define** it: 3 directions (A safe, B evolved, C bold). |
 Write the brand foundation (purpose, audience, personality traits with "is / is not", personality sliders, the competitor landscape, differentiation, constraints). Missing brand inputs never block the run: use the documented defaults and label them `ASSUMPTION:`.
 
+### Step 1a: Design research
+Follow [DESIGN_RESEARCH.md](references/DESIGN_RESEARCH.md): 6–10 current references for this domain and these personas from design galleries, palette and type sources (with `WebSearch` / `WebFetch`), recorded with their URLs in BRAND-DIRECTIONS §1a: the trends seen, the table stakes and clichés, and the patterns each direction takes. Patterns, never copies; with no web access, say "not performed" and continue.
+
 ### Step 2: Visual directions (for G1)
 Fill [BRAND_DIRECTIONS_TEMPLATE.md](references/BRAND_DIRECTIONS_TEMPLATE.md) → `docs/delivery/BRAND-DIRECTIONS.md`. For each direction, build one self-contained HTML board in `docs/delivery/brand/directions/<A|B|C>-board.html` (mood words, palette with contrast results, type pairing, shape and density, iconography, imagery, a wordmark proposal, one key screen and a component strip), and render it to PNG at 1440×900 (same render commands as the mockups). Choose each palette with [COLOR_METHOD.md](references/COLOR_METHOD.md): hue from the domain meaning, personas and competitor gap; status hues reserved; the **60-30-10** split (60% dominant, 30% secondary, 10% accent); OKLCH scales; the rationale recorded. Check each palette with `bash .claude/skills/build-design-system/scripts/check-tokens.sh <direction-tokens.json>` (contrast + distinctness) and show the result on the board.
 
@@ -67,6 +70,7 @@ Every board and asset renders (PNG next to the HTML/SVG); every palette passes `
 ├── SKILL.md
 └── references/
     ├── BRAND_DISCOVERY.md            # cases A/B/C, foundation, personality sliders, landscape, defaults
+    ├── DESIGN_RESEARCH.md            # where to look for current design, palette and type references; what to record; rules
     ├── BRAND_DIRECTIONS_TEMPLATE.md  # BRAND-DIRECTIONS.md + the direction board skeleton
     ├── BRAND_GUIDELINES_TEMPLATE.md  # BRAND-BRIEF.md (full brand guidelines)
     ├── COLOR_METHOD.md               # how colors are chosen: hue by meaning + gap, reserved status hues, 60-30-10, OKLCH scales, CVD

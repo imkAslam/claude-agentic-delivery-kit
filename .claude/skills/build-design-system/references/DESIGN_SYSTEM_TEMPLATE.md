@@ -16,7 +16,8 @@ The design system turns the brand into **reusable, specified components**. Engin
 ## 2. Component inventory
 | Component | Variants | Sizes | Used on screens | Library basis | Status |
 |---|---|---|---|---|---|
-| Button | primary, secondary, ghost, danger, link | sm, md, lg | all | <library or custom> | specified |
+| Button | primary, secondary, ghost, danger, link | sm, md, lg | all | <the UI library's component, e.g. shadcn/ui Button, or custom + why> | specified |
+Library basis: name the project's UI-library component each one builds on (PROJECT.md "Web UI layer"); specify only what differs from the library's behavior. `custom` needs a reason.
 
 ## 3. Component specifications (one block per component)
 ### Button

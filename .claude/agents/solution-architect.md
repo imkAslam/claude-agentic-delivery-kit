@@ -42,6 +42,7 @@ Repository + Unit of Work, service layer/use cases, ports and adapters, strategy
 - **API style:** REST + OpenAPI (default), GraphQL, typed RPC, gRPC, webhooks
 - **Data:** PostgreSQL (default), document, KV/cache, search, wide-column, time-series, vector, object storage
 - **Realtime:** SSE, WebSockets or WebRTC, only when needed
+- **Web UI layer:** the styling and component library with the frontend framework (default for React/Next.js: Tailwind CSS + shadcn/ui; STACK_SELECTION §3a), confirmed with the stack at G1; Next.js apps use route groups and the folder tree in FOLDER_STRUCTURES §A1
 - **Scalability:** stateless tier, autoscaling, pooling, replicas, caching, CDN, queues, partitioning, rate limits, resilience patterns
 - **Security architecture:** with the cybersecurity-agent (the identity layer, trust boundaries)
 

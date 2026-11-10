@@ -1,6 +1,6 @@
 ---
 name: coding-foundations
-description: "Foundation layer for writing code the same way across the team: object-oriented design, SOLID, class design, domain modeling and a catalog of design patterns with when to use and avoid each, form and input validation across stacks (React Hook Form or Formik with zod or yup, and the equivalents elsewhere), plus stack guides with best practices and review checklists for TypeScript, Node.js, NestJS, React and Next.js, React Native, Python (FastAPI, Django), Go, Java/Kotlin (Spring) and .NET."
+description: "Foundation layer for writing code the same way across the team: object-oriented design, SOLID, class design, domain modeling and a catalog of design patterns with when to use and avoid each, form and input validation across stacks (React Hook Form or Formik with zod or yup, and the equivalents elsewhere), plus stack guides with best practices and review checklists for TypeScript, Node.js, NestJS, React, Next.js (App Router, route groups), React Native, Python (FastAPI, Django), Go, Java/Kotlin (Spring) and .NET."
 when_to_use: "Use before implementing or reviewing code in a stack for the first time in a session, when choosing a design pattern or structuring classes and modules, when the architect pins the coding conventions for a stack, and when a reviewer needs the stack checklist."
 user-invocable: false
 ---
@@ -19,7 +19,8 @@ The solution-architect lists them per role in `.claude/project.json → roles.<r
 | [TYPESCRIPT.md](references/TYPESCRIPT.md) | Any TypeScript code (frontend, backend, mobile) |
 | [NODE.md](references/NODE.md) | Node.js services and scripts (Express, Fastify, Hono, workers) |
 | [NESTJS.md](references/NESTJS.md) | NestJS services (read with NODE and TYPESCRIPT) |
-| [REACT.md](references/REACT.md) | React and Next.js web apps |
+| [REACT.md](references/REACT.md) | React web apps: components, the UI-library-first rule, component layers, state, hooks |
+| [NEXTJS.md](references/NEXTJS.md) | Next.js App Router apps (read with REACT): route groups, server and client components, server actions, caching, error layers |
 | [REACT_NATIVE.md](references/REACT_NATIVE.md) | React Native and Expo apps (read with REACT) |
 | [PYTHON.md](references/PYTHON.md) | Python services: FastAPI, Django/DRF, SQLAlchemy, workers |
 | [GO.md](references/GO.md) | Go services |

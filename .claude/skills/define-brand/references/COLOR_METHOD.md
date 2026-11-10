@@ -9,6 +9,7 @@
 | Persona context | BA-ANALYSIS personas, PRD §2 | Stress, lighting, session length, device, age, accessibility needs (e.g. clinicians on long night shifts need calm, low-glare screens) |
 | Personality sliders | BRAND_DISCOVERY §3 | Calm vs energetic and serious vs playful drive saturation and hue temperature |
 | Competitor landscape | BRAND_DISCOVERY §4 | The dominant category hue, the clichés, and the gap |
+| Design research | DESIGN_RESEARCH.md → BRAND-DIRECTIONS §1a | Current palettes and color use in good products of this kind; a trend is used only if it passes §2–§7 |
 | Existing brand | `docs/intake/**`, `design-references/` | Colors the client already owns (case A/B: keep them, never change them silently) |
 
 ## 2. Pick the hue family: meaning + gap

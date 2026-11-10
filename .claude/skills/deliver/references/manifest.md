@@ -17,7 +17,7 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
   },
   "roles": {                          // enable only the roles the PRD needs
     "frontend": { "enabled": true,  "agent": "frontend-engineer", "reviewer": "frontend-reviewer",
-                  "paths": ["<frontend-root>/**"], "guides": ["typescript", "react"],
+                  "paths": ["<frontend-root>/**"], "guides": ["typescript", "react", "nextjs"],
                   "commands": { "lint": "<cmd>", "typecheck": "<cmd>", "test": "<cmd>" } },
     "backend":  { "enabled": true,  "agent": "backend-engineer",  "reviewer": "backend-reviewer",
                   "paths": ["<backend-root>/**"], "guides": ["typescript", "node", "nestjs"],   // coding-foundations stack guides (file names, lowercase); OOP_AND_PATTERNS always applies

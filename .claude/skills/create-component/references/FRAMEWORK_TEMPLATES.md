@@ -1,6 +1,6 @@
 # Framework templates
 
-Each template shows typed props, the four data states and accessible markup. Replace `ItemList`, `Item` and `listItems` with the ticket's names. **Prefer the project's existing conventions over these.**
+Each template shows typed props, the four data states and accessible markup. Replace `ItemList`, `Item` and `listItems` with the ticket's names. **Prefer the project's existing conventions over these.** Build from the project's UI-library components (`components/ui`) where they exist; the plain elements below only show the shape.
 
 ## React / Next.js (TypeScript)
 ```tsx
