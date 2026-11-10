@@ -38,10 +38,10 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 ## What you get
 | | Count | Where |
 |---|---|---|
-| Role subagents | 32 | `.claude/agents/` |
+| Role subagents | 33 | `.claude/agents/` |
 | Skills (orchestrator, gates, role skills, adapters, shared practices) | 31 | `.claude/skills/` |
 | Rules (always-on and path-scoped) | 13 | `.claude/rules/` |
-| Deterministic hooks + a test suite (91 checks) | 7 | `.claude/hooks/` |
+| Deterministic hooks + a test suite (130 checks) | 7 | `.claude/hooks/` |
 | Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack |
 
 Main features:
@@ -52,8 +52,11 @@ Main features:
 - **No coding without approval:** code, scaffolding, code commits and build agents are blocked until you approve G2.
 - **Your stack or ours:** you can name a preferred tech stack at any time (in the evidence, at intake, or at G1). The architect scores it honestly and uses it unless it fails a must-have requirement. Otherwise the architect recommends one. Either way, you confirm the stack at G1.
 - **Engineering standards for every role:** engineering principles, coding standards (naming, size and complexity limits, typed boundaries, error handling, logging, async, performance), database design rules, secure coding, testing and documentation. Reviewers check against them.
-- **Brand and design system:** visual directions, brand guidelines, W3C design tokens (contrast-checked), component specs, mockups of every state, and design QA per milestone.
-- **Complete documentation:** PRD with every architecture diagram inline, ADRs, data model, feature catalog, database document, code map, README, CHANGELOG.
+- **Brand and design system:** design research from current design galleries, visual directions, brand guidelines, W3C design tokens (contrast-checked), component specs, mockups of every state, and design QA per milestone.
+- **Complete documentation:** PRD with every architecture diagram inline (mirrored into the architecture document), ADRs, data model, feature catalog, database document, as-built system flows, code map, README, CHANGELOG.
+- **Modern frontend defaults:** Next.js App Router with route groups and a defined folder tree, Tailwind CSS + shadcn/ui as the default UI layer (you can name another), components built library-first and themed by the design tokens.
+- **Performance built in:** measurable budgets in the PRD, a performance guide for every engineer, and a performance-specialist that measures each milestone and the release candidate.
+- **A clean codebase:** a hygiene check at every integration finds scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code and dead doc links; they are removed before each milestone review.
 - **Free-first development:** every dev and test service runs locally in Docker.
 - **Cost controls:** model tiering, profiles, a parallel-agent cap and a token ledger with an optional budget.
 
@@ -167,13 +170,13 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | `foundation` | orchestrator | Validates the stack and CI foundation; the design-foundation tickets come first |
 | `dispatch` | orchestrator | Picks ready tickets whose dependencies are done; checks they don't touch the same files |
 | `build-fork` (parallel) | frontend-, backend-, mobile-, devops-, integration-engineer, cybersecurity-agent, each in its own worktree, each paired with its reviewer (+ database-reviewer on data changes) | Code + tests (red → green), screenshots or logs, one commit per ticket |
-| `integrate` | integrator, then uiux-agent (design QA) and docs-writer | Merges in dependency order after ownership checks, regenerates the lockfile and contract clients, runs a real end-to-end journey, writes the milestone package. Failures go through triage to the right role |
+| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Merges in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `DESIGN-QA.md` and `PERFORMANCE-REVIEW.md`). Failures go through triage to the right role |
 | `mbr` | **you** | Milestone Build Review: approve or request fixes |
 
 ### 4 · Verify & Accept (lane `verify`)
 | Step | Who | Output |
 |---|---|---|
-| `verify-fork` | qa-agent, quality-security-agent, security-auditor | `QA-REPORT.md`, `OPEN-ISSUES.md`, `QUALITY-SECURITY-REPORT.md`, `SECURITY-AUDIT-REPORT.md` (dynamic testing only on owned, authorized environments) |
+| `verify-fork` | qa-agent, quality-security-agent, security-auditor, performance-specialist | `QA-REPORT.md`, `OPEN-ISSUES.md`, `QUALITY-SECURITY-REPORT.md`, `SECURITY-AUDIT-REPORT.md`, `PERFORMANCE-REVIEW.md` (dynamic testing only on owned, authorized environments) |
 | `evidence-policy` | orchestrator | Missing, failing or stale evidence goes back to triage |
 | `acceptance` | **you** | Accept, or send bug feedback |
 
@@ -283,11 +286,11 @@ Questions reach you only at gates, at most 5 per gate, in plain language, each w
 | Plan & Design | database-architect | sonnet | Conceptual → logical → physical data model |
 | | api-designer | sonnet | Contracts, API guidelines, mocks, contract tests |
 | | integration-engineer | sonnet | Third-party integrations catalog and adapters |
-| | uiux-agent | sonnet | Brand directions, UX structure, tokens, design system, mockups, assets, design QA |
+| | uiux-agent | sonnet | Design research, brand directions, UX structure, tokens, design system, mockups, assets, design QA |
 | | design-reviewer | sonnet | Independent design review incl. the WCAG contrast check |
 | | architect-reviewer | sonnet | DevOps plan review, cross-design alignment |
 | | delivery-planner | sonnet | Milestones, tickets, dependencies, the tracker |
-| | docs-writer | haiku | Docs index, features, database doc, ADR index, code map, README, CHANGELOG |
+| | docs-writer | haiku | Docs index, features, database doc, system flows, ADR index, code map, README, CHANGELOG |
 | Build | frontend-engineer / frontend-reviewer | sonnet | Web UI |
 | | backend-engineer / backend-reviewer | sonnet | API, data, server-side |
 | | mobile-engineer / mobile-reviewer | sonnet | Mobile app (only when the PRD has one) |
@@ -295,7 +298,8 @@ Questions reach you only at gates, at most 5 per gate, in plain language, each w
 | | integration-reviewer | sonnet | Adapters, webhooks, sync jobs |
 | | database-reviewer | sonnet | Any schema, migration or query change |
 | | security-reviewer | sonnet | Security tickets and security-sensitive diffs |
-| | integrator | sonnet | Merges, ownership checks, end-to-end journey, milestone package |
+| | integrator | sonnet | Merges, ownership and hygiene checks, end-to-end journey, milestone package |
+| | performance-specialist | sonnet | Measures each milestone and the candidate against the performance budgets (read-only) |
 | Verify | qa-agent | sonnet | Test cases (plan), E2E automation (build), execution (verify) |
 | | quality-security-agent | sonnet | Dependency audit, secret scan, optional SonarQube / CodeRabbit / authorized DAST |
 | | security-auditor | **opus** | Scoped, authorized manual security audit |
@@ -320,11 +324,13 @@ Reviewers are read-only. Engineers write only inside their role's owned paths. E
 Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, references loaded on demand, scripts under `scripts/`).
 
 Bundled scripts:
-- `check-diagrams.sh`: every required diagram exists in the PRD and renders.
+- `check-diagrams.sh`: every required diagram exists in the PRD, the copy in ARCHITECTURE.md is identical (`--mirror`), and each one renders.
+- `sync-diagrams.sh`: copies every diagram from the PRD into ARCHITECTURE.md §14.
 - `check-tokens.sh`: validates the DTCG token file, resolves aliases, checks WCAG contrast and OKLab distinctness (brand vs status colors, with protanopia/deuteranopia simulation) per theme, and emits CSS variables.
 - `render-png.sh`: mockups to PNG with Playwright, falling back to Chrome headless.
 - `check-migrations.sh`: migration safety checks.
 - `check-ownership.sh`: every changed file belongs to the role that changed it.
+- `check-hygiene.sh`: no scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code or dead doc links.
 - `delivery-state.sh`: the run state helper.
 
 ---
@@ -356,7 +362,7 @@ A hook that exits with code 2 blocks the tool call.
 | `coding-standards` (source files) | Naming; size and complexity limits (function ≤ 30 lines, ≤ 3 params, nesting ≤ 2, complexity ≤ 10); strict types and "parse, don't validate"; value types for money and ids; error handling; dependency injection and import boundaries; async, timeouts and resources; structured logging without PII; performance; formatting and lint hygiene; per-stack tooling (TS, Python, Go, JVM, .NET, Ruby/PHP, Rust, Swift/Dart) |
 | `database-standards` (data files) | Design principles: constraints in the database; 3NF by default; surrogate keys with natural uniqueness; correct types; enums; limited JSON; no EAV; soft delete only where needed; audit history. Also the model, zero-downtime migrations, queries, data protection, performance and operations (pooling, timeouts, restore-tested backups) and testing (migrations up/down in CI, real-engine tests) |
 | `secure-coding`, `testing`, `api-design`, `documentation` | OWASP-based controls; test first; API conventions; comments and ADRs |
-| **`coding-foundations` skill** (the foundation layer) | **OOP_AND_PATTERNS:** SOLID in practice, class design, domain modeling (value objects, entities, aggregates, repositories, use cases, events), 20+ design patterns with when to use and when to avoid, anti-patterns. **FORMS_AND_VALIDATION:** one schema shared by client and server; per-stack libraries (React Hook Form or Formik with zod or yup, VeeValidate, Angular Reactive Forms, Superforms, Pydantic, class-validator, Bean Validation, FluentValidation); rules for passwords, phones, OTP, files, dates and money; accessible errors; server-error mapping; tests. **Stack guides:** TypeScript, Node.js, NestJS, React + Next.js, React Native/Expo, Python (FastAPI, Django, SQLAlchemy), Go, Java/Kotlin Spring, .NET. Each has musts, prefers and a review checklist |
+| **`coding-foundations` skill** (the foundation layer) | **OOP_AND_PATTERNS:** SOLID in practice, class design, domain modeling (value objects, entities, aggregates, repositories, use cases, events), 20+ design patterns with when to use and when to avoid, anti-patterns. **FORMS_AND_VALIDATION:** one schema shared by client and server; per-stack libraries (React Hook Form or Formik with zod or yup, VeeValidate, Angular Reactive Forms, Superforms, Pydantic, class-validator, Bean Validation, FluentValidation); rules for passwords, phones, OTP, files, dates and money; accessible errors; server-error mapping; tests. **Stack guides:** TypeScript, Node.js, NestJS, React (UI-library-first components, component layers), Next.js (App Router, route groups, error layers), React Native/Expo, Python (FastAPI, Django, SQLAlchemy), Go, Java/Kotlin Spring, .NET. **Cross-stack guides:** PERFORMANCE (budgets, measure-first, frontend, backend, heavy data), REALTIME (SSE, WebSockets, WebRTC), WORKERS (web workers, thread pools, durable jobs). Each has musts, prefers and a review checklist |
 
 The architect picks the stack guides for each role (`project.json → roles.<role>.guides`; every build and review brief lists them) and pins the stack-specific formatter, linter (with the complexity limits) and strict type checker in `PROJECT.md` and `project.json`. `commit-gate.sh` runs them before every commit, and every reviewer checks against these rules.
 
@@ -379,19 +385,20 @@ docs/
 ├── intake/                       client evidence (your input)
 ├── README.md                     documentation index
 ├── FEATURES.md                   feature catalog: priority, milestone, AC, screens, APIs, tickets, status
+├── SYSTEM-FLOWS.md               how each built journey works step by step, state machines, cross-cutting behavior
 ├── CODEMAP.md                    where the code lives (read before opening code)
-├── database/DATABASE.md          database design + as-built data dictionary + migration log + operations
+├── database/DATABASE.md          database design + as-built dictionary, indexes, access rules, pooling, seeds, capacity, operations
 ├── adr/                          architecture decision records + README.md index (proposed → accepted → superseded)
 └── delivery/
     ├── Intake-Readiness.md  RESEARCH.md  BA-ANALYSIS.md
     ├── PRD.md                    the complete PRD, incl. §10–§12 architecture and every diagram (Mermaid, inline)
-    ├── ARCHITECTURE-RESEARCH.md  ARCHITECTURE.md  THREAT-MODEL.md
+    ├── ARCHITECTURE-RESEARCH.md  ARCHITECTURE.md (text + the same diagrams in §14)  THREAT-MODEL.md
     ├── DATA-MODEL.md  API-GUIDELINES.md  INTEGRATIONS.md
     ├── BRAND-DIRECTIONS.md  BRAND-BRIEF.md  UI-UX.md  DESIGN-SYSTEM.md  tokens.json  tokens.dark.json
     ├── mockups/  brand/          HTML mockups + PNGs, logo set, favicon, app icons, OG image
     ├── TEST-CASES.md  DEVOPS-PLAN.md  LOCAL_SERVICES.md  BOOTSTRAP.md
     ├── DELIVERY-PLAN.md  TICKETS.md  QUALITY-RELEASE-PLAN.md
-    ├── milestones/<ms>/          BUILD-REVIEW, COMPLETED-TICKETS, VERIFICATION-RESULTS, RUN-GUIDE, DESIGN-QA, evidence/
+    ├── milestones/<ms>/          BUILD-REVIEW, COMPLETED-TICKETS, VERIFICATION-RESULTS, RUN-GUIDE, DESIGN-QA, PERFORMANCE-REVIEW, evidence/
     ├── QA-REPORT.md  OPEN-ISSUES.md  ACCEPTANCE-REVIEW.md  QUALITY-SECURITY-REPORT.md  SECURITY-AUDIT-REPORT.md
     ├── RELEASE-REVIEW.md  DEPLOYMENT-PLAN.md  ROLLBACK-RUNBOOK.md  OPERATIONS-HANDOFF.md  DEPLOYMENT-RESULT.md
     ├── GATE-LOG.md  MESSAGES.md  LESSONS.md  failures/
@@ -399,13 +406,13 @@ README.md  CHANGELOG.md            quick start and commands; user-visible change
 ```
 
 Two rules hold across these documents:
-- **Diagrams live only in the PRD.** D1, the main system diagram, is at the top of §10; D0 and D2–D8 are in §12. There are no separate diagram files, and other documents reference diagrams by id.
-- **Living documents are never part of a gate package,** so keeping them current never needs a change request. They are FEATURES, DATABASE, CODEMAP, the ADR index, README and CHANGELOG.
+- **Diagrams live in the PRD and in the architecture document.** The PRD is the source: D1, the main system diagram, is at the top of §10; D0 and D2–D8 are in §12. `ARCHITECTURE.md` §14 carries an identical copy, generated by `sync-diagrams.sh` and checked at the gates, so the two can't drift. There are no separate diagram files, and other documents reference diagrams by id.
+- **Living documents are never part of a gate package,** so keeping them current never needs a change request. They are FEATURES, DATABASE, SYSTEM-FLOWS, CODEMAP, the ADR index, README and CHANGELOG. The docs-writer also removes stale entries at every milestone.
 
 ---
 
 ## Brand and design
-- **At G1 the client chooses the look.** With no brand, the uiux-agent proposes 2–3 visual directions (safe, evolved, bold) as boards. With a partial brand it extends what exists. With a full brand it audits it.
+- **At G1 the client chooses the look.** The uiux-agent first researches 6–10 current references (design galleries, palette and type sources; patterns only, never copies). With no brand, the uiux-agent proposes 2–3 visual directions (safe, evolved, bold) as boards. With a partial brand it extends what exists. With a full brand it audits it.
 - **In Plan & Design the chosen direction becomes a system:**
   - brand guidelines and voice and tone;
   - W3C DTCG design tokens in three tiers (primitive → semantic → component), with light and dark themes, WCAG contrast pairs and brand-vs-status distinctness checked by `check-tokens.sh`;
@@ -558,7 +565,7 @@ It runs 91 checks against throwaway fixtures, covering:
 ```
 .claude/
 ├── settings.json              hooks registration and DELIVERY_* settings
-├── agents/                    32 role subagents
+├── agents/                    33 role subagents
 ├── skills/                    31 skills (each: SKILL.md + references/ + scripts/)
 │   └── deliver/
 │       ├── SKILL.md           the orchestrator

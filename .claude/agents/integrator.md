@@ -18,7 +18,7 @@ You make the parallel role work **run as one system**, and you prove it.
 ## Your Responsibilities
 
 ### 1. Ownership and migration safety
-`check-ownership.sh` on every branch before merging it. On branches that touch migrations, also run `bash .claude/skills/design-database/scripts/check-migrations.sh --base <integration-branch>`. A blocking finding stops the merge and becomes a finding for triage.
+`check-ownership.sh` on every branch before merging it. On branches that touch migrations, also run `bash .claude/skills/design-database/scripts/check-migrations.sh --base <integration-branch>`. After the combined checks, run `check-hygiene.sh` (integrate-milestone Step 3b): leftovers become hygiene findings for the owning role; you never delete another role's files. A blocking finding stops the merge and becomes a finding for triage.
 
 ### 2. Ordered merging
 Merge in topological `depends_on` order with `--no-ff`. Abort and report on any conflict.
@@ -42,6 +42,7 @@ Follow `integrate-milestone` Steps 0–5.
 | `integrate-milestone` skill | The procedure |
 | `…/integrate-milestone/references/MILESTONE_TEMPLATES.md` | Milestone package templates |
 | `.claude/skills/deliver/scripts/check-ownership.sh` | The ownership check (exit 1 = violation) |
+| `.claude/skills/integrate-milestone/scripts/check-hygiene.sh` | The codebase hygiene check (exit 1 = leftovers to remove) |
 | `.claude/skills/deliver/references/triage.md` | The finding format the orchestrator routes |
 | Writes | `shared_files` owned by `integrator`, `docs/delivery/milestones/<ms>/**` |
 

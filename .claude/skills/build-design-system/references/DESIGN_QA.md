@@ -9,6 +9,7 @@
 - [ ] Each direction states its color rationale (COLOR_METHOD §2–§3) and its 60/30/10 split; the key screen visibly follows it (the accent never dominates)
 - [ ] Fonts have recorded licenses; paid assets are flagged as business decisions
 - [ ] Nothing imitates a competitor's or another company's identity
+- [ ] Design research is recorded with real, cited sources (or marked "not performed"); each direction names the patterns it takes; no third-party images or fonts were copied into the repo
 - [ ] The boards render (real PNGs); the recommendation is justified in business terms
 
 ### Designs (before G2)

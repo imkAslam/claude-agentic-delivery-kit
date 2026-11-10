@@ -230,6 +230,81 @@ tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
 
+echo "check-hygiene"
+CH="$REPO/.claude/skills/integrate-milestone/scripts/check-hygiene.sh"; HR="$TMP/hyg"; mkdir -p "$HR/web/src" "$HR/docs" "$HR/scripts" "$HR/.claude"
+( cd "$HR" && git init -q && git config user.email t@t && git config user.name t
+  printf 'export const a = 1;\n' > web/src/a.ts
+  printf '# App\n[code map](docs/CODEMAP.md)\n' > README.md
+  printf '# Code map\n`web/src/a.ts` entry point\n`application/json` is a media type, not a path\n' > docs/CODEMAP.md
+  printf 'console.log("allowed in scripts");\n' > scripts/seed.js
+  git add -A && git commit -qm init )
+hy() { out=$(bash "$CH" --root "$HR" "$@" 2>&1); c=$?; }
+plant() { ( cd "$HR" && git add -A -f && git commit -qm "$1" ); }
+has() { printf '%s\n' "$out" | grep -q "$1" && { pass=$((pass+1)); echo "  ok   $2"; } || { fail=$((fail+1)); echo "  FAIL $2"; printf '%s\n' "$out" | sed 's/^/       /'; }; }
+hy; expect 0 "clean repository passes"
+mkdir -p "$HR/web/.next/cache" "$HR/web/src/empty"; printf '.next/\n' > "$HR/.gitignore"; plant ignore
+hy; printf '%s\n' "$out" | grep -q 'emptydir.web/src/empty' && ! printf '%s\n' "$out" | grep -q '\.next' && { pass=$((pass+1)); echo "  ok   empty folders warn, except inside git-ignored paths"; } || { fail=$((fail+1)); echo "  FAIL empty folders warn, except inside git-ignored paths"; printf '%s\n' "$out" | sed 's/^/       /'; }
+rmdir "$HR/web/src/empty"
+printf 'x' > "$HR/.DS_Store"; printf 'A=1\n' > "$HR/.env"; printf 'A=\n' > "$HR/.env.example"; plant stray
+hy; expect 1 "stray and env files fail"; has '^FAIL.stray..DS_Store' "stray file is named"
+printf '%s\n' "$out" | grep -q 'env.example' && { fail=$((fail+1)); echo "  FAIL .env.example is allowed"; } || { pass=$((pass+1)); echo "  ok   .env.example is allowed"; }
+( cd "$HR" && git rm -q --cached .DS_Store .env && rm -f .DS_Store .env && git commit -qm unstray )
+mkdir -p "$HR/web/public"; printf '<svg/>' > "$HR/web/public/next.svg"; printf 'export const P = "Get started by editing";\n' > "$HR/web/src/page.ts"; plant scaffold
+hy; expect 1 "scaffold leftovers fail"; has '^FAIL.scaffold.web/public/next.svg' "starter asset is named"; has '^FAIL.scaffold.web/src/page.ts:1' "starter text is located"
+printf '{"hygiene":{"allow":[{"path":"web/public/next.svg","reason":"shown on the docs page"},{"path":"web/src/page.ts","reason":"copy under review"}]}}\n' > "$HR/.claude/project.json"
+hy; expect 0 "allow-list with reasons accepts the exceptions"
+printf '{"hygiene":{"allow":[{"path":"web/public/next.svg"},{"path":"web/src/page.ts","reason":"copy under review"}]}}\n' > "$HR/.claude/project.json"
+hy; expect 1 "an allow entry without a reason fails"
+printf '{"hygiene":{"allow":[{"path":"web/public/next.svg","reason":"shown on the docs page"},{"path":"web/src/page.ts","reason":"copy under review"}]},"commands":{"unused":"echo unused-export; exit 1"}}\n' > "$HR/.claude/project.json"
+hy; expect 1 "the pinned unused-code command failing fails the check"
+hy --no-unused; expect 0 "--no-unused skips the unused-code command"
+printf 'export const b = 2; // TODO remove later\nexport const c = 3; // TODO T-12 keep until the migration\nconsole.log(b);\nconsole.log(c); // hygiene:allow CLI output\n' > "$HR/web/src/b.ts"; plant debug
+hy --no-unused; expect 1 "debug output and a ticketless TODO fail"; has '^FAIL.todo.web/src/b.ts:1' "the TODO without a ticket is located"; has '^FAIL.debug.web/src/b.ts:3' "console.log is located"
+[ "$(printf '%s\n' "$out" | grep -c 'web/src/b.ts')" = 2 ] && { pass=$((pass+1)); echo "  ok   a ticketed TODO and a hygiene:allow line are accepted"; } || { fail=$((fail+1)); echo "  FAIL a ticketed TODO and a hygiene:allow line are accepted"; }
+hy --no-unused --base HEAD~1; expect 1 "--base checks only the ticket diff"
+printf 'export const b = 2;\n' > "$HR/web/src/b.ts"; printf '\n`web/src/gone.ts` was removed\n' >> "$HR/docs/CODEMAP.md"; plant deadlink
+hy --no-unused; expect 1 "a code map path to a missing file fails"; has '^FAIL.deadlink.docs/CODEMAP.md' "the dead path is located"
+printf '%s\n' "$out" | grep -q 'application/json' && { fail=$((fail+1)); echo "  FAIL non-path code spans are ignored"; } || { pass=$((pass+1)); echo "  ok   non-path code spans are ignored"; }
+
+echo "sync-diagrams"
+SD="$REPO/.claude/skills/design-architecture/scripts/sync-diagrams.sh"; CD="$REPO/.claude/skills/design-architecture/scripts/check-diagrams.sh"
+DD="$TMP/diag"; mkdir -p "$DD"
+printf '# PRD\n## 10. Solution\n<!-- architect:begin -->\n### D1 · Main system\nPurpose: whole app.\n```mermaid\nflowchart TB\n  web --> api\n```\n**What to notice:** one.\n\n## 12. Architecture diagrams\n### D0 · Context\n```mermaid\nflowchart LR\n  user --> sys\n```\n#### D2-L3 · Application layer\n```mermaid\nflowchart LR\n  a --> b\n```\n<!-- architect:end -->\n## 13. Other\nnot a diagram\n' > "$DD/PRD.md"
+printf '# Architecture\n## 12. Layers\nkeep this text\n' > "$DD/ARCH.md"
+dg() { out=$("$@" 2>&1); c=$?; }
+dg bash "$SD" --check "$DD/PRD.md" "$DD/ARCH.md"; expect 1 "architecture without the diagrams fails the check"
+dg bash "$SD" "$DD/PRD.md" "$DD/ARCH.md"; expect 0 "sync copies the PRD diagrams into ARCHITECTURE"
+dg bash "$CD" --no-render --require "D0 D1 D2" --mirror "$DD/ARCH.md" "$DD/PRD.md"; expect 0 "mirror check passes after sync"
+grep -q 'keep this text' "$DD/ARCH.md" && grep -q '^## 14. Architecture diagrams' "$DD/ARCH.md" && ! grep -q 'not a diagram' "$DD/ARCH.md" && { pass=$((pass+1)); echo "  ok   sync keeps the architecture text and copies only diagram sections"; } || { fail=$((fail+1)); echo "  FAIL sync keeps the architecture text and copies only diagram sections"; }
+cp "$DD/ARCH.md" "$DD/ARCH.first"; bash "$SD" "$DD/PRD.md" "$DD/ARCH.md" >/dev/null
+cmp -s "$DD/ARCH.md" "$DD/ARCH.first" && { pass=$((pass+1)); echo "  ok   sync is idempotent"; } || { fail=$((fail+1)); echo "  FAIL sync is idempotent"; }
+sed 's/web --> api/web --> gateway/' "$DD/ARCH.md" > "$DD/ARCH.tmp" && mv "$DD/ARCH.tmp" "$DD/ARCH.md"
+dg bash "$CD" --no-render --require "D0 D1" --mirror "$DD/ARCH.md" "$DD/PRD.md"; expect 1 "a diagram edited in ARCHITECTURE fails the mirror check"
+printf '%s\n' "$out" | grep -q '^DIFFERS   D1 ' && { pass=$((pass+1)); echo "  ok   the mirror check names the diagram that differs"; } || { fail=$((fail+1)); echo "  FAIL the mirror check names the diagram that differs"; }
+bash "$SD" "$DD/PRD.md" "$DD/ARCH.md" >/dev/null
+dg bash "$SD" --check "$DD/PRD.md" "$DD/ARCH.md"; expect 0 "re-sync restores the copy"
+
+echo "kit consistency"
+CFD="$REPO/.claude/skills/coding-foundations"; miss=""
+for g in $(grep -o 'references/[A-Z_]*\.md' "$CFD/SKILL.md" | sort -u); do [ -f "$CFD/$g" ] || miss="$miss $g"; done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every guide listed in coding-foundations exists"; } || { fail=$((fail+1)); echo "  FAIL missing guides:$miss"; }
+miss=""
+for g in $(grep -o '"guides": \[[^]]*\]' "$REPO/.claude/skills/deliver/references/manifest.md" | grep -o '"[a-z_]*"' | tr -d '"' | grep -v '^guides$' | sort -u); do
+  [ -f "$CFD/references/$(printf '%s' "$g" | tr '[:lower:]' '[:upper:]').md" ] || miss="$miss $g"
+done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every guide named in the manifest example exists"; } || { fail=$((fail+1)); echo "  FAIL manifest guides without a file:$miss"; }
+miss=""
+for a in "$REPO"/.claude/agents/*.md; do
+  for k in name description model; do sed -n '2,12p' "$a" | grep -q "^$k:" || miss="$miss $(basename "$a"):$k"; done
+  [ "$(sed -n 's/^name: *//p' "$a" | head -1)" = "$(basename "$a" .md)" ] || miss="$miss $(basename "$a"):name-mismatch"
+done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every agent has name, description and model, and its name matches the file"; } || { fail=$((fail+1)); echo "  FAIL agent frontmatter:$miss"; }
+miss=""
+for sk in "$REPO"/.claude/skills/*/; do
+  for r in $(grep -oE '\]\(references/[A-Za-z_]+\.md' "$sk/SKILL.md" 2>/dev/null | sed 's/](//' | sort -u); do [ -f "$sk/$r" ] || miss="$miss $(basename "$sk")/$r"; done
+done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every reference linked from a SKILL.md exists"; } || { fail=$((fail+1)); echo "  FAIL broken skill references:$miss"; }
+
 echo "check-ownership"
 git checkout -qb ms-1/frontend/T-9; echo z > api/sneaky.ts; echo z > web/ok.ts; git add -A; git commit -qm t --no-verify
 git checkout -q -

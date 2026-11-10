@@ -38,7 +38,7 @@ Classify every column, then define its retention and deletion path, encryption a
 The tool, file naming, the expand → migrate → contract approach, backfill strategy, seeds and fixtures, backups and PITR, pooling, and the replica and partitioning triggers. See [MIGRATIONS.md](references/MIGRATIONS.md).
 
 ### Step 7: Write and hand off
-Write `docs/delivery/DATA-MODEL.md` with [DATA_MODEL_TEMPLATE.md](references/DATA_MODEL_TEMPLATE.md). Send `handoff` messages to the solution-architect (the D6-erd and D6-states Mermaid sources for PRD §12; diagrams live only in the PRD), the backend (implementation), DevOps (backups, the migration step) and QA (seeds).
+Write `docs/delivery/DATA-MODEL.md` with [DATA_MODEL_TEMPLATE.md](references/DATA_MODEL_TEMPLATE.md). Send `handoff` messages to the solution-architect (the D6-erd and D6-states Mermaid sources for PRD §12; the architect places them in the PRD and mirrors them into ARCHITECTURE §14), the backend (implementation), DevOps (backups, the migration step) and QA (seeds).
 
 ### Implementing (backend-engineer)
 Write migrations that implement the approved model exactly, one logical change per migration, following MIGRATIONS.md. Run `bash ${CLAUDE_SKILL_DIR}/scripts/check-migrations.sh --base <base>` before committing, and fix every blocking finding.

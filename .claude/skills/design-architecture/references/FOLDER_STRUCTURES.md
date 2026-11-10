@@ -8,7 +8,7 @@ Choose the template that matches the chosen style, adapt the names to the stack'
 ├── apps/
 │   ├── web/                    # L0 web client                → frontend
 │   │   └── src/
-│   │       ├── app/            # routes/pages (framework routing convention)
+│   │       ├── app/            # routes/pages (framework routing convention; Next.js: use tree A1 below)
 │   │       ├── features/       # one folder per business capability
 │   │       │   └── <feature>/{components,hooks,api,tests}
 │   │       ├── components/ui/  # reusable design-system components
@@ -41,6 +41,69 @@ Choose the template that matches the chosen style, adapt the names to the stack'
 ├── <root manifest + lockfile>  #                                → integrator (shared_files)
 └── .claude/                    # delivery kit (never edited by roles)
 ```
+
+### A1. Next.js App Router web app (the `apps/web` tree when the frontend is Next.js)
+Replaces the generic `apps/web/src` block above. Rules: coding-foundations → NEXTJS.md and REACT.md.
+```text
+apps/web/
+├── src/
+│   ├── app/                          # routing only: pages stay thin and compose feature components
+│   │   ├── (auth)/                   # public sign-in flows; centered layout, no app navigation
+│   │   │   ├── login/page.tsx
+│   │   │   ├── register/page.tsx
+│   │   │   ├── forgot-password/page.tsx
+│   │   │   ├── verify-email/page.tsx
+│   │   │   ├── layout.tsx  error.tsx  loading.tsx
+│   │   ├── (app)/                    # authenticated product (name per shell: (dashboard), (admin)…)
+│   │   │   ├── dashboard/{page,loading}.tsx
+│   │   │   ├── <feature>/
+│   │   │   │   ├── page.tsx          # list
+│   │   │   │   ├── [id]/{page,loading}.tsx
+│   │   │   │   └── new/page.tsx
+│   │   │   ├── settings/page.tsx
+│   │   │   ├── layout.tsx            # app shell (sidebar, navbar) + the server-side auth guard
+│   │   │   ├── error.tsx  loading.tsx  not-found.tsx
+│   │   ├── (marketing)/              # public pages: landing (F-LANDING), pricing, about, legal
+│   │   │   ├── page.tsx              # the landing page at "/"
+│   │   │   ├── pricing/page.tsx
+│   │   │   ├── layout.tsx  error.tsx
+│   │   ├── api/                      # route handlers: health, webhooks, BFF endpoints
+│   │   │   ├── health/route.ts
+│   │   │   └── webhooks/<provider>/route.ts
+│   │   ├── layout.tsx                # root layout: fonts, providers, metadata defaults
+│   │   ├── global-error.tsx  not-found.tsx
+│   │   ├── sitemap.ts  robots.ts
+│   │   └── globals.css               # imports the generated token theme
+│   ├── components/
+│   │   ├── ui/                       # UI-library components (added by its CLI) and base components
+│   │   ├── features/<feature>/       # feature components: business logic, forms, API hooks in use
+│   │   ├── layout/                   # navbar, sidebar, footer, mobile nav, breadcrumbs
+│   │   ├── shared/                   # reused across features: empty state, pagination, error boundary, file upload
+│   │   └── providers/                # theme, query client, auth/session, realtime
+│   ├── hooks/
+│   │   ├── api/                      # server-state hooks over the generated contract client, one file per resource
+│   │   └── use-*.ts                  # UI hooks: debounce, media query, intersection observer
+│   ├── lib/
+│   │   ├── api/                      # generated-client wiring: base URL, auth, error mapping
+│   │   ├── auth/                     # session helpers (server-side)
+│   │   ├── realtime/                 # the one socket/SSE client and its typed events (only if used)
+│   │   └── utils/                    # class-name helper, formatters, constants
+│   ├── stores/                       # small client stores, UI state only
+│   ├── types/                        # app-level types (contract types come from packages/contracts)
+│   ├── config/                       # site, navigation, route constants
+│   ├── styles/                       # generated token theme (tokens.json → CSS variables), themes
+│   └── middleware.ts                 # cheap checks: auth redirect, locale, headers
+├── public/                           # static assets: brand asset kit exports, icons, manifest
+├── tests/                            # integration tests; unit tests sit next to their unit
+├── components.json                   # UI-library config (when the library uses one)
+└── <framework, styling and TypeScript config files>
+```
+Import rules (enforced by the import-boundary lint where the stack has one):
+1. `app/` imports from `components/`, `hooks/`, `lib/`, `config/`; nothing imports from `app/`.
+2. `components/ui` imports only `lib/utils` and the UI library. `features/<a>` never imports `features/<b>`.
+3. Server-only modules (`lib/auth`, server data access) are never imported by a client component.
+4. Server data lives in the query cache or Server Components, never in `stores/`.
+5. The whole tree is owned by the frontend role; `packages/contracts` stays with the api-designer.
 
 ## B. Single backend service: clean / hexagonal (Python, Go, Java, .NET, Node)
 ```text

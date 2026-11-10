@@ -2,10 +2,11 @@
 
 The architecture must be understandable **visually**. Every project gets the full diagram set below, using the same component names and ids in every diagram, plus a written **"Why this architecture"** rationale.
 
-## Single home: the PRD
-- **Every diagram lives inside `docs/delivery/PRD.md`** as a Mermaid block, so the PRD is the complete document the client reads and approves. D1 opens §10; all the others are in **§12 Architecture diagrams**.
+## Two homes, one source: the PRD and ARCHITECTURE.md
+- **Every diagram is written inside `docs/delivery/PRD.md`** as a Mermaid block, so the PRD is the complete document the client reads and approves. D1 opens §10; all the others are in **§12 Architecture diagrams**. **The PRD is the source.**
+- **`docs/delivery/ARCHITECTURE.md` carries an identical copy of the whole set** in **§14 Architecture diagrams**, so engineers read the diagrams next to the architecture text. The copy is generated, never typed: `bash .claude/skills/design-architecture/scripts/sync-diagrams.sh docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md` writes it between the `<!-- diagrams:begin -->` and `<!-- diagrams:end -->` markers. Nobody edits inside the markers. Run it after every diagram change in the PRD.
 - **No separate diagram files:** no `docs/delivery/diagrams/` folder, no `.mmd`, `.svg` or `.png` diagram exports in the repository. Rendering checks happen in a temporary directory (rule 6).
-- **No copies in other artifacts.** ARCHITECTURE, DATA-MODEL, INTEGRATIONS, DEVOPS-PLAN and THREAT-MODEL reference a diagram by id ("see PRD §12 · D6-erd") and explain it in text.
+- **No copies anywhere else.** DATA-MODEL, INTEGRATIONS, DEVOPS-PLAN, THREAT-MODEL and the living docs reference a diagram by id ("see PRD §12 · D6-erd") and explain it in text. The text sections of ARCHITECTURE (§0–§13) also reference ids; the diagrams themselves sit only in its §14.
 - **One writer.** The solution-architect is the only agent that writes diagrams into the PRD (it keeps the ids and names consistent). Other authors draft their diagram and send its Mermaid source to the solution-architect in a `handoff` message.
 - **Earlier runs:** if `docs/delivery/diagrams/` exists, fold each diagram into the PRD under its id, then remove the folder (`git rm -r` if it's tracked).
 
@@ -39,7 +40,7 @@ The heading is always `### D<n>[-<suffix>] · <title>` (layer diagrams may use `
 3. Label every arrow with the protocol or interaction (`HTTPS REST`, `SQL`, `enqueue`, `webhook`, `OIDC`).
 4. Follow it with **"What to notice"**: 1–3 bullets explaining the key decisions visible in the diagram.
 5. At most ~25 nodes per diagram. If it's bigger, split by layer or module, and link them.
-6. Check them: `bash .claude/skills/design-architecture/scripts/check-diagrams.sh --require "D0 D1 D2 D3 D4 D5 D6 D7 D8" docs/delivery/PRD.md`. It confirms every id has a heading and renders every block in a temporary directory outside the repo. Exit 3 means no renderer was available: say "diagram syntax not checked", and never claim a diagram renders when it hasn't been checked.
+6. Mirror, then check them: `sync-diagrams.sh` (above), then `bash .claude/skills/design-architecture/scripts/check-diagrams.sh --require "D0 D1 D2 D3 D4 D5 D6 D7 D8" --mirror docs/delivery/ARCHITECTURE.md docs/delivery/PRD.md`. It confirms every id has a heading, that the copy in ARCHITECTURE §14 is identical to the PRD (it names any missing or different diagram), and renders every block in a temporary directory outside the repo. Exit 3 means no renderer was available: say "diagram syntax not checked", and never claim a diagram renders when it hasn't been checked.
 
 ## D1 example: main system diagram (whole app)
 ```mermaid

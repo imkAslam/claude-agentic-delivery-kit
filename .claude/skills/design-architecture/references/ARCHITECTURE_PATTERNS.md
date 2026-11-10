@@ -80,6 +80,7 @@ Stage 1 modular monolith + managed DB → Stage 2 add a cache, queue/workers and
 | Bidirectional, low latency (chat, collaboration, presence) | **WebSockets**, or a managed realtime service |
 | Audio/video, peer-to-peer | **WebRTC** + a signaling server (+ TURN) |
 | Occasional refresh | Polling with backoff |
+How to build the chosen channel (event contracts, auth, reconnect and resync, scaling out): coding-foundations → REALTIME.md. CPU-heavy or long-running work: WORKERS.md. Budgets and tactics: PERFORMANCE.md.
 
 ## 6. Scalability and resilience tactics
 Stateless app tier · horizontal autoscaling · connection pooling · read replicas · cache-aside with TTLs and invalidation · CDN for static assets and media · async queues for slow work · pagination everywhere · idempotent consumers · rate limiting and backpressure · timeouts, retries with jitter, circuit breakers · bulkheads (separate pools for critical paths) · database indexing, then partitioning, then sharding · feature flags · graceful degradation.

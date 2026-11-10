@@ -42,7 +42,9 @@ Key flows, tone, accessibility target (WCAG 2.2 AA), supported devices and local
 | Area | Requirement | Target |
 |---|---|---|
 | Security / privacy | … | AC-SEC-… |
-| Performance | … | p95 < … |
+| Performance, web | LCP ≤ 2.5 s · INP ≤ 200 ms · CLS ≤ 0.1 at p75 on mobile; JS per route ≤ … kB | Lighthouse / field data on the key journeys |
+| Performance, API | reads p95 < … ms · writes p95 < … ms at <n> concurrent users | load test on staging |
+| Performance, data volume | <rows, file sizes, list lengths the product must handle> | tested at this volume |
 | Availability | … | … % monthly |
 | Data retention | … | … |
 
@@ -69,7 +71,7 @@ The folder tree (from FOLDER_STRUCTURES.md, adapted) plus a folder → owner-rol
 ## 12. Architecture diagrams
 The complete visual set, inline as Mermaid (design-architecture/references/DIAGRAMS.md): a diagrams index, then D0 context · D2 layers (overview + one per layer) · D3 deployment ·
 D4 trust boundaries · D5 critical-journey sequences · D6 data · D7 integration map · D8 CI/CD flow. Each one has a heading `### D<n> · <title>`, a purpose line and legend,
-and "What to notice". These are the only copies of the diagrams; there are no separate diagram files.
+and "What to notice". The PRD is the source of the diagrams; ARCHITECTURE.md §14 carries an identical generated copy, and there are no separate diagram files.
 <!-- architect:end -->
 The product-manager never edits between the architect markers. To change them, send the architect a MESSAGES request.
 

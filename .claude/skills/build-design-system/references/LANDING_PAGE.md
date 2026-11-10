@@ -22,7 +22,7 @@ The page is assembled from approved artifacts, never invented. Each section has 
 - Claims must be true of the released product. No "AI-powered", "secure" or "compliant" wording unless an approved artifact backs it (the threat model, the security audit, a client-confirmed certification).
 
 ## 3. Content as data
-The page reads its text, feature list and images from one content file in the frontend's owned paths (e.g. `<web>/content/landing.content.json`, path set in PROJECT.md). A refresh then is a small data diff reviewed like any ticket, not a redesign. Layout and components come from DESIGN-SYSTEM.md and the tokens like every other screen; the 60-30-10 split applies (COLOR_METHOD §4: a landing page may show more secondary color in its section bands, the accent stays on the CTAs).
+In a Next.js app the page lives in the `(marketing)` route group (FOLDER_STRUCTURES §A1). The page reads its text, feature list and images from one content file in the frontend's owned paths (e.g. `<web>/content/landing.content.json`, path set in PROJECT.md). A refresh then is a small data diff reviewed like any ticket, not a redesign. Layout and components come from DESIGN-SYSTEM.md and the tokens like every other screen; the 60-30-10 split applies (COLOR_METHOD §4: a landing page may show more secondary color in its section bands, the accent stays on the CTAs).
 
 ## 4. Technical baseline (the F-LANDING acceptance criteria)
 - **SEO:** a unique `<title>` and meta description; canonical URL; Open Graph and Twitter card using the brand social image (`brand/assets/og-image.html` → 1200×630 PNG); schema.org `SoftwareApplication` or `Organization` JSON-LD; `sitemap.xml` and `robots.txt`; one `h1`, logical headings.
@@ -32,7 +32,7 @@ The page reads its text, feature list and images from one content file in the fr
 - **Separation:** the landing page never shows authenticated data and never calls private API operations; it links to sign-up or sign-in.
 
 ## 5. Design (Plan & Design)
-The uiux-agent adds the landing page to UI-UX.md (inventory id `S-LANDING`), wireframes it with the other key screens, and builds mockups of every section at 1440×900 and 390×844, from tokens and specified components only. The design-reviewer checks §1–§4 (DESIGN_QA §A).
+The uiux-agent researches 3–4 current landing pages for this kind of product (define-brand → DESIGN_RESEARCH.md; patterns only), adds the landing page to UI-UX.md (inventory id `S-LANDING`), wireframes it with the other key screens, and builds mockups of every section at 1440×900 and 390×844, from tokens and specified components only. The design-reviewer checks §1–§4 (DESIGN_QA §A).
 
 ## 6. Build and refresh (plan-delivery)
 - **First release:** one frontend ticket *"frontend · Landing page"* (M) in the milestone that ships the sign-up or contact journey, depending on the design-foundation ticket. Its ACs are §4 plus the section map in §1.

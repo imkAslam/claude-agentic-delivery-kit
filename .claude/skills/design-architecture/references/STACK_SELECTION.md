@@ -31,6 +31,17 @@ Weight each driver 1–5, score each candidate 1–5, and compute the weighted t
 | Realtime collaboration / live updates | Add a websocket/SSE channel to the API only for the realtime features |
 | Strict compliance or data residency | Region-pinned managed services; consider AWS or a VPS in the required region |
 
+## 3a. Web UI layer (styling + component library)
+Chosen with the frontend framework, recorded in the stack ADR and shown in the G1 stack table. The client can name another library at any time.
+| Frontend | Default | Why | Alternatives, and when to prefer them |
+|---|---|---|---|
+| React / Next.js | **Tailwind CSS + shadcn/ui** (Radix primitives, Lucide icons) | Components are copied into the repo (full control, no version lock-in), accessible primitives, themed by CSS variables that map directly to the design tokens, the current community standard | MUI or Ant Design (dense enterprise tables and forms out of the box), Mantine or Chakra (batteries-included hooks and components), a client design system that already exists |
+| Vue / Nuxt | Tailwind CSS + shadcn-vue (Reka UI primitives) | Same model as above | Vuetify, PrimeVue (enterprise widgets) |
+| Angular | Angular Material + CDK | First-party, accessible, signals-ready | PrimeNG (data-heavy screens), Tailwind + spartan/ui |
+| Svelte / SvelteKit | Tailwind CSS + shadcn-svelte (Bits UI primitives) | Same model as above | Skeleton, Flowbite |
+| Any | — | — | Charts: a library that takes token colors (e.g. Recharts, ECharts). Animation: CSS first, a motion library only where the design needs it |
+Rules: one component library per app; the library is **themed by the design tokens** (build-design-system → DESIGN_TOKENS.md §8), never by its default palette; a paid library or paid component pack is a business decision for the gate.
+
 ## 4. Choices that need explicit justification
 Microservices · NoSQL as the primary store for relational data · a self-managed Kubernetes cluster · multiple languages in the backend · custom auth instead of a vetted library/provider · GraphQL for a single client with simple reads.
 
@@ -47,6 +58,7 @@ Microservices · NoSQL as the primary store for relational data · a self-manage
 | Concern | Recommended | Client preference | Why (plain language) | Trade-off / cost |
 |---|---|---|---|---|
 | Frontend | … | … or — | … | … |
+| Web UI layer (styling + component library, §3a) | … | | | |
 | Backend | … | | | |
 | Database | … | | | |
 | Mobile (if any) | … | | | |

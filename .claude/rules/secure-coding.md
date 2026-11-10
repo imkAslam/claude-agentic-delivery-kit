@@ -58,6 +58,13 @@ Defense in depth · least privilege · deny by default · never trust input (inc
 - Add dependencies only from maintained sources, with lockfiles committed; no known critical/high CVEs without an accepted exception.
 - Verify the integrity of downloaded artifacts; CI actions and images are pinned.
 
+## Browser, sessions and transport
+- **Session tokens live in `HttpOnly`, `Secure`, `SameSite` cookies.** Never store access or refresh tokens in `localStorage`, `sessionStorage` or a persisted client store; state-changing cookie-authenticated requests need CSRF protection.
+- **Security headers on every response:** a Content-Security-Policy without `unsafe-inline` scripts, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, frame protection (`frame-ancestors`), `Referrer-Policy`, a restrictive `Permissions-Policy`. Set them in one place (middleware or the edge).
+- **CORS is an explicit allow-list** of origins per environment; never `*` with credentials, never a reflected origin.
+- **Realtime channels:** authenticate the handshake, authorize every subscription and inbound message, check the origin, limit size and rate (coding-foundations → REALTIME.md).
+- **Payments and webhooks:** card data never touches the app's state, logs or database (use the provider's hosted fields); verify webhook signatures on the raw body and handle each event idempotently (`integrations.md`).
+
 ## Logging (A09)
 - Log security events (authn failures, authz denials, admin actions, exports) with a request id. Never log secrets, tokens, passwords, full card numbers or unnecessary PII.
 

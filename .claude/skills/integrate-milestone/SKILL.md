@@ -33,6 +33,12 @@ Run `commands.install` (you own the lockfile and the root manifest), then `contr
 ### Step 3: Combined checks
 Run `commands.lint`, `typecheck`, `test`, `build`. Capture each exit code and an output summary.
 
+### Step 3b: Hygiene check (keep the codebase clean)
+```bash
+bash ${CLAUDE_SKILL_DIR}/scripts/check-hygiene.sh        # whole tree; exit 1 = leftovers found
+```
+It reports scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code (through `commands.unused` when the architect pinned one), and dead links in the living docs. **You never delete another role's files.** Each finding becomes `FINDING: hygiene — <check> — <file:line> — <owning role>`; the orchestrator opens one chore ticket per owning role, fixed before `mbr`. Warnings (commented-out code, empty folders) are listed in BUILD-REVIEW. A deliberate exception goes into `project.json → hygiene.allow` with a reason (a request to the solution-architect, who owns that file).
+
 ### Step 4: Real journey
 Start `commands.dev` (in the background) and wait for `dev_url` + the health path. Walk the milestone's journey from DELIVERY-PLAN across the UI → API → database: use `commands.e2e` where QA has automated it, otherwise browser automation. Save screenshots and logs to `docs/delivery/milestones/<ms>/evidence/`. Stop the dev server afterwards.
 
@@ -54,6 +60,8 @@ Start `commands.dev` (in the background) and wait for `dev_url` + the health pat
 ```
 .claude/skills/integrate-milestone/
 ├── SKILL.md
-└── references/
-    └── MILESTONE_TEMPLATES.md   # BUILD-REVIEW, COMPLETED-TICKETS, VERIFICATION-RESULTS, RUN-GUIDE
+├── references/
+│   └── MILESTONE_TEMPLATES.md   # BUILD-REVIEW, COMPLETED-TICKETS, VERIFICATION-RESULTS, RUN-GUIDE
+└── scripts/
+    └── check-hygiene.sh         # leftovers: scaffold files, stray files, debug output, ticketless TODOs, unused code, dead doc links
 ```

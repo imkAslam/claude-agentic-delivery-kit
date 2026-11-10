@@ -14,8 +14,8 @@ Living documentation, kept current at fixed points of the workflow. **Approved a
 |---|---|---|
 | `init` | After **g1** is approved (lane plan, first step) | `docs/README.md` (index), `docs/FEATURES.md` (from PRD §4/§7), `docs/adr/README.md` (ADR index) |
 | `plan` | After `planning`, before **g2** | FEATURES.md + milestones, tickets, screens, operations; `docs/database/DATABASE.md` (design, from DATA-MODEL); ADR index |
-| `milestone` | After `integrate` passes, before **mbr** | FEATURES.md status; DATABASE.md as built (from the real migrations); `docs/CODEMAP.md` (from the real tree); CHANGELOG `[Unreleased]`; README quick start and commands; ADR index |
-| `release` | Lane release, `release-prep` | CHANGELOG version section; README badges/links; final docs index |
+| `milestone` | After `integrate` passes, before **mbr** | FEATURES.md status; DATABASE.md as built (from the real migrations); `docs/SYSTEM-FLOWS.md` (the flows the milestone built or changed); `docs/CODEMAP.md` (from the real tree); stale entries removed; CHANGELOG `[Unreleased]`; README quick start and commands; ADR index |
+| `release` | Lane release, `release-prep` | CHANGELOG version section; README badges/links; final docs index; SYSTEM-FLOWS.md and DATABASE.md checked against the release candidate |
 | `adr` | Any agent making a significant technical decision | `docs/adr/ADR-<nnn>-<slug>.md` + index row |
 
 ## Instructions
@@ -32,6 +32,9 @@ Maintain `docs/FEATURES.md` with [FEATURES_TEMPLATE.md](references/FEATURES_TEMP
 ### Step 3: Database document
 Maintain `docs/database/DATABASE.md` with [DATABASE_DOC_TEMPLATE.md](references/DATABASE_DOC_TEMPLATE.md): the design summary (from DATA-MODEL), then the **as-built** data dictionary from the migrations, the migration log, and how to run, seed, back up and restore. A difference between as built and the approved DATA-MODEL is a finding for the database-reviewer.
 
+### Step 3b: System flows (`milestone` mode)
+Maintain `docs/SYSTEM-FLOWS.md` with [SYSTEM_FLOWS_TEMPLATE.md](references/SYSTEM_FLOWS_TEMPLATE.md): for each journey the milestone delivered or changed, the as-built step table (client → API → data → integrations, with operations, rules and checks), permissions, errors and side effects; the entity state machines; and the cross-cutting behavior (validation, error shape, session lifecycle, rate limits, CORS). Build it from the merged code and the contracts. Reference diagrams by id; never redraw them. A built flow that differs from the approved journey without a CR is a finding, never a silent edit.
+
 ### Step 4: ADRs
 Follow [ADR_GUIDE.md](references/ADR_GUIDE.md): when an ADR is required, the template (context, decision, alternatives with pros/cons/why rejected, consequences), the lifecycle (proposed → accepted → superseded/deprecated; never deleted or rewritten), and the index in `docs/adr/README.md`.
 
@@ -41,6 +44,9 @@ Use [README_CHANGELOG.md](references/README_CHANGELOG.md). The README's commands
 ### Step 5b: Code map (`milestone` mode)
 Rebuild `docs/CODEMAP.md` with [CODEMAP_TEMPLATE.md](references/CODEMAP_TEMPLATE.md) from `git ls-files`, the entry points and PRD §11: modules with owners, features → code, shared files, conventions. About 150 lines; every path must exist. Engineers read it before opening code, so a stale map wastes every later ticket's context.
 
+### Step 5c: Remove what is stale (`milestone` and `release` modes)
+Documents describe the product **as it is now**. Remove or update every entry whose subject no longer exists: a deleted screen, operation, table, column, job, file or feature (a deferred or removed feature keeps its FEATURES row with the decision that removed it). Then run `bash .claude/skills/integrate-milestone/scripts/check-hygiene.sh --no-unused` and fix every `deadlink` finding in the documents you own. Report other hygiene findings as `finding` messages; never delete code.
+
 ### Step 6: Verify
 Every link resolves; every feature, table and ADR in the sources appears in the documents; nothing contradicts an approved artifact. Report the counts in the return block.
 
@@ -48,7 +54,7 @@ Every link resolves; every feature, table and ADR in the sources appears in the 
 - Document the **why**: decisions, constraints, trade-offs and rejected alternatives. Don't restate code.
 - Never edit approved artifacts (PRD, DATA-MODEL, contracts, accepted ADRs). Supersede an ADR with a new one.
 - No secrets, personal data or internal hostnames in any document.
-- Diagrams stay in the PRD; documents link to them by id.
+- Diagrams stay in the PRD and its mirror, ARCHITECTURE §14; the living documents link to them by id and never redraw them.
 - Keep it short. A table row beats a paragraph.
 
 ## Integration with Other Skills
@@ -64,7 +70,8 @@ Every link resolves; every feature, table and ADR in the sources appears in the 
 └── references/
     ├── DOCS_MAP.md               # docs/README.md: the document map and index
     ├── FEATURES_TEMPLATE.md      # docs/FEATURES.md: the feature catalog
-    ├── DATABASE_DOC_TEMPLATE.md  # docs/database/DATABASE.md: design summary + as-built dictionary + operations
+    ├── DATABASE_DOC_TEMPLATE.md  # docs/database/DATABASE.md: design summary, as-built dictionary, indexes, access/RLS, pooling, seeds, capacity, operations
+    ├── SYSTEM_FLOWS_TEMPLATE.md  # docs/SYSTEM-FLOWS.md: as-built flow per journey, state machines, cross-cutting behavior
     ├── ADR_GUIDE.md              # when to write an ADR, template, lifecycle, index
     ├── README_CHANGELOG.md       # root README.md and CHANGELOG.md formats
     └── CODEMAP_TEMPLATE.md       # docs/CODEMAP.md: modules, features → code, shared files

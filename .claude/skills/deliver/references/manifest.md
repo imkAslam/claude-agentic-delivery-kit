@@ -17,10 +17,10 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
   },
   "roles": {                          // enable only the roles the PRD needs
     "frontend": { "enabled": true,  "agent": "frontend-engineer", "reviewer": "frontend-reviewer",
-                  "paths": ["<frontend-root>/**"], "guides": ["typescript", "react"],
+                  "paths": ["<frontend-root>/**"], "guides": ["typescript", "react", "nextjs"],
                   "commands": { "lint": "<cmd>", "typecheck": "<cmd>", "test": "<cmd>" } },
     "backend":  { "enabled": true,  "agent": "backend-engineer",  "reviewer": "backend-reviewer",
-                  "paths": ["<backend-root>/**"], "guides": ["typescript", "node", "nestjs"],   // coding-foundations stack guides (file names, lowercase); OOP_AND_PATTERNS always applies
+                  "paths": ["<backend-root>/**"], "guides": ["typescript", "node", "nestjs"],   // coding-foundations guides (file names, lowercase); OOP_AND_PATTERNS and PERFORMANCE always apply; add "realtime" / "workers" only when the architecture uses them
                   "commands": { "lint": "<cmd>", "typecheck": "<cmd>", "test": "<cmd>" } },
     "mobile":   { "enabled": false, "agent": "mobile-engineer",   "reviewer": "mobile-reviewer",
                   "paths": ["<mobile-root>/**"], "commands": {} },
@@ -43,8 +43,11 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
   "pre_build_paths": ["<extra globs allowed before g2, e.g. mock-server config>"],   // optional; guard-coding.sh
   "commands": {                       // repo-wide; used by the integrator and by the commit gate on main-session commits
     "install": "<cmd>", "dev": "<cmd>", "lint": "<cmd>", "typecheck": "<cmd>",
-    "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>"
+    "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>",
+    "perf": "<optional: Lighthouse / load-test cmd used by the performance-specialist>",
+    "unused": "<optional: unused files/exports/dependencies check, e.g. knip, vulture; used by check-hygiene.sh>"
   },
+  "hygiene": { "allow": [ { "path": "<glob>", "reason": "<why this file or folder is a deliberate exception>" } ] },   // optional; read by integrate-milestone/scripts/check-hygiene.sh. An entry without a reason fails the check
   "dev_url": "http://localhost:<port>",
   "services": [                        // backing services for dev/test (see setup-docker → LOCAL_SERVICES.md)
     { "name": "db",   "kind": "postgres", "provider": "docker", "image": "postgres:16-alpine", "env": ["DATABASE_URL"] },
