@@ -7,7 +7,7 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md. NestJS adds NESTJS.md. Templates: `cre
 - Prefer Fastify or Hono for new services (schema validation and speed built in); Express is fine when the team knows it.
 
 ## Runtime (must)
-- **Never block the event loop:** no sync fs/crypto/zlib or large `JSON.parse` in the request path; move CPU-heavy work to worker threads or a job queue.
+- **Never block the event loop:** no sync fs/crypto/zlib or large `JSON.parse` in the request path; move CPU-heavy work to a worker-thread pool or a job queue ([WORKERS.md](WORKERS.md)). Realtime channels: [REALTIME.md](REALTIME.md). Budgets and query, cache and pool practices: [PERFORMANCE.md](PERFORMANCE.md).
 - **Config:** read `process.env` once at startup into a typed, validated config object (zod); fail to start on invalid config. Never read env vars deep inside code.
 - **Graceful shutdown:** on `SIGTERM`/`SIGINT` stop accepting connections, finish in-flight requests within a deadline, close DB pools and queues, then exit. Health (`/health/live`) and readiness (`/health/ready`) endpoints.
 - **Process errors:** log `unhandledRejection` and `uncaughtException` and exit non-zero; the orchestrator restarts the process. Never keep running in an unknown state.

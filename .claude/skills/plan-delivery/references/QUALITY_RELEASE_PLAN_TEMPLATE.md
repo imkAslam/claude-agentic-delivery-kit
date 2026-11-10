@@ -16,7 +16,7 @@ Test first · role checks green · AC evidence · independent review APPROVE · 
 | E2E web | <stack.e2e> | P1 TCs per milestone | integration step + CI |
 | E2E mobile | <stack.mobile_e2e> | P1 mobile TCs | integration step |
 | Accessibility | automated scan + keyboard walkthrough | P1 screens | verify lane |
-| Performance | load test tool if available | the main operations vs. PRD targets | verify lane |
+| Performance | performance-specialist: Lighthouse / build report, query plans, load test tool if available | the PRD §6 budgets on the milestone's routes and operations | after `integrate` (per profile) + verify lane; a missed budget on a critical journey blocks |
 
 ## Quality and security checks (only the tools detected in SYSTEM-PROFILE)
 | Check | Tool | Detected? | When | Threshold |

@@ -20,7 +20,7 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
                   "paths": ["<frontend-root>/**"], "guides": ["typescript", "react", "nextjs"],
                   "commands": { "lint": "<cmd>", "typecheck": "<cmd>", "test": "<cmd>" } },
     "backend":  { "enabled": true,  "agent": "backend-engineer",  "reviewer": "backend-reviewer",
-                  "paths": ["<backend-root>/**"], "guides": ["typescript", "node", "nestjs"],   // coding-foundations stack guides (file names, lowercase); OOP_AND_PATTERNS always applies
+                  "paths": ["<backend-root>/**"], "guides": ["typescript", "node", "nestjs"],   // coding-foundations guides (file names, lowercase); OOP_AND_PATTERNS and PERFORMANCE always apply; add "realtime" / "workers" only when the architecture uses them
                   "commands": { "lint": "<cmd>", "typecheck": "<cmd>", "test": "<cmd>" } },
     "mobile":   { "enabled": false, "agent": "mobile-engineer",   "reviewer": "mobile-reviewer",
                   "paths": ["<mobile-root>/**"], "commands": {} },
@@ -43,7 +43,9 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
   "pre_build_paths": ["<extra globs allowed before g2, e.g. mock-server config>"],   // optional; guard-coding.sh
   "commands": {                       // repo-wide; used by the integrator and by the commit gate on main-session commits
     "install": "<cmd>", "dev": "<cmd>", "lint": "<cmd>", "typecheck": "<cmd>",
-    "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>"
+    "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>",
+    "perf": "<optional: Lighthouse / load-test cmd used by the performance-specialist>",
+    "unused": "<optional: unused files/exports/dependencies check, e.g. knip, vulture; used by check-hygiene.sh>"
   },
   "dev_url": "http://localhost:<port>",
   "services": [                        // backing services for dev/test (see setup-docker → LOCAL_SERVICES.md)

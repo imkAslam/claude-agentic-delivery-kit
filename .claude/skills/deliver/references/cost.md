@@ -10,6 +10,7 @@ Every subagent run costs tokens: its prompt, the skills it preloads, every file 
 | Mockups | Key screens: default + one unhappy state each; other states described in the states matrix | Every screen × every state that applies | Every state, desktop + mobile + dark |
 | Review rounds cap | 2 | `DELIVERY_MAX_ROUNDS` (3) | 3 |
 | Ticket review | One reviewer (the role reviewer); the database or security reviewer only when the diff touches their area | Role reviewer + specialist reviewers by area | Same + a second opinion on P1 areas |
+| Performance review | The candidate only (Lane 4) | Each milestone that changes screens or data paths + the candidate | Every milestone + the candidate |
 | Security audit (Lane 4) | Automated scans; manual audit only with personal/payment data or public APIs | As the threat model warrants | Always |
 | Parallel agents | 2 | `DELIVERY_MAX_PARALLEL` (3) | 4 |
 The profile never changes the gates, the hooks, test-first or the evidence rules.
@@ -18,7 +19,7 @@ The profile never changes the gates, the hooks, test-first or the evidence rules
 | Tier | Agents | Why |
 |---|---|---|
 | **opus** | solution-architect, security-auditor | Decisions that are expensive to reverse; adversarial reasoning |
-| **sonnet** | every engineer, designer, analyst, planner and reviewer | Strong, much cheaper; the default |
+| **sonnet** | every engineer, designer, analyst, planner and reviewer (including the performance-specialist) | Strong, much cheaper; the default |
 | **haiku** | system-detector, docs-writer | Mechanical detection and documentation upkeep |
 **Escalate** to opus for one call (the Agent tool's `model` parameter) only when the same task failed twice on sonnet, or the reviewer reports a P1 design flaw. **De-escalate** to haiku for mechanical reruns (re-rendering, re-running a checker, status updates).
 

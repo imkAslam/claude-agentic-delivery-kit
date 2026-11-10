@@ -42,7 +42,9 @@ Key flows, tone, accessibility target (WCAG 2.2 AA), supported devices and local
 | Area | Requirement | Target |
 |---|---|---|
 | Security / privacy | … | AC-SEC-… |
-| Performance | … | p95 < … |
+| Performance, web | LCP ≤ 2.5 s · INP ≤ 200 ms · CLS ≤ 0.1 at p75 on mobile; JS per route ≤ … kB | Lighthouse / field data on the key journeys |
+| Performance, API | reads p95 < … ms · writes p95 < … ms at <n> concurrent users | load test on staging |
+| Performance, data volume | <rows, file sizes, list lengths the product must handle> | tested at this volume |
 | Availability | … | … % monthly |
 | Data retention | … | … |
 

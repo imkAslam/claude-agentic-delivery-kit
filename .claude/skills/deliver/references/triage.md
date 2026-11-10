@@ -6,6 +6,7 @@ Triage turns failures (from the integrator, QA, quality/security, a gate's "requ
 | Finding area | Route to | Reviewer |
 |---|---|---|
 | UI, screens, forms, client-side state, a11y, a mismatch with the mockups (DESIGN-QA) | frontend-engineer (or mobile-engineer for the app) | frontend- / mobile-reviewer |
+| A missed performance budget or a PERFORMANCE-REVIEW finding (slow route, N+1, unbounded read, oversized bundle) | The role that owns the code (frontend-, backend-, mobile-engineer); an index or model change → database-architect + CR on `g2`; an architectural bottleneck → solution-architect | The role reviewer; the performance-specialist re-measures |
 | The agreed design itself is wrong or incomplete (a missing state, token or component spec; a brand rule that doesn't work) | uiux-agent + CR on `g2` | design-reviewer |
 | API behavior, business rules, performance of server code | backend-engineer | backend-reviewer |
 | Schema, migrations, query performance, data integrity, data privacy | backend-engineer (implementation); database-architect if the **model** must change (CR on `g2`) | database-reviewer + backend-reviewer |

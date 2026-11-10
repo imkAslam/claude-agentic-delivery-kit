@@ -230,6 +230,27 @@ tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
 
+echo "kit consistency"
+CFD="$REPO/.claude/skills/coding-foundations"; miss=""
+for g in $(grep -o 'references/[A-Z_]*\.md' "$CFD/SKILL.md" | sort -u); do [ -f "$CFD/$g" ] || miss="$miss $g"; done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every guide listed in coding-foundations exists"; } || { fail=$((fail+1)); echo "  FAIL missing guides:$miss"; }
+miss=""
+for g in $(grep -o '"guides": \[[^]]*\]' "$REPO/.claude/skills/deliver/references/manifest.md" | grep -o '"[a-z_]*"' | tr -d '"' | grep -v '^guides$' | sort -u); do
+  [ -f "$CFD/references/$(printf '%s' "$g" | tr '[:lower:]' '[:upper:]').md" ] || miss="$miss $g"
+done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every guide named in the manifest example exists"; } || { fail=$((fail+1)); echo "  FAIL manifest guides without a file:$miss"; }
+miss=""
+for a in "$REPO"/.claude/agents/*.md; do
+  for k in name description model; do sed -n '2,12p' "$a" | grep -q "^$k:" || miss="$miss $(basename "$a"):$k"; done
+  [ "$(sed -n 's/^name: *//p' "$a" | head -1)" = "$(basename "$a" .md)" ] || miss="$miss $(basename "$a"):name-mismatch"
+done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every agent has name, description and model, and its name matches the file"; } || { fail=$((fail+1)); echo "  FAIL agent frontmatter:$miss"; }
+miss=""
+for sk in "$REPO"/.claude/skills/*/; do
+  for r in $(grep -oE '\]\(references/[A-Za-z_]+\.md' "$sk/SKILL.md" 2>/dev/null | sed 's/](//' | sort -u); do [ -f "$sk/$r" ] || miss="$miss $(basename "$sk")/$r"; done
+done
+[ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every reference linked from a SKILL.md exists"; } || { fail=$((fail+1)); echo "  FAIL broken skill references:$miss"; }
+
 echo "check-ownership"
 git checkout -qb ms-1/frontend/T-9; echo z > api/sneaky.ts; echo z > web/ok.ts; git add -A; git commit -qm t --no-verify
 git checkout -q -

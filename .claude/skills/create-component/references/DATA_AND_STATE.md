@@ -46,7 +46,7 @@ Map `validation_failed.details[]` to field errors. On `unauthenticated`, redirec
 Never duplicate server data in a global store.
 
 ## Realtime (only when ARCHITECTURE says so)
-Wrap the socket or SSE stream in one hook, composable or store per channel; reconnect with backoff; merge events into the server-state cache (don't keep a parallel copy); show a connection-status indicator when the data could be stale.
+Wrap the socket or SSE stream in one hook, composable or store per channel; reconnect with backoff; merge events into the server-state cache (don't keep a parallel copy); show a connection-status indicator when the data could be stale. Full rules: coding-foundations → REALTIME.md §4.
 
 ## Large data
-Server-side pagination or cursors per the contract; virtualize long lists; debounce search inputs (250–300 ms); avoid re-rendering whole tables on single-row updates.
+Server-side pagination or cursors per the contract; virtualize long lists; debounce search inputs (250–300 ms); avoid re-rendering whole tables on single-row updates. Budgets and the checklist: coding-foundations → PERFORMANCE.md; work over ~50 ms goes to a web worker (WORKERS.md).

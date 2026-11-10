@@ -53,7 +53,7 @@ Use the project's semantic tokens (e.g. `bg-primary text-on-primary`, `var(--col
 Labels for every control; visible focus; keyboard support (Tab order, Enter/Space, Esc closes overlays, arrow keys in menus and lists); announced errors (`aria-describedby`, `aria-live`); `aria-busy` while loading; no meaning carried by color alone.
 
 ### Step 7: Performance (when the data or update rate calls for it)
-More than about 200 rendered rows → virtualize. Frequent updates → memoize, or use fine-grained state. Heavy computation → move it off the main thread. Route-level code splitting for large pages. Size images and lazy-load them.
+More than about 200 rendered rows → virtualize. Frequent updates → memoize, or use fine-grained state. Heavy computation → move it off the main thread. Route-level code splitting for large pages. Size images and lazy-load them. Follow coding-foundations → PERFORMANCE.md §3 and keep the PRD §6 budgets.
 
 ### Step 8: Verify and capture evidence
 Run the role's `lint`, `typecheck` and `test`. Start `commands.dev`, open the screen, and save a screenshot of each state to `docs/delivery/evidence/<ticket>/`, so the reviewer can compare them with the mockups.

@@ -30,7 +30,7 @@ Each `AC-` is implemented and covered by a test that would fail without it.
 The screenshots match the mockups and the DESIGN-SYSTEM.md specs, and every UI state exists. No raw color literals or hardcoded sizes outside the generated theme (grep the diff for `#[0-9a-fA-F]{3,8}\b` and `rgb(`). Copy matches the copy deck and the voice.
 
 ### 5. Accessibility and quality
-Labels, focus, keyboard, announced errors; generated-client use; performance for the data volume.
+Labels, focus, keyboard, announced errors; generated-client use; performance for the data volume (coding-foundations → PERFORMANCE.md frontend checklist; NEXTJS.md route groups and error layers on Next.js).
 
 ## Process
 1. `git diff <base>...HEAD` and `git diff --name-only` in the worktree from the brief.
