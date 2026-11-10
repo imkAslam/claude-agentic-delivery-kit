@@ -40,6 +40,9 @@ Each gap with the exact install or login command **for the human to run**.
 ## Process
 Follow the `detect-system` skill step by step, then write `docs/delivery/SYSTEM-PROFILE.md` in its output format.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, add an **Existing code** section to SYSTEM-PROFILE.md: languages and frameworks with versions, package manager, test runner and quality tools, CI, the migrations tool, existing API specs, the theme or token source and UI library, the size of each top-level folder (files, lines), and for every candidate command (install, lint, typecheck, test, build) whether it ran and its exit code. Never install anything; never print secret values. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

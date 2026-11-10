@@ -4,7 +4,7 @@
 Every Agent call's prompt follows this shape. Keep it short: paths, section anchors and IDs, never pasted documents ([cost.md](cost.md) §3). Correction rounds continue the same agent with only the new findings.
 
 ```
-ROLE: <agent name>   MODE: <plan|build|release|review|alignment|…>   STEP: <lane>/<step id>   ROUND: <n of max>
+ROLE: <agent name>   MODE: <plan|build|release|review|alignment|adopt|…>   STEP: <lane>/<step id>   ROUND: <n of max>
 GOAL: <one sentence: what "done" means for this call>
 INPUTS: <artifact paths + the sections/IDs that matter>
 TICKET: <id, title, AC-/BR-/TC- refs, contract operations, depends_on>          (build steps only)

@@ -46,6 +46,9 @@ Health checks, logs without PII, metrics, alerts, runbooks, rollback.
 - **Build mode:** foundation first, the local dev environment (`setup-docker` + LOCAL_SERVICES: `compose.yml`, `.env.example`, seed/init scripts, `project.json → services`), then the `ci` skill (`write-pipeline`, `check-secrets`), the `ship` target files, and `release-docs` Step 2 (BOOTSTRAP). Validate with linters and dry-runs and paste the output.
 - **Release mode:** `release-docs` Steps 3–4. Trigger production only after G3, through `ci trigger production <artifact>`.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt` (plan mode), write `DEVOPS-PLAN.md` **as built**: the environments that exist, the CI stages, how a deploy happens today (including manual steps), backups, monitoring, and secrets by **name**. Manual production deploys, missing rollback or missing backups are debts for the register (P1 when production data is at risk). Change no pipeline or infrastructure in lane `adopt`. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

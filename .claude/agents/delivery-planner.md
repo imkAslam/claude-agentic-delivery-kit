@@ -35,6 +35,9 @@ Test levels, detected tools only, thresholds, release criteria and rollback expe
 ## Process
 Follow the `plan-delivery` skill Steps 0–4, then publish with the `tracker` skill.
 
+## Adopt mode (existing codebase)
+In an adopt run (state `Mode: adopt`), you plan **increments**: tickets only for the approved change, each listing the existing files it touches (from CODEMAP.md) and, where that code has no tests, a "characterization tests first" checklist item. Add each "fix now" debt from BASELINE.md as a chore ticket with its debt id in the title, and attach "fix when touched" debts to the ticket that touches that area. There are no foundation or scaffold tickets: the project already exists.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

@@ -12,6 +12,29 @@ Each step below shows its `step id` for `delivery-state.sh set-step <lane> <step
 
 ---
 
+## Lane `adopt` — Adopt an existing codebase (instead of lanes `understand` and `plan`)
+Entered with `/deliver adopt [folders]` → `delivery-state.sh init --mode adopt`. Only for a repository that already has product code and no delivery run. Every step is documents-only (`guard-coding.sh` stays on until the baseline). Rules and per-agent detail: the `adopt-codebase` skill; every brief carries `MODE: adopt`.
+
+| step id | Who | Input → Output | Next / loop |
+|---|---|---|---|
+| `detect` | **system-detector** | The repository → `SYSTEM-PROFILE.md` with the **Existing code** section | No product code found → stop: this is a new project, use `/deliver start`. A dirty working tree → ask the human to commit or stash |
+| `map` | **solution-architect** | SYSTEM-PROFILE + the code → `.claude/project.json`, `.claude/PROJECT.md`, `ARCHITECTURE.md` (as built), the derivable diagrams in `PRD.md` §10–§12 + `sync-diagrams.sh`, inherited ADRs | → `as-built-fork`. Commit `project.json` before forking |
+| `as-built-fork` | **[fork]** **database-architect** (`DATA-MODEL.md` from migrations) · **api-designer** (contracts from the existing API, coverage stated) · **ba-agent** → **product-manager** (`BA-ANALYSIS.md`, a light `PRD.md`) · **uiux-agent** (*audit*: `tokens.json` from the theme, component inventory, real screenshots) · **qa-agent** (`TEST-INVENTORY.md`) · **devops-engineer** (`DEVOPS-PLAN.md` as built) · **cybersecurity-agent** (cond.; a light `THREAT-MODEL.md`) | The code → the as-built documents | A P1 security or data-loss finding → tell the human immediately (major decision), then continue |
+| `baseline-checks` | **quality-security-agent** | `project.json` commands, hygiene, audits, the agents' debts → `BASELINE.md` (check results + debt register) | A command that can't be made green → `NEEDS_HUMAN` with the proposed quarantine |
+| `as-built-docs` | **docs-writer** (`MODE: adopt`) | → `docs/README.md`, `FEATURES.md`, `database/DATABASE.md`, `SYSTEM-FLOWS.md`, `CODEMAP.md` | → `as-built-review` |
+| `as-built-review` | **architect-reviewer** | Accuracy review of every as-built document against the code (loop id `as-built-review`) | ⇢ *Corrections* to the owning agent → re-review the diff |
+| `baseline` | ⏸ **gate `baseline` — Adopt baseline** | Package: `PRD.md`, `ARCHITECTURE.md`, `BASELINE.md`, `DATA-MODEL.md`, the contracts, `tokens.json`, `DESIGN-SYSTEM.md`, `UI-UX.md`, `TEST-INVENTORY.md`, `DEVOPS-PLAN.md` (+ `THREAT-MODEL.md`) | Approved → commit the package, `delivery-state.sh approve-baseline …` (records `baseline`, `g1`, `g2`; tags `delivery-baseline`), register the "fix now" debts as chore tickets → `build / increment-wait`. ⇢ *Revise* → the owning agent |
+
+### Increments (every change after the baseline)
+An adopted product has no "milestone 1". Work arrives as evidence in `docs/intake/` (a feature brief, a bug list, a change), and each batch runs this loop:
+
+| step id | Who | Input → Output | Next / loop |
+|---|---|---|---|
+| `increment-wait` (lane `build`) | Orchestrator | "Fix now" debt tickets run first (`dispatch`). New evidence in `docs/intake/` → `increment-discovery` | Nothing to do → report and stop |
+| `increment-discovery` (lane `understand`) | **intake-agent** (the new evidence only) → **product-manager** ⇄ **product-owner-reviewer** → **solution-architect** (technical review) · **uiux-agent**, **api-designer**, **database-architect** only when the change touches their area | The PRD change for this scope with full acceptance criteria; the as-built documents **deepened for the touched areas** (contract operations, data model, screens and states) | Ask the human to approve the change (new scope is a major decision), then `cr-open g1` and/or `cr-open g2` listing the files that change |
+| `increment-plan` (lane `plan`) | **qa-agent** (test cases for the new AC) · **delivery-planner** (a milestone `ms-<n>` for the increment, tickets, "characterization tests first" where the touched code has none, "fix when touched" debts attached) | → `TEST-CASES.md`, `DELIVERY-PLAN.md`, `TICKETS.md` | Re-present the invalidated gate(s) with the change only → approve → `cr-close` → lane `build`, `dispatch` |
+| then | Lanes `build` → `verify` → `release` exactly as below | `check-hygiene.sh --base delivery-baseline` (standards apply to new and changed code) | After `ops_ack` (or after `mbr` when releases are batched) → `increment-wait` |
+
 ## Lane `understand` — Understand & Agree
 
 | step id | Who | Input → Output | Next / loop |

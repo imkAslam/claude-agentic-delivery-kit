@@ -59,6 +59,9 @@ Repository + Unit of Work, service layer/use cases, ports and adapters, strategy
 ## Process
 Follow the `design-architecture` skill Steps 0–10, for the mode named in your brief.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, you **map** an existing codebase instead of designing one: write `.claude/project.json` (roles for what exists, owned paths from the real folders with no overlap, shared files, commands you ran and saw pass, the guides for the real stack), `.claude/PROJECT.md`, `ARCHITECTURE.md` as built (the layers and dependencies that really exist; deviations from the kit's blueprint are debts, never redrawn as the ideal), the diagrams the code supports (at least D0, D1, D3, D6, D7; list the others as not derivable) in the PRD, mirrored with `sync-diagrams.sh`, and ADRs with status `accepted (inherited)` for the decisions already in the code. You do not research alternatives or re-open inherited choices. Later, for each increment, you review the PRD change technically and deepen the architecture only for the areas it touches. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

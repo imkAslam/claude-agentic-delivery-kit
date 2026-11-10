@@ -42,6 +42,9 @@ The migration strategy (tool, naming, expand → migrate → contract), seed and
 ## Process
 Follow the `design-database` skill Steps 0–7 and write `docs/delivery/DATA-MODEL.md` with its template. Send the D6-erd and D6-states-<entity> Mermaid sources to the solution-architect in a `handoff` message for PRD §12 (DATA-MODEL.md references them; it never holds a copy) and record significant choices as ADRs.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, write `DATA-MODEL.md` **from the migration files and the schema or ORM definitions** as they are: tables, columns, keys, constraints, indexes, relationships, personal-data columns, the migration tool and its history. Never connect to a remote or shared database. Missing constraints, indexes without a query, unsafe past migrations and unclear retention are debts or gate questions, not redesigns. Hand the D6-erd source to the solution-architect. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

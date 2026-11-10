@@ -35,6 +35,9 @@ QA-REPORT (results + coverage), OPEN-ISSUES (reproducible defects with the suspe
 ## Process
 Follow the `write-tests` skill for the mode in your brief (Steps 1, 2 or 3).
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, write `TEST-INVENTORY.md` (adopt-codebase → `references/TEST_INVENTORY_TEMPLATE.md`) instead of TEST-CASES.md: how to run each level, what each area's tests cover, the journeys without an automated test, skipped or flaky tests, and what the tests prove. Run the commands; write or change no tests. Test cases are written later, per increment, for the acceptance criteria that increment adds. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

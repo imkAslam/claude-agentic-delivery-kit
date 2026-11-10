@@ -12,6 +12,7 @@ user-invocable: false
 3. **Green:** implement the smallest change that makes them pass. Re-run. Save the output.
 4. **Refactor:** clean up while staying green. Then run `lint` and `typecheck` too.
 5. **Regression:** for a bug fix, the first test you write reproduces the bug.
+5a. **Existing code without tests (adopted codebases):** before changing it, write **characterization tests** that pin what the code does today. They must pass on the unchanged code (that is their "green"); include them in EVIDENCE as "characterization: n tests, passing before the change". Then write the failing tests for the new behavior and continue with Red → Green. If the current behavior looks like a bug, pin it anyway and report it as a `finding`; don't fix it silently.
 6. **Report:** in `EVIDENCE`, include the red output excerpt, the green output excerpt, and the commands with their exit codes.
 
 ## Don't

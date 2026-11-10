@@ -18,7 +18,7 @@ STATE=".claude/delivery/state.json"
 EXAMPLE=".claude/skills/deliver/references/state.example.json"
 LOG="docs/delivery/GATE-LOG.md"
 MAX="${DELIVERY_MAX_ROUNDS:-3}"
-LANES="understand plan build verify release done"
+LANES="adopt understand plan build verify release done"
 TICKET_STATUSES="backlog ready in_progress in_review changes_requested approved done verified reopened blocked cancelled"
 TICKET_TYPES="feature chore spike bug"
 SEVERITIES="P1 P2 P3"
@@ -85,14 +85,17 @@ log_gate() {
 usage() {
   cat <<'EOF'
 delivery-state.sh <command> [args]
-  init                                         create .claude/delivery/state.json (no-op if present)
+  init [--mode adopt]                          create .claude/delivery/state.json (no-op if present);
+                                               --mode adopt starts an adopt run for an existing codebase (lane adopt)
   summary                                      print lane, step, gates, tickets, CRs, failures
-  set-step <lane> <step>                       lanes: understand plan build verify release done
+  set-step <lane> <step>                       lanes: adopt understand plan build verify release done
   milestone <ms-n>                             set the current milestone
   validated                                    record that every project.json command ran green
   round <loop-id> | round-reset <loop-id>      review-round counter (exit 3 + CAP_REACHED at the cap)
   note "<text>"                                record a note (e.g. a skipped step and why)
   approve <gate> <decision> "<approver>" "<notes>" <path>...   human approval tied to file hashes
+  approve-baseline "<approver>" "<notes>" <path>...   adopt runs only: one human approval of the as-built package;
+                                               records baseline, g1 and g2 together and tags the commit delivery-baseline
   reject  <gate> <decision> "<approver>" "<notes>"             human rejection / revise decision
   verify  <gate>                               exit 0 only if approved and every package hash matches
   release "<name>" "<artifact>" "<environment>" record the release identity (required before approving g3)
@@ -133,12 +136,19 @@ log_msg() {
 cmd="${1:-help}"; shift || true
 case "$cmd" in
   init)
+    mode="new"
+    if [ "${1:-}" = "--mode" ]; then mode="${2:-}"; in_list "$mode" new adopt || die "unknown mode: ${mode} (new | adopt)"; fi
     mkdir -p "$(dirname "$STATE")"
     if [ ! -f "$STATE" ]; then
       [ -f "$EXAMPLE" ] || die "missing $EXAMPLE"
       cp "$EXAMPLE" "$STATE"; upd '.'
-      echo "created $STATE"
+      if [ "$mode" = "adopt" ]; then
+        upd '.mode = "adopt" | .lane = "adopt" | .step = "detect" | .gates.baseline = {status: "pending", decision: null, approver: null, ts: null, notes: null, package: {}}'
+      fi
+      echo "created $STATE (${mode} run)"
     else
+      cur=$(jq -r '.mode // "new"' "$STATE")
+      [ "$mode" = "new" ] || [ "$cur" = "$mode" ] || die "a ${cur} run already exists here; an adopt run can only start in a repository without a delivery run"
       echo "state exists: $STATE"
     fi
     if [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1; then
@@ -148,6 +158,7 @@ case "$cmd" in
   summary)
     need_state
     jq -r --arg max "$MAX" '
+      (if (.mode // "new") == "adopt" then "Mode: adopt (existing codebase)   Baseline: " + (if .baseline then "\(.baseline.tag) @ \(.baseline.commit[0:7])" else "not approved yet" end) else empty end),
       "Lane: \(.lane)   Step: \(.step)   Milestone: \(.milestone // "-")",
       "Gates: " + ([.gates | to_entries[] | "\(.key)=\(.value.status)" + (if .value.decision then "(\(.value.decision))" else "" end)] | join("  ")),
       "Tickets: " + (if (.tickets | length) == 0 then "none" else ([.tickets | to_entries | group_by(.value.status)[] | "\(.[0].value.status)=\(length)"] | join("  ")) end),
@@ -197,6 +208,37 @@ case "$cmd" in
       --arg g "$gate" --arg d "$decision" --arg a "$approver" --arg n "$notes" --argjson pkg "$pkg"
     log_gate "$gate" approved "$decision" "$approver" "$notes"
     echo "approved $gate ($(printf '%s' "$pkg" | jq 'length') files hashed)"
+    ;;
+  approve-baseline)
+    need_state; [ $# -ge 3 ] || die "usage: approve-baseline <approver> <notes> <path>..."
+    [ "$(jq -r '.mode // "new"' "$STATE")" = "adopt" ] || die "approve-baseline is only for adopt runs (delivery-state.sh init --mode adopt)"
+    [ "$(jq -r '.gates.baseline.status // "pending"' "$STATE")" != "approved" ] || die "the baseline is already approved; later changes go through change requests (cr-open)"
+    approver="$1" notes="$2"; shift 2
+    [ -n "$approver" ] || die "approver is required"
+    [ -f .claude/project.json ] || die "the baseline is incomplete: missing .claude/project.json (role boundaries and commands)"
+    for p in "$@"; do [ -e "$p" ] || die "not found: $p"; done
+    pkg=$(hash_paths "$@")
+    for req in docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; do
+      printf '%s' "$pkg" | jq -e --arg p "$req" 'has($p)' >/dev/null || die "the baseline package must include $req"
+    done
+    commit=""
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+      dirty=$(git status --porcelain -- "$@" 2>/dev/null)
+      [ -z "$dirty" ] || die "commit the baseline package before approving it (uncommitted: $(printf '%s' "$dirty" | head -3 | tr '\n' ' '))"
+      commit=$(git rev-parse HEAD 2>/dev/null) || die "the repository has no commit yet"
+      if git rev-parse -q --verify refs/tags/delivery-baseline >/dev/null 2>&1; then
+        [ "$(git rev-parse 'delivery-baseline^{commit}')" = "$commit" ] || die "the tag delivery-baseline already exists on another commit; remove it only if the human asked to redo the baseline"
+      else
+        git tag delivery-baseline || die "could not create the tag delivery-baseline"
+      fi
+    fi
+    upd '(.gates.baseline, .gates.g1, .gates.g2) = {status: "approved", decision: "baseline", approver: $a, ts: $now, notes: $n, package: $pkg}
+         | .gates.intake = {status: "approved", decision: "baseline", approver: $a, ts: $now, notes: "replaced by the adopt baseline", package: {}}
+         | .baseline = {tag: "delivery-baseline", commit: $c, ts: $now}
+         | .lane = "build" | .step = "increment-wait"' \
+      --arg a "$approver" --arg n "$notes" --arg c "$commit" --argjson pkg "$pkg"
+    for g in baseline g1 g2; do log_gate "$g" approved baseline "$approver" "$notes"; done
+    echo "approved the baseline ($(printf '%s' "$pkg" | jq 'length') files hashed); g1 and g2 recorded; tag delivery-baseline @ $(printf '%s' "$commit" | cut -c1-7); coding is unlocked"
     ;;
   reject)
     need_state; [ $# -ge 3 ] || die "usage: reject <gate> <decision> <approver> [notes]"

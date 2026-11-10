@@ -230,6 +230,46 @@ tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
 
+echo "adopt mode"
+AR="$TMP/adopt"; mkdir -p "$AR/.claude" "$AR/src" "$AR/legacy" "$AR/docs/delivery"
+for part in agents hooks rules skills settings.json; do [ -e "$KIT/$part" ] && cp -R "$KIT/$part" "$AR/.claude/"; done
+( cd "$AR" && git init -q && git config user.email t@t && git config user.name t
+  printf 'export const a = 1;\n' > src/a.ts; printf 'export const old = 1; // TODO clean up\n' > legacy/old.ts
+  git add -A && git commit -qm "existing product" )
+AS="$AR/.claude/skills/deliver/scripts/delivery-state.sh"
+ast() { out=$(cd "$AR" && CLAUDE_PROJECT_DIR="$AR" bash "$AS" "$@" 2>&1); c=$?; }
+ahook() { # ahook <name> <expected-exit> <hook> <json>
+  local o code; o=$(cd "$AR" && printf '%s' "$4" | CLAUDE_PROJECT_DIR="$AR" bash "$AR/.claude/hooks/$3" 2>&1); code=$?
+  if [ "$code" -eq "$2" ]; then pass=$((pass+1)); printf '  ok   %s\n' "$1"; else fail=$((fail+1)); printf '  FAIL %s (expected %s, got %s)\n%s\n' "$1" "$2" "$code" "$(printf '%s' "$o" | sed 's/^/       /')"; fi
+}
+awrite() { jq -nc --arg f "$AR/$1" --arg a "${2:-}" --arg d "$AR" '{tool_name:"Write",tool_input:{file_path:$f,content:"x"},cwd:$d} + (if $a=="" then {} else {agent_type:$a} end)'; }
+out=$(bash "$S" init --mode adopt 2>&1); c=$?; expect 1 "an existing run cannot be converted to adopt mode"
+out=$(bash "$S" approve-baseline "Client" "x" docs/delivery/PRD.md 2>&1); c=$?; expect 1 "approve-baseline is refused outside an adopt run"
+ast init --mode adopt; expect 0 "adopt init creates the run"
+ast summary; printf '%s\n' "$out" | grep -q 'Mode: adopt' && printf '%s\n' "$out" | grep -q 'Lane: adopt   Step: detect' && { pass=$((pass+1)); echo "  ok   summary shows the adopt mode and lane"; } || { fail=$((fail+1)); echo "  FAIL summary shows the adopt mode and lane"; }
+ahook "code is blocked before the baseline"        2 guard-coding.sh "$(awrite src/b.ts)"
+ahook "as-built documents can be written"          0 guard-coding.sh "$(awrite docs/delivery/PRD.md)"
+ast approve-baseline "Client" "ok" docs/delivery/PRD.md; expect 1 "baseline refused without project.json"
+printf '{"version":1,"roles":{"frontend":{"enabled":true,"agent":"frontend-engineer","paths":["src/**"],"commands":{}}},"contracts":{"paths":["contracts/**"]},"commands":{}}\n' > "$AR/.claude/project.json"
+for f in PRD ARCHITECTURE BASELINE; do printf '# %s (as built)\n' "$f" > "$AR/docs/delivery/$f.md"; done
+ast approve-baseline "Client" "ok" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md; expect 1 "baseline refused when BASELINE.md is not in the package"
+ast approve-baseline "Client" "ok" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; expect 1 "baseline refused while the package is uncommitted"
+( cd "$AR" && git add -A && git commit -qm "docs: as-built baseline" )
+ast approve-baseline "Client" "as built accepted" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; expect 0 "baseline approved in one step"
+ast verify g1; expect 0 "g1 is recorded by the baseline"
+ast verify g2; expect 0 "g2 is recorded by the baseline"
+( cd "$AR" && git rev-parse -q --verify refs/tags/delivery-baseline >/dev/null ) && { pass=$((pass+1)); echo "  ok   the baseline commit is tagged"; } || { fail=$((fail+1)); echo "  FAIL the baseline commit is tagged"; }
+ast summary; printf '%s\n' "$out" | grep -q 'Lane: build   Step: increment-wait' && { pass=$((pass+1)); echo "  ok   the run waits for the first increment"; } || { fail=$((fail+1)); echo "  FAIL the run waits for the first increment"; }
+ast approve-baseline "Client" "again" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; expect 1 "a baseline is approved only once"
+ahook "code is allowed after the baseline"         0 guard-coding.sh "$(awrite src/b.ts)"
+ahook "approved as-built documents are protected"  2 guard-gates.sh "$(awrite docs/delivery/PRD.md)"
+ahook "a role edits inside its adopted paths"      0 guard-boundary.sh "$(awrite src/b.ts frontend-engineer)"
+ahook "unmapped folders are blocked for roles"     2 guard-boundary.sh "$(awrite legacy/old.ts frontend-engineer)"
+printf 'export const b = 2; // TODO later\n' > "$AR/src/b.ts"; ( cd "$AR" && git add -A && git commit -qm "feat: b" )
+out=$(bash "$AR/.claude/skills/integrate-milestone/scripts/check-hygiene.sh" --root "$AR" --base delivery-baseline --no-unused 2>&1); c=$?
+expect 1 "hygiene since the baseline flags new leftovers"
+printf '%s\n' "$out" | grep -q 'src/b.ts' && ! printf '%s\n' "$out" | grep -q 'legacy/old.ts' && { pass=$((pass+1)); echo "  ok   existing debt is not reported against new work"; } || { fail=$((fail+1)); echo "  FAIL existing debt is not reported against new work"; printf '%s\n' "$out" | sed 's/^/       /'; }
+
 echo "check-hygiene"
 CH="$REPO/.claude/skills/integrate-milestone/scripts/check-hygiene.sh"; HR="$TMP/hyg"; mkdir -p "$HR/web/src" "$HR/docs" "$HR/scripts" "$HR/.claude"
 ( cd "$HR" && git init -q && git config user.email t@t && git config user.name t

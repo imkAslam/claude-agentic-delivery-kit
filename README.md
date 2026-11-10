@@ -1,6 +1,6 @@
 # Claude Agentic Delivery Kit
 
-A role-based **agent team for Claude Code** that takes a greenfield product from client evidence to a hosted release and an operations handoff:
+A role-based **agent team for Claude Code** that takes a new product from client evidence to a hosted release and an operations handoff, and can **adopt an existing codebase** so its future changes run through the same workflow:
 
 **client evidence → PRD → architecture → design system → plan → parallel build → acceptance → release → operations handoff**
 
@@ -39,10 +39,10 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 | | Count | Where |
 |---|---|---|
 | Role subagents | 33 | `.claude/agents/` |
-| Skills (orchestrator, gates, role skills, adapters, shared practices) | 31 | `.claude/skills/` |
+| Skills (orchestrator, gates, role skills, adapters, shared practices) | 32 | `.claude/skills/` |
 | Rules (always-on and path-scoped) | 13 | `.claude/rules/` |
-| Deterministic hooks + a test suite (130 checks) | 7 | `.claude/hooks/` |
-| Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack |
+| Deterministic hooks + a test suite (151 checks) | 7 | `.claude/hooks/` |
+| Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack (an adopted codebase has one `baseline` approval in place of intake, g1 and g2) |
 
 Main features:
 - **One command:** `/deliver` starts or resumes the whole run; `/delivery-status` shows where it is.
@@ -136,6 +136,20 @@ git add .claude CLAUDE.md .gitignore && git commit -m "chore: add the delivery k
    ```
 3. Answer the gates when the orchestrator stops. Each gate shows a short summary (about 25 lines), the evidence paths and the reviewers' verdicts, and asks at most 5 business questions, each with a recommended default.
 4. Check progress at any time with `/delivery-status`. After a break, a restart or a compaction: `/delivery-status`, then `/deliver resume`.
+
+### Adopt an existing codebase
+For a repository that already has product code. Install the kit the same way (copy `.claude/` and `CLAUDE.md`, commit), commit or stash your own work, then run:
+```
+/deliver adopt                 # the whole repository
+/deliver adopt apps/web apps/api   # or only some folders; the rest stays untouched until adopted later
+```
+What happens:
+1. **The agents read the code and write as-built documents:** role boundaries and commands (`project.json`), the architecture with the diagrams the code supports, the data model from the migrations, API contracts from the existing routes, a light PRD with the feature list, design tokens from the existing theme, a test inventory, the code map. Every statement cites a file; nothing is invented, and what the code can't tell becomes a question for you.
+2. **A baseline report (`BASELINE.md`)** lists the results of lint, tests, build, the hygiene check and the security scans, and a **debt register** of the existing problems with a proposal for each (fix now, fix when touched, accept).
+3. **One approval (`baseline`)** replaces intake, G1 and G2. You confirm the feature list and the boundaries, and decide which serious problems are fixed first and which risks you accept. Until then no product code is changed.
+4. **After that, every change is an increment:** put the feature brief or bug list in `docs/intake/` and run `/deliver`. It goes through a change request you approve, a plan, tickets, reviews, a milestone review, acceptance and release, as for a new product.
+
+Rules for adopted code: standards apply to code that is added or changed; untested code is pinned with characterization tests before it is changed; existing problems are fixed through the tickets you chose or when a ticket touches that area; nothing is restructured to the kit's defaults unless you ask.
 
 ---
 
@@ -312,7 +326,7 @@ Reviewers are read-only. Engineers write only inside their role's owned paths. E
 ## Skills
 | Group | Skills |
 |---|---|
-| Orchestration | `deliver` (`/deliver`), `gate-review`, `delivery-status` (`/delivery-status`) |
+| Orchestration | `deliver` (`/deliver`), `gate-review`, `delivery-status` (`/delivery-status`), `adopt-codebase` (existing codebases) |
 | Understand | `intake-readiness`, `write-requirements`, `design-architecture`, `threat-model`, `define-brand` |
 | Plan & Design | `design-database`, `design-api`, `build-integration`, `build-design-system`, `design-inspiration`, `plan-delivery`, `write-tests` |
 | Build | `create-component`, `create-endpoint`, `create-screen`, `integrate-milestone` |
@@ -566,7 +580,7 @@ It runs 91 checks against throwaway fixtures, covering:
 .claude/
 ├── settings.json              hooks registration and DELIVERY_* settings
 ├── agents/                    33 role subagents
-├── skills/                    31 skills (each: SKILL.md + references/ + scripts/)
+├── skills/                    32 skills (each: SKILL.md + references/ + scripts/)
 │   └── deliver/
 │       ├── SKILL.md           the orchestrator
 │       ├── references/        workflow, gates, briefs, triage, collaboration, cost, memory, manifest, state schema
@@ -584,7 +598,7 @@ Created during a run, in the target project:
 ---
 
 ## Limitations and notes
-- Built for **greenfield** products. An existing codebase needs boundaries and a code map written first.
+- Designed first for new products. An existing codebase is brought in with `/deliver adopt`: the as-built documents are a working baseline, not a full specification, and they are only as complete as what the agents could read within the budget (the baseline lists what was not covered). Several independent products in one repository are adopted one scope at a time.
 - Subagents can't ask you questions or start other agents. Everything that needs you, or needs parallelism, goes through the orchestrator by design.
 - The orchestrator can't run `/compact` itself. It suggests it at gates and otherwise relies on automatic compaction.
 - Token counts in the ledger are recorded from each agent's result, so the ledger is as complete as the orchestrator's recording.

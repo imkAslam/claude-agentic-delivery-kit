@@ -2,7 +2,7 @@
 name: deliver
 description: "Runs the role-based delivery workflow from client evidence to a hosted release: delegates to role subagents (intake, BA, PM, architect, UI/UX, QA, devops, frontend, backend, mobile, security, reviewers, integrator), loops on independent reviews, routes failures through triage, and stops at 7 human gates. Resumes from saved state."
 when_to_use: "Use when the user runs /deliver, or asks to start, continue, resume or check the delivery workflow, PRD-to-release pipeline, or agent team run."
-argument-hint: "[start | resume | status]"
+argument-hint: "[start | resume | status | adopt [folders]]"
 disable-model-invocation: true
 allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/scripts/delivery-state.sh *)
 ---
@@ -41,6 +41,7 @@ References (read only the part the current step needs):
 1. `delivery-state.sh init` (does nothing if the state already exists), then `delivery-state.sh summary`. If `$ARGUMENTS` is `status`, show the summary and stop.
 2. **Preflight:** delegate to `system-detector`, unless `docs/delivery/SYSTEM-PROFILE.md` was written today. If the profile reports blocking gaps (no git, or no access to the tracker/CI chosen in `project.json`), show the user the exact commands to run and stop.
 3. If the user states a preferred tech stack at any point, save it verbatim to `docs/intake/stack-preference.md` as evidence; the intake-agent and the architect pick it up.
+3a. **Adopting an existing codebase** (`$ARGUMENTS` starts with `adopt`, or the repository already has product code and no run): confirm with the human that this is an existing product to adopt (not a new one), that their work is committed, and the scope (whole repository or the named folders). Then `delivery-state.sh init --mode adopt` and follow lane `adopt` in [workflow.md](references/workflow.md) with the `adopt-codebase` skill. No intake evidence is needed for the adoption itself; it is needed for each increment afterwards. Never convert an existing run to adopt mode.
 4. For a new run, `docs/intake/` must contain evidence. If it's empty, ask the user to add briefs, notes or documents (or paste them so you can save them there), and stop.
 
 ## Main loop

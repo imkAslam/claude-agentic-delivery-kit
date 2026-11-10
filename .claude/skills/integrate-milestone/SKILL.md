@@ -36,6 +36,7 @@ Run `commands.lint`, `typecheck`, `test`, `build`. Capture each exit code and an
 ### Step 3b: Hygiene check (keep the codebase clean)
 ```bash
 bash ${CLAUDE_SKILL_DIR}/scripts/check-hygiene.sh        # whole tree; exit 1 = leftovers found
+bash ${CLAUDE_SKILL_DIR}/scripts/check-hygiene.sh --base delivery-baseline   # adopt runs (run summary shows "Mode: adopt"): only code changed since the baseline
 ```
 It reports scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code (through `commands.unused` when the architect pinned one), and dead links in the living docs. **You never delete another role's files.** Each finding becomes `FINDING: hygiene — <check> — <file:line> — <owning role>`; the orchestrator opens one chore ticket per owning role, fixed before `mbr`. Warnings (commented-out code, empty folders) are listed in BUILD-REVIEW. A deliberate exception goes into `project.json → hygiene.allow` with a reason (a request to the solution-architect, who owns that file).
 

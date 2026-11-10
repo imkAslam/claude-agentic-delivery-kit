@@ -20,6 +20,9 @@ Tables of indicators: [detection.md](references/detection.md).
 ```
 > Status: draft · Owner: system-detector · Updated: <ISO>
 ## Repository        state, commits, architecture, languages, frameworks, package manager, tests
+## Existing code     (adopt runs, or whenever product code exists) frameworks + versions, package manager, test runner, CI,
+##                   migrations tool, API specs, theme/token source, UI library, size per top-level folder, and for each
+##                   candidate command: ran? exit code
 ## Toolchain         | tool | version | status |
 ## Access            | service | status | command used |
 ## CI secrets        present names · missing required names

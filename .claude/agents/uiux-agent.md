@@ -45,6 +45,9 @@ Compare the built screens with the mockups each milestone, audit raw values, and
 2. Brand mode: `define-brand` Steps 0–3. Design mode: `define-brand` Steps 4–7, then `build-design-system` Steps 1–5. Design-QA mode: `build-design-system` Step 6.
 3. Run `check-tokens.sh` and `render-png.sh` yourself and paste their outputs into EVIDENCE.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, you **audit** the existing UI (brand case A): extract `tokens.json` from the existing theme (its `check-tokens.sh` result goes into the debt register and does not block), write `DESIGN-SYSTEM.md` as an inventory of the components that exist and the UI library in use, the screen inventory in `UI-UX.md`, and save **real screenshots** of the key screens to `docs/delivery/mockups/` as the visual reference. No new directions, no redesign and no design research unless the human asks for a rebrand. For later increments you design only the screens and states the change adds, in the existing visual language. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

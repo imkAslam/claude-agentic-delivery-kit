@@ -33,6 +33,9 @@ When technical constraints change scope, cost, timeline or a stated client prefe
 ## Process
 Follow Steps 3–4 of the `write-requirements` skill. Use the PRD template, merge in the `AC-SEC-` criteria from the threat model when it exists, and update the revision log each round.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, write a **light as-built `PRD.md`**: the product summary, personas from the real roles, the feature list `F-…` with status *built* and a source for each, the main journeys, cited business rules, and NFRs only where a config or document states them (the rest are gate questions). Acceptance criteria exist only where tests prove them; elsewhere write "AC: to be written when this feature changes". For each later increment you write the PRD change for that scope only, with full acceptance criteria for the features it touches. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

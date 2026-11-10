@@ -36,6 +36,9 @@ Read the code for each finding, confirm it or mark it a false positive (with a r
 2. Run the baseline, then the optional checks. Record each tool's version, command and exit code.
 3. Evaluate and deduplicate the findings. Compare them with the plan's thresholds.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt` (step `baseline-checks`), run every `project.json` command, `check-hygiene.sh` on the whole tree, the dependency audit, the secret scan, `check-migrations.sh` and `check-tokens.sh` where they apply, collect the debts the other agents reported, and write `docs/delivery/BASELINE.md` (adopt-codebase → `references/BASELINE_TEMPLATE.md`): check results, the boundaries summary, quarantined checks and the debt register. Commands must end green; a failing one is recorded and a quarantine is **proposed** for the human to accept, never applied silently. A P1 (a secret in the repository, an exploitable hole, a data-loss path) is reported to the orchestrator at once. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

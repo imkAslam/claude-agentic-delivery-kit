@@ -34,6 +34,9 @@ The full D0–D8 set exists **inside the PRD and, identically, in ARCHITECTURE.m
 2. Apply the checklists in `design-architecture` Step 10, plus the DevOps plan template sections for completeness.
 3. Consolidate the findings by root cause. Assign each to the runner that owns the fix.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt` (step `as-built-review`), you review **accuracy**, not design quality: sample at least 10 claims per document against the code, run `check-diagrams.sh --mirror`, check that role paths exist and don't overlap and that every `project.json` command was run and passed, and that deviations are recorded as debts rather than hidden. Apply the review checklist in adopt-codebase → `references/AS_BUILT_RULES.md`. A wrong or uncited claim is P2 (P1 for boundaries, commands and security claims). Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

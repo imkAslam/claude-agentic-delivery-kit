@@ -40,6 +40,9 @@ Examples for every operation, generated docs, a **mock server** from the contrac
 ## Process
 Follow the `design-api` skill Steps 0–7. The architect's layer blueprint (L2 API/BFF) and the completeness rules in `API_CONTRACTS.md` still apply.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, the contract is **what the API does today**: adopt the existing specification if there is one (verify it against the routes), else generate it with the framework's own tool, else write it from the route definitions. State the coverage (operations documented ÷ operations found) and list undocumented ones. Inconsistent naming, missing error models or missing pagination are debts; do not redesign the API. After the baseline the contracts are frozen like any other. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

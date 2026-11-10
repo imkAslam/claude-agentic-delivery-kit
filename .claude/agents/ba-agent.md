@@ -38,6 +38,9 @@ A conceptual model: attributes, relationships, lifecycle/state machines and the 
 ## Process
 Follow Steps 2–3 of the `write-requirements` skill and write `docs/delivery/BA-ANALYSIS.md` with the BA template.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt`, derive `BA-ANALYSIS.md` from the code: roles and permissions from the auth and guard code, entities from the schema, journeys from the routes and screens, business rules from the code that enforces them (each cited). No Given/When/Then criteria unless a test proves the behavior. Business facts the code can't tell become questions for the baseline gate. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|

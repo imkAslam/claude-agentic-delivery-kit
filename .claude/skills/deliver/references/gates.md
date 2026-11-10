@@ -4,6 +4,7 @@ Only the human can pass a gate. The orchestrator presents the package with the `
 
 | Gate id | Name | Package (paths relative to `docs/delivery/` unless shown) | Reviewers | Decisions | Approval unlocks |
 |---|---|---|---|---|---|
+| `baseline` | Adopt baseline (adopt runs only; stands in for `intake`, `g1` and `g2`) | `PRD.md` (light, as built), `ARCHITECTURE.md` (as built, diagrams in §14), `BASELINE.md` (check results, boundaries, debt register), `DATA-MODEL.md`, the contracts, `tokens.json`, `DESIGN-SYSTEM.md`, `UI-UX.md`, `TEST-INVENTORY.md`, `DEVOPS-PLAN.md` (+ `THREAT-MODEL.md`) | Client / Product Owner, Human Architect | `approve`, `revise`, `hold` | Coding on the adopted codebase, through increments (workflow.md) |
 | `intake` | Intake decision | `Intake-Readiness.md` | Client / Product Owner | `start`, `update`, `provisional`, `hold` | research/BA (`start`, `provisional`) |
 | `g1` | PRD + architecture direction (**no coding**) | `PRD.md`: the complete document, incl. §10 D1 main system diagram, "Why this architecture" and the layered architecture; §11 folder structure; **§12 every other diagram (D0, D2–D8)**. There are no separate diagram files, `ARCHITECTURE-RESEARCH.md`, `ARCHITECTURE.md` (with the same diagrams mirrored in its §14; `check-diagrams.sh --mirror` passes), `BRAND-DIRECTIONS.md` + `brand/directions/` (the visual directions; the client picks one); the **tech stack** in PRD §10 (the client confirms it or names their own) (+ `RESEARCH.md`, `BA-ANALYSIS.md`, `THREAT-MODEL.md` if present) | Client / Product Owner, Human Architect | `approve`, `revise-prd`, `revise-architecture` | Lane plan: detailed planning only; no coding |
 | `g2` | Implementation scope: **approval to start coding** | `ARCHITECTURE.md` (§14 mirrors the PRD diagrams), `DATA-MODEL.md`, `API-GUIDELINES.md`, `INTEGRATIONS.md`, `UI-UX.md`, `BRAND-BRIEF.md`, `DESIGN-SYSTEM.md`, `tokens*.json`, `mockups/`, `brand/assets/`, `brand/fonts/` (if any), `TEST-CASES.md`, `DEVOPS-PLAN.md`, `DELIVERY-PLAN.md`, `TICKETS.md`, `QUALITY-RELEASE-PLAN.md`, plus every path in `project.json → contracts.paths` | Client, Human Architect, UI/UX, QA, DevOps (as planned) | `approve`, `revise` | **Coding starts** (lane build; `guard-coding.sh` blocks every code write, scaffold, code commit and build agent until this approval). **Contracts and design frozen** |
@@ -17,6 +18,7 @@ Only the human can pass a gate. The orchestrator presents the package with the `
 bash .claude/skills/deliver/scripts/delivery-state.sh approve <gate> <decision> "<approver name/role>" "<notes>" <file-or-dir>...
 bash .claude/skills/deliver/scripts/delivery-state.sh reject  <gate> <decision> "<approver>" "<notes>"
 bash .claude/skills/deliver/scripts/delivery-state.sh verify  <gate>          # exit 0 only when approved and all hashes match
+bash .claude/skills/deliver/scripts/delivery-state.sh approve-baseline "<approver>" "<notes>" <file-or-dir>...   # adopt runs: records baseline + g1 + g2, tags delivery-baseline (commit the package first)
 bash .claude/skills/deliver/scripts/delivery-state.sh release "<name>" "<artifact digest/tag>" "<environment>"   # before approving g3
 ```
 

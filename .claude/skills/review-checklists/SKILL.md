@@ -17,6 +17,7 @@ user-invocable: false
 - [ ] No secrets, credentials or personal data in code, config, fixtures or logs.
 - [ ] Errors are handled at the boundaries. No swallowed exceptions or silent fallbacks.
 - [ ] No dead code, debug output, commented-out blocks or TODOs without a ticket. `bash .claude/skills/integrate-milestone/scripts/check-hygiene.sh --base <integration-branch> --no-unused` is clean for the diff: no scaffold leftovers, stray files or dead doc links, and whatever the ticket replaced was removed.
+- [ ] Adopted codebases: the diff follows the existing conventions; untested code it changes got characterization tests first; no unrelated debt was "fixed" inside the ticket; new debt found is reported.
 - [ ] Performance: the PERFORMANCE.md checklist for the touched area (no N+1, no unbounded reads, lists paginated or virtualized, slow work off the request path); REALTIME.md and WORKERS.md checklists when the diff uses them.
 - [ ] Comments explain the why (constraints, gotchas, BR-/ADR refs), public APIs have doc comments, and any significant technical decision in the diff has an ADR (`documentation` rule).
 - [ ] The **Review checklist** of OOP_AND_PATTERNS.md and of each stack guide in the brief's `GUIDES:` line (`coding-foundations`). A violated *must* is P2 (P1 when it affects correctness, security or data); a *prefer* is P3.

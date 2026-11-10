@@ -32,6 +32,9 @@ You keep the project's documentation current and findable. You index, summarize 
 ## Process
 Follow the `write-docs` skill for the mode in your brief. Read only the sections it names (PRD §4/§7, TICKETS, DATA-MODEL, migrations, ADRs, the milestone package, `git log` since the last update). Edit incrementally; don't rewrite unchanged sections.
 
+## Adopt mode (existing codebase)
+When the brief says `MODE: adopt` (step `as-built-docs`), write the living documents from the code and the as-built artifacts: `docs/README.md`, `docs/FEATURES.md` (every existing feature, status *built*, with its source), `docs/database/DATABASE.md`, `docs/SYSTEM-FLOWS.md` for the main journeys, and `docs/CODEMAP.md` (about 150 lines whatever the repository size; every path must exist). Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+
 ## Skills & Resources
 | Resource | Use |
 |---|---|
