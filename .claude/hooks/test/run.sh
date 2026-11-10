@@ -242,6 +242,9 @@ hy() { out=$(bash "$CH" --root "$HR" "$@" 2>&1); c=$?; }
 plant() { ( cd "$HR" && git add -A -f && git commit -qm "$1" ); }
 has() { printf '%s\n' "$out" | grep -q "$1" && { pass=$((pass+1)); echo "  ok   $2"; } || { fail=$((fail+1)); echo "  FAIL $2"; printf '%s\n' "$out" | sed 's/^/       /'; }; }
 hy; expect 0 "clean repository passes"
+mkdir -p "$HR/web/.next/cache" "$HR/web/src/empty"; printf '.next/\n' > "$HR/.gitignore"; plant ignore
+hy; printf '%s\n' "$out" | grep -q 'emptydir.web/src/empty' && ! printf '%s\n' "$out" | grep -q '\.next' && { pass=$((pass+1)); echo "  ok   empty folders warn, except inside git-ignored paths"; } || { fail=$((fail+1)); echo "  FAIL empty folders warn, except inside git-ignored paths"; printf '%s\n' "$out" | sed 's/^/       /'; }
+rmdir "$HR/web/src/empty"
 printf 'x' > "$HR/.DS_Store"; printf 'A=1\n' > "$HR/.env"; printf 'A=\n' > "$HR/.env.example"; plant stray
 hy; expect 1 "stray and env files fail"; has '^FAIL.stray..DS_Store' "stray file is named"
 printf '%s\n' "$out" | grep -q 'env.example' && { fail=$((fail+1)); echo "  FAIL .env.example is allowed"; } || { pass=$((pass+1)); echo "  ok   .env.example is allowed"; }

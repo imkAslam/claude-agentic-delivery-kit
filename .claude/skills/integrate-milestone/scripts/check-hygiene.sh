@@ -121,7 +121,7 @@ report WARN commented "commented-out code" < "$tmp/r"
 # 6. empty folders (warning, whole-tree runs only)
 if [ -z "$base" ]; then
   find . -type d -empty -not -path './.git/*' -not -path '*/node_modules/*' -not -path './.claude' -not -path './.claude/*' 2>/dev/null | sed 's|^\./||' | while IFS= read -r d; do
-    allowed "$d" || printf '%s\n' "$d"
+    allowed "$d" || git check-ignore -q "$d" 2>/dev/null || printf '%s\n' "$d"
   done > "$tmp/empty"
   while IFS= read -r d; do [ -n "$d" ] && add "WARN	emptydir	$d	empty folder"; done < "$tmp/empty"
 fi

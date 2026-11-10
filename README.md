@@ -41,7 +41,7 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 | Role subagents | 33 | `.claude/agents/` |
 | Skills (orchestrator, gates, role skills, adapters, shared practices) | 31 | `.claude/skills/` |
 | Rules (always-on and path-scoped) | 13 | `.claude/rules/` |
-| Deterministic hooks + a test suite (129 checks) | 7 | `.claude/hooks/` |
+| Deterministic hooks + a test suite (130 checks) | 7 | `.claude/hooks/` |
 | Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack |
 
 Main features:
