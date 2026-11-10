@@ -16,6 +16,9 @@
 ## Not done / deviations
 Items moved out of scope, deviations from the mockups (with reasons), known issues.
 
+## Codebase hygiene
+The `check-hygiene.sh` summary line; the chore tickets that removed leftovers (ticket, role, what was removed); open warnings and allow-list entries with their reasons.
+
 ## Reviewers' notes
 A summary of the role reviewers' P3 findings that are still open.
 ```
@@ -36,6 +39,7 @@ A summary of the role reviewers' P3 findings that are still open.
 | Typecheck | <commands.typecheck> | 0 | — |
 | Tests | <commands.test> | 0 | 214 passed |
 | Build | <commands.build> | 0 | artifact size … |
+| Hygiene | check-hygiene.sh | 0 | 0 findings, 2 warnings (listed in BUILD-REVIEW) |
 | E2E journey | <commands.e2e> / manual walk | 0 | TC-001..TC-007 passed |
 | CI (if pushed) | pipeline <link> | green | — |
 ```

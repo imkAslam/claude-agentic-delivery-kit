@@ -230,6 +230,39 @@ tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
 
+echo "check-hygiene"
+CH="$REPO/.claude/skills/integrate-milestone/scripts/check-hygiene.sh"; HR="$TMP/hyg"; mkdir -p "$HR/web/src" "$HR/docs" "$HR/scripts" "$HR/.claude"
+( cd "$HR" && git init -q && git config user.email t@t && git config user.name t
+  printf 'export const a = 1;\n' > web/src/a.ts
+  printf '# App\n[code map](docs/CODEMAP.md)\n' > README.md
+  printf '# Code map\n`web/src/a.ts` entry point\n`application/json` is a media type, not a path\n' > docs/CODEMAP.md
+  printf 'console.log("allowed in scripts");\n' > scripts/seed.js
+  git add -A && git commit -qm init )
+hy() { out=$(bash "$CH" --root "$HR" "$@" 2>&1); c=$?; }
+plant() { ( cd "$HR" && git add -A -f && git commit -qm "$1" ); }
+has() { printf '%s\n' "$out" | grep -q "$1" && { pass=$((pass+1)); echo "  ok   $2"; } || { fail=$((fail+1)); echo "  FAIL $2"; printf '%s\n' "$out" | sed 's/^/       /'; }; }
+hy; expect 0 "clean repository passes"
+printf 'x' > "$HR/.DS_Store"; printf 'A=1\n' > "$HR/.env"; printf 'A=\n' > "$HR/.env.example"; plant stray
+hy; expect 1 "stray and env files fail"; has '^FAIL.stray..DS_Store' "stray file is named"
+printf '%s\n' "$out" | grep -q 'env.example' && { fail=$((fail+1)); echo "  FAIL .env.example is allowed"; } || { pass=$((pass+1)); echo "  ok   .env.example is allowed"; }
+( cd "$HR" && git rm -q --cached .DS_Store .env && rm -f .DS_Store .env && git commit -qm unstray )
+mkdir -p "$HR/web/public"; printf '<svg/>' > "$HR/web/public/next.svg"; printf 'export const P = "Get started by editing";\n' > "$HR/web/src/page.ts"; plant scaffold
+hy; expect 1 "scaffold leftovers fail"; has '^FAIL.scaffold.web/public/next.svg' "starter asset is named"; has '^FAIL.scaffold.web/src/page.ts:1' "starter text is located"
+printf '{"hygiene":{"allow":[{"path":"web/public/next.svg","reason":"shown on the docs page"},{"path":"web/src/page.ts","reason":"copy under review"}]}}\n' > "$HR/.claude/project.json"
+hy; expect 0 "allow-list with reasons accepts the exceptions"
+printf '{"hygiene":{"allow":[{"path":"web/public/next.svg"},{"path":"web/src/page.ts","reason":"copy under review"}]}}\n' > "$HR/.claude/project.json"
+hy; expect 1 "an allow entry without a reason fails"
+printf '{"hygiene":{"allow":[{"path":"web/public/next.svg","reason":"shown on the docs page"},{"path":"web/src/page.ts","reason":"copy under review"}]},"commands":{"unused":"echo unused-export; exit 1"}}\n' > "$HR/.claude/project.json"
+hy; expect 1 "the pinned unused-code command failing fails the check"
+hy --no-unused; expect 0 "--no-unused skips the unused-code command"
+printf 'export const b = 2; // TODO remove later\nexport const c = 3; // TODO T-12 keep until the migration\nconsole.log(b);\nconsole.log(c); // hygiene:allow CLI output\n' > "$HR/web/src/b.ts"; plant debug
+hy --no-unused; expect 1 "debug output and a ticketless TODO fail"; has '^FAIL.todo.web/src/b.ts:1' "the TODO without a ticket is located"; has '^FAIL.debug.web/src/b.ts:3' "console.log is located"
+[ "$(printf '%s\n' "$out" | grep -c 'web/src/b.ts')" = 2 ] && { pass=$((pass+1)); echo "  ok   a ticketed TODO and a hygiene:allow line are accepted"; } || { fail=$((fail+1)); echo "  FAIL a ticketed TODO and a hygiene:allow line are accepted"; }
+hy --no-unused --base HEAD~1; expect 1 "--base checks only the ticket diff"
+printf 'export const b = 2;\n' > "$HR/web/src/b.ts"; printf '\n`web/src/gone.ts` was removed\n' >> "$HR/docs/CODEMAP.md"; plant deadlink
+hy --no-unused; expect 1 "a code map path to a missing file fails"; has '^FAIL.deadlink.docs/CODEMAP.md' "the dead path is located"
+printf '%s\n' "$out" | grep -q 'application/json' && { fail=$((fail+1)); echo "  FAIL non-path code spans are ignored"; } || { pass=$((pass+1)); echo "  ok   non-path code spans are ignored"; }
+
 echo "sync-diagrams"
 SD="$REPO/.claude/skills/design-architecture/scripts/sync-diagrams.sh"; CD="$REPO/.claude/skills/design-architecture/scripts/check-diagrams.sh"
 DD="$TMP/diag"; mkdir -p "$DD"

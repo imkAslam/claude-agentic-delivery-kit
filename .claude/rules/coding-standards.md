@@ -80,6 +80,10 @@ These apply to every language. The stack-specific conventions (formatter, linter
 - Code is formatted by the project formatter; CI fails on unformatted code. Zero lint warnings on changed files.
 - Disabling a lint rule inline needs a comment with the reason and a ticket id, and the reviewer's approval.
 - No dead code, commented-out code, debug output or leftover feature flags. `TODO` only with a ticket id (`documentation.md`).
+- **Leave no leftovers.** The foundation ticket removes everything the scaffold generated that the product doesn't use: starter pages and components, default logos and placeholder assets, example tests, boilerplate README text. A ticket that replaces something removes the old version **in the same commit**: the component, route, hook, style, test, flag, migration helper and dependency it made obsolete. No "v2" copies, no `old/` or `backup/` folders, no unused files kept "just in case" (git keeps the history).
+- Never commit junk: OS files, logs, temp and backup files, build output, dependency folders, `.env` files (only `.env.example`). Keep the ignore file current.
+- Delete only inside your role's owned paths. A leftover in another role's path is a `finding` for that role.
+- `check-hygiene.sh` (integrate-milestone skill) checks all of this on the ticket diff and at every integration. A deliberate exception is listed in `project.json → hygiene.allow` with its reason, or marked `hygiene:allow <reason>` on the line.
 - Generated code is never edited by hand; regenerate it (`commands.codegen`).
 
 ## Tests and reviews
