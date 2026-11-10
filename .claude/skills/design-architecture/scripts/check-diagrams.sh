@@ -1,25 +1,28 @@
 #!/usr/bin/env bash
-# check-diagrams.sh [--require "D0 D1 D2 ..."] [--no-render] <markdown-file>...
+# check-diagrams.sh [--require "D0 D1 D2 ..."] [--mirror <ARCHITECTURE.md>] [--no-render] <markdown-file>...
 # Checks the architecture diagrams that live inside the PRD (and any other markdown passed in):
 #   1. every required diagram id has a heading ("### D3 · Deployment", "#### D2-L3 · Application layer", ...)
 #   2. every ```mermaid block renders. Rendering happens in a temporary directory outside the repository;
 #      nothing is written into the project. Diagrams are never stored as separate files.
+#   3. with --mirror: the copy of the diagrams in ARCHITECTURE.md (§14) is identical to the first file (the PRD);
+#      sync-diagrams.sh creates and refreshes that copy.
 # Renderer: `mmdc` on PATH, otherwise `npx -y @mermaid-js/mermaid-cli@11`. Use --no-render to skip.
 # Exit 0 = all ids present and all blocks render · 1 = a missing id or a render failure ·
 #      2 = usage error · 3 = ids present but no renderer available (syntax NOT checked; say so).
 set -uo pipefail
 
-require="" render=1 files=""
+require="" render=1 files="" mirror=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --require) require="${2:-}"; shift 2 ;;
+    --mirror) mirror="${2:-}"; [ -n "$mirror" ] || { echo "--mirror needs a file" >&2; exit 2; }; shift 2 ;;
     --no-render) render=0; shift ;;
-    -h|--help) sed -n 2,10p "$0"; exit 0 ;;
+    -h|--help) sed -n 2,12p "$0"; exit 0 ;;
     *) files="${files}${1}
 "; shift ;;
   esac
 done
-[ -n "$files" ] || { echo "usage: check-diagrams.sh [--require \"D0 D1 ...\"] [--no-render] <markdown-file>..." >&2; exit 2; }
+[ -n "$files" ] || { echo "usage: check-diagrams.sh [--require \"D0 D1 ...\"] [--mirror <ARCHITECTURE.md>] [--no-render] <markdown-file>..." >&2; exit 2; }
 
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/diagrams.XXXXXX") || exit 2
 trap 'rm -rf "$tmp"' EXIT
@@ -37,6 +40,12 @@ $files
 EOF
   if [ "$found" = 1 ]; then echo "present   ${id}"; else echo "MISSING   ${id} (no heading '### ${id} · <title>')"; status=1; fi
 done
+
+# 1b. The mirrored copy in ARCHITECTURE.md matches the source (the first file)
+if [ -n "$mirror" ]; then
+  src=$(printf '%s\n' "$files" | sed -n 1p)
+  bash "$(dirname "$0")/sync-diagrams.sh" --check "$src" "$mirror" || status=1
+fi
 
 # 2. Extract every mermaid block: <n>.mmd plus an index line "<n>\t<file>:<line>\t<last heading>"
 : > "$tmp/index"
