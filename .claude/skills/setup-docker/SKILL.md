@@ -18,7 +18,7 @@ Inputs: `.claude/project.json` (`stack`, `commands`, `deploy.health_path`). If i
 7. Make the start command the process itself (exec form), so signals reach it.
 
 ## Free local services (always first)
-Every backing service for development and testing runs locally in Docker, using the free substitutes in [LOCAL_SERVICES.md](references/LOCAL_SERVICES.md) (database, cache, object storage, mail capture, queues, search, antivirus, mock OIDC, cloud emulators). Use the remote fallback only when Docker isn't running (per SYSTEM-PROFILE) or a service has no local substitute. Then the human supplies URLs in `.env`, asked once by the orchestrator.
+Every backing service for development and testing runs locally in Docker, **one container per service** (tests use a separate database inside the same container; without Docker, SQLite: [NO_DOCKER.md](references/NO_DOCKER.md)), using the free substitutes in [LOCAL_SERVICES.md](references/LOCAL_SERVICES.md) (database, cache, object storage, mail capture, queues, search, antivirus, mock OIDC, cloud emulators). Use the remote fallback only when Docker isn't running (per SYSTEM-PROFILE) or a service has no local substitute. Then the human supplies URLs in `.env`, asked once by the orchestrator.
 
 ## compose for development (`compose.yml`)
 - `app`: build target `build` or a dev stage, with a source bind mount and the dev command from `commands.dev`.

@@ -19,6 +19,9 @@ Items moved out of scope, deviations from the mockups (with reasons), known issu
 ## Codebase hygiene
 The `check-hygiene.sh` summary line; the chore tickets that removed leftovers (ticket, role, what was removed); open warnings and allow-list entries with their reasons.
 
+## Improvement report (orchestrator; `deliver/references/memory.md` §8)
+The `delivery-state.sh stats <ms>` numbers, what went wrong and why, and numbered suggestions (S1, S2, …) with the expected benefit. Nothing is applied unless the human chooses it at the review.
+
 ## Reviewers' notes
 A summary of the role reviewers' P3 findings that are still open.
 ```

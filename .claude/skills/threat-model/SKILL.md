@@ -32,7 +32,7 @@ Choose from [CONTROLS_CATALOG.md](references/CONTROLS_CATALOG.md). Map each high
 Write `AC-SEC-<n>` in Given/When/Then form for each control that's testable (see the write-requirements acceptance guide). The PM merges them into the PRD, and QA covers them.
 
 ### Step 5: Build-time work (security tickets)
-Implement controls test-first, inside the owned paths. For an assessment: read the code, reproduce safely in a local or test environment only, and report `file:line`, severity, an exploit scenario, the fix, and a test that would fail without the fix.
+Implement controls, then test them (the `feature-testing` skill; security controls keep one test per abuse case), inside the owned paths. For an assessment: read the code, reproduce safely in a local or test environment only, and report `file:line`, severity, an exploit scenario, the fix, and a test that would fail without the fix.
 
 ### Step 6: Review and verification (security-reviewer)
 Apply the Security section of **review-checklists**. For each claimed fix, confirm a regression test exists. Scan the diff for secrets.

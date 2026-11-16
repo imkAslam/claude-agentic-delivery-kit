@@ -115,7 +115,9 @@ check "frontend blocked in backend path"   2 guard-boundary.sh "$(write_json "$R
 check "frontend may write evidence docs"   0 guard-boundary.sh "$(write_json "$REPO/docs/delivery/evidence/T-1/a.md" "x" frontend-engineer)"
 check "frontend blocked from kit"          2 guard-boundary.sh "$(write_json "$REPO/.claude/rules/x.md" "x" frontend-engineer)"
 check "backend owns migrations"            0 guard-boundary.sh "$(write_json "$REPO/api/migrations/001.sql" "x" backend-engineer)"
-check "main session unrestricted"          0 guard-boundary.sh "$(write_json "$REPO/api/new.ts" "x")"
+check "orchestrator (main session) cannot write product code" 2 guard-boundary.sh "$(write_json "$REPO/api/new.ts" "x")"
+check "orchestrator agent cannot write product code"          2 guard-boundary.sh "$(write_json "$REPO/web/c.ts" "x" orchestrator)"
+check "orchestrator can write delivery documents"             0 guard-boundary.sh "$(write_json "$REPO/docs/delivery/PLAN.md" "x")"
 check "architect edits contract before G2" 0 guard-boundary.sh "$(write_json "$REPO/contracts/api.yaml" "x" solution-architect)"
 check "backend never owns contracts"       2 guard-boundary.sh "$(write_json "$REPO/contracts/api.yaml" "x" backend-engineer)"
 bash "$S" approve g2 approve "Architect" "ok" contracts docs/delivery/PRD.md >/dev/null
@@ -305,6 +307,43 @@ hy --no-unused --base HEAD~1; expect 1 "--base checks only the ticket diff"
 printf 'export const b = 2;\n' > "$HR/web/src/b.ts"; printf '\n`web/src/gone.ts` was removed\n' >> "$HR/docs/CODEMAP.md"; plant deadlink
 hy --no-unused; expect 1 "a code map path to a missing file fails"; has '^FAIL.deadlink.docs/CODEMAP.md' "the dead path is located"
 printf '%s\n' "$out" | grep -q 'application/json' && { fail=$((fail+1)); echo "  FAIL non-path code spans are ignored"; } || { pass=$((pass+1)); echo "  ok   non-path code spans are ignored"; }
+
+echo "lean kit"
+printf 'services:\n  db:\n    image: postgres:16-alpine\n  web:\n    build: .\n' > "$HR/compose.yml"; plant compose
+hy --no-unused; printf '%s\n' "$out" | grep -q 'services' && { fail=$((fail+1)); echo "  FAIL one database container is accepted"; } || { pass=$((pass+1)); echo "  ok   one database container is accepted"; }
+printf 'services:\n  db:\n    image: postgres:16-alpine\n  test-db:\n    image: "postgres:16-alpine"\n' > "$HR/compose.yml"; plant twodb
+hy --no-unused; has '^FAIL.services.compose.yml.2 postgres containers' "two database containers in one compose file fail"
+printf 'services:\n  db:\n    image: postgres:16-alpine\n' > "$HR/compose.yml"; printf 'services:\n  pg:\n    image: postgres:16-alpine\n' > "$HR/compose.test.yml"; plant testcompose
+hy --no-unused; has '^FAIL.services.compose.test.yml.a separate postgres container for tests' "a database container just for tests fails"
+( cd "$HR" && git rm -q compose.test.yml && git commit -qm "one db" )
+printf '{"devDependencies":{"testcontainers":"^10"}}\n' > "$HR/package.json"; plant tc
+hy --no-unused; has '^FAIL.services.package.json.Testcontainers' "a Testcontainers dependency fails"
+printf '{"devDependencies":{}}\n' > "$HR/package.json"; plant notc
+mkdir -p "$HR/docs/delivery/milestones/ms-1/screens"; printf '# PRD\n' > "$HR/docs/delivery/PRD.md"; printf '# Review\n' > "$HR/docs/delivery/milestones/ms-1/REVIEW.md"; printf 'x' > "$HR/docs/delivery/milestones/ms-1/screens/S-01.png"; plant leandocs
+hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.' && { fail=$((fail+1)); echo "  FAIL the lean document set passes"; printf '%s\n' "$out" | sed 's/^/       /'; } || { pass=$((pass+1)); echo "  ok   the lean document set passes"; }
+printf '# BA\n' > "$HR/docs/delivery/BA-ANALYSIS.md"; mkdir -p "$HR/docs/delivery/evidence/T-001"; printf 'log\n' > "$HR/docs/delivery/evidence/T-001/test.txt"; plant extradocs
+hy --no-unused; has '^FAIL.docs.docs/delivery/BA-ANALYSIS.md' "a document outside the lean set fails"; has '^FAIL.docs.docs/delivery/evidence/T-001/test.txt' "stored evidence files fail"
+printf '{"docs":{"layout":"classic"}}\n' > "$HR/.claude/project.json"
+hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.' && { fail=$((fail+1)); echo "  FAIL the classic layout skips the documents check"; } || { pass=$((pass+1)); echo "  ok   the classic layout skips the documents check"; }
+rm -f "$HR/.claude/project.json"; ( cd "$HR" && git rm -rq docs/delivery/BA-ANALYSIS.md docs/delivery/evidence && git commit -qm "lean again" )
+awk 'BEGIN { for (i = 0; i < 701; i++) print "line " i }' > "$HR/docs/delivery/PRD.md"; plant longprd
+hy --no-unused; has '^FAIL.docs.docs/delivery/PRD.md.701 lines, over the limit of 700' "a document over its length limit fails"
+PS="$TMP/plan"; mkdir -p "$PS/.claude"; cp -R "$KIT/skills" "$KIT/hooks" "$PS/.claude/"; ( cd "$PS" && git init -q )
+pst() { out=$(cd "$PS" && CLAUDE_PROJECT_DIR="$PS" bash "$PS/.claude/skills/deliver/scripts/delivery-state.sh" "$@" 2>&1); c=$?; }
+pst init
+pst ticket add T-001 backend ms-1 "Scaffold API" --type chore --paths "api/package.json,api/src/main.ts"
+pst ticket add T-002 backend ms-1 "Auth API" T-001 --paths "api/src/modules/auth/**"
+pst ticket add T-003 frontend ms-1 "Auth screens" --paths "web/src/app/(auth)/**"
+pst plan-check ms-1; expect 0 "independent tickets pass the plan check"
+printf '%s\n' "$out" | grep -q '2 feature tickets, 2 can start together' && { pass=$((pass+1)); echo "  ok   the plan check reports how many tickets can start together"; } || { fail=$((fail+1)); echo "  FAIL the plan check reports how many tickets can start together"; printf '%s\n' "$out" | sed 's/^/       /'; }
+pst ticket add T-004 frontend ms-1 "Profile screens" T-002 --paths "web/src/app/(app)/profile/**"
+pst plan-check ms-1; expect 1 "a feature ticket depending on another in the same milestone fails"
+pst ticket status T-004 cancelled --force "replanned"
+pst ticket add T-005 backend ms-1 "Auth tweaks" T-001 --paths "api/src/modules/auth/session.ts"
+pst plan-check ms-1; expect 1 "parallel tickets touching the same files fail"
+pst ticket status T-002 in_progress; pst agent set ticket:T-002 agent-abc
+pst board; printf '%s\n' "$out" | grep -q 'T-002.backend.in_progress.*agent-abc' && { pass=$((pass+1)); echo "  ok   the board shows who has which ticket"; } || { fail=$((fail+1)); echo "  FAIL the board shows who has which ticket"; printf '%s\n' "$out" | sed 's/^/       /'; }
+pst stats ms-1; printf '%s\n' "$out" | grep -q '^backend: ' && { pass=$((pass+1)); echo "  ok   stats report rework per role"; } || { fail=$((fail+1)); echo "  FAIL stats report rework per role"; }
 
 echo "sync-diagrams"
 SD="$REPO/.claude/skills/design-architecture/scripts/sync-diagrams.sh"; CD="$REPO/.claude/skills/design-architecture/scripts/check-diagrams.sh"

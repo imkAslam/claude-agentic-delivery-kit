@@ -9,6 +9,9 @@
 #   deadlink   links in README.md and docs/*.md, and paths in docs/CODEMAP.md, that point to nothing
 #   commented  (warning) 3+ consecutive lines of commented-out code
 #   emptydir   (warning) empty folders in the working tree
+#   services   more than one container of the same database in a compose file, a database container for tests,
+#              or a Testcontainers dependency (tests use a test database inside the one development container)
+#   comments   (warning) files with many comment lines: one doc comment at the top of a function or class is enough
 #   docs       only the lean document set in docs/delivery/, each within its length limit (skipped when
 #              project.json -> docs.layout is "classic")
 # --base <ref>  check only files changed since <ref> (a ticket diff); default: every tracked file.
@@ -23,7 +26,7 @@ while [ $# -gt 0 ]; do
     --base) base="${2:-}"; [ -n "$base" ] || { echo "--base needs a ref" >&2; exit 2; }; shift 2 ;;
     --no-unused) unused=0; shift ;;
     --root) root="${2:-}"; [ -n "$root" ] || { echo "--root needs a directory" >&2; exit 2; }; shift 2 ;;
-    -h|--help) sed -n 2,17p "$0"; exit 0 ;;
+    -h|--help) sed -n 2,20p "$0"; exit 0 ;;
     *) echo "usage: check-hygiene.sh [--base <ref>] [--no-unused] [--root <dir>]" >&2; exit 2 ;;
   esac
 done
@@ -156,6 +159,36 @@ if [ -f docs/CODEMAP.md ]; then
   done >> "$tmp/dead"
 fi
 report FAIL deadlink "points to a file that does not exist" < "$tmp/dead"
+
+# 9a. services: one container per database, shared by development and tests
+git ls-files 2>/dev/null | grep -E '(^|/)(docker-)?compose[^/]*\.ya?ml$' > "$tmp/compose" || true
+while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  for fam in 'postgres|postgis|timescale' 'mysql|mariadb' 'mongo'; do
+    n=$(grep -cE "^[[:space:]]*image:[[:space:]]*[\"']?([^[:space:]\"']*/)?(${fam})" "$f" || true)
+    name=${fam%%|*}
+    [ "$n" -le 1 ] || add "FAIL	services	$f	$n ${name} containers: use one container; tests get their own database inside it"
+    case "$(basename "$f")" in *test*|*e2e*|*drill*)
+      [ "$n" -eq 0 ] || add "FAIL	services	$f	a separate ${name} container for tests: tests use a test database inside the development container" ;;
+    esac
+  done
+done < "$tmp/compose"
+git ls-files 2>/dev/null | grep -E '(^|/)(package\.json|pyproject\.toml|requirements[^/]*\.txt|go\.mod|pom\.xml|build\.gradle(\.kts)?|[^/]*\.csproj)$' > "$tmp/manifests" || true
+if [ -s "$tmp/manifests" ]; then
+  tr '\n' '\0' < "$tmp/manifests" | xargs -0 grep -liE 'testcontainers' 2>/dev/null | while IFS= read -r f; do printf '%s\n' "$f"; done > "$tmp/tc"
+  while IFS= read -r f; do [ -n "$f" ] && add "FAIL	services	$f	Testcontainers starts extra database containers: use the test database inside the project's one container"; done < "$tmp/tc"
+fi
+
+# 9b. comments: one doc comment at the top of a function or class, not line-by-line (warning)
+if [ -s "$tmp/cc" ]; then
+  tr '\n' '\0' < "$tmp/cc" | xargs -0 awk '
+    function flush() { if (code >= 30 && com * 10 > code * 4) printf "%s:1:%d comment lines for %d code lines\n", file, com, code; com = 0; code = 0 }
+    FNR == 1 { flush(); file = FILENAME }
+    /^[ \t]*$/ { next }
+    { if ((file ~ /\.(py|rb)$/ && $0 ~ /^[ \t]*#/) || (file !~ /\.(py|rb)$/ && $0 ~ /^[ \t]*(\/\/|\/\*|\*)/)) com++; else code++ }
+    END { flush() }' > "$tmp/r" 2>/dev/null
+  report WARN comments "many comments: keep one doc comment at the top of each function or class" < "$tmp/r"
+fi
 
 # 9. documents: only the lean set, each within its length limit (deliver/references/documents.md)
 layout="lean"

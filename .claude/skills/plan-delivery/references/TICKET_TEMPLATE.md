@@ -5,7 +5,7 @@
 T-<nnn> · <role> · <module>: <capability>          e.g. "T-010 · backend · Auth API: signup, login, verification and recovery"
 type: feature | chore | spike      role: frontend | backend | mobile | devops | integration | qa | security
 milestone: ms-<n>      size: S | M | L      status: ready      module: <bounded context / feature folder>
-depends_on: [T-…]
+depends_on: [T-…]                 (foundation tickets or an earlier milestone only; never another feature ticket of this milestone)
 acceptance: [AC-…]            test_cases: [TC-…]            contracts: [<operationId>…]
 owned_paths: ["<subset of project.json roles.<role>.paths>"]
 mockups: [docs/delivery/mockups/<screen>-*.png]                (UI tickets)
@@ -26,9 +26,9 @@ One or two sentences: the user-visible outcome of the whole capability.
 Business rules (BR-…), edge cases, data/migration notes, feature flags, security controls from the threat model.
 
 ## Definition of done
-- [ ] Every checklist item done; tests written first and failing, then passing (red/green evidence)
+- [ ] Every checklist item done; the whole module built, then feature-level tests for every AC (unit tests only for complex logic)
 - [ ] Role lint, typecheck and test green (commit gate)
-- [ ] All AC listed above demonstrably met; evidence in docs/delivery/milestones/<ms>/screens/
+- [ ] All AC listed above demonstrably met: the test command and result in the return block; UI tickets add one screenshot per screen in `milestones/<ms>/screens/`
 - [ ] Independent reviewer APPROVE (plus the database-reviewer for data changes)
 - [ ] One Conventional Commit with `Refs: T-<nnn>`
 ```
@@ -73,6 +73,7 @@ Slice **by capability, vertically within one role**, never by layer. A backend t
 | T-030 "auth DTOs", T-031 "auth migrations", T-032 "auth service" | Sliced by layer: nothing works until all are done | One backend Auth API ticket containing all of them |
 | "Build the whole user area" (auth + profile + settings + admin users) | Too big: several modules | Auth API (L) · Profile & settings API (M) · Admin user management API (M) |
 | T-001 "root workspace files", T-002 "ignore rules", T-003 "env example" | Chores as tickets | **T-001 · backend · foundation**: scaffold, tooling, health, env example (checklist) |
-| "Build the orders feature" (several roles) | Several roles in one ticket | T-040 backend Orders API · T-041 frontend Orders screens against mocks · T-042 qa Orders E2E |
+| "Build the orders feature" (several roles) | Several roles in one ticket | T-040 backend Orders API · T-041 frontend Orders screens against mocks, both started together; QA runs the Orders journey after integration |
 | "Fix stuff in checkout" | No clear outcome | Bug T-077 linked to T-041: "Missing postcode error not shown (AC-ORD-2)" |
-| Two parallel tickets that both edit the root dependency manifest | File overlap | The owner's ticket adds the dependencies first; the others depend on it |
+| Two parallel tickets that both edit the root dependency manifest | File overlap | The foundation ticket adds the dependencies; feature tickets add only their own files |
+| T-050 frontend "Orders list" depends on T-051 frontend "Orders filters" in the same milestone | Feature tickets waiting on each other | One ticket "Orders list with filters", or filters in the next milestone |

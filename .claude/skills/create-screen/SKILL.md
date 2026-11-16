@@ -28,7 +28,7 @@ Read `project.json`: `stack.mobile`, `stack.mobile_e2e`, `roles.mobile.paths`, `
 | Offline needs | PRD NFRs ("works offline", "sync") and the ticket's AC |
 | Permissions and deep links | `DESIGN.md › UX` flows, ticket AC |
 
-### Step 2: Write the tests first (tdd skill)
+### Step 2: Know what you will test (the tests are written after the module is built: `feature-testing` skill)
 Component tests for each state (loading, empty, error, offline, success); interactions through accessible queries; navigation assertions; API calls via the generated mocks. Add an E2E flow (e.g. Maestro/Detox) when the ticket is a primary journey and the QA ticket doesn't already cover it.
 
 ### Step 3: Build the screen
@@ -51,7 +51,7 @@ Run the role's commands. Run on a simulator or emulator when the toolchain is av
 - **design-inspiration:** load it before UI work
 - **create-component:** the shared data, error-mapping and state rules ([DATA_AND_STATE.md](../create-component/references/DATA_AND_STATE.md))
 - **ship → mobile-eas:** devops owns builds, signing and store releases. Don't touch them
-- **tdd / role-boundaries / review-checklists**
+- **feature-testing / role-boundaries / review-checklists**
 
 ## File Structure
 ```

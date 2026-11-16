@@ -18,9 +18,9 @@
 | T-002 | backend | Scaffold API + health endpoint + codegen wiring | — | S |
 | T-003 | frontend | Scaffold web app + generated client + app shell | — | S |
 | T-004 | devops | Staging deploy of the walking skeleton via CI | T-001, T-002, T-003 | M |
-| T-005 | backend | <operation> (AC-…) | T-002 | M |
-| T-006 | frontend | <screen> against mocks (AC-…) | T-003 | M |
-| T-007 | qa | E2E TC-… for J-1 | T-005, T-006 | S |
+| T-005 | backend | <module API> (AC-…) | T-002 (foundation) | M |
+| T-006 | frontend | <module screens> against mocks (AC-…) | T-003 (foundation) | M |
+T-005 and T-006 start together. QA runs the J-1 journey once after integration (no ticket). `delivery-state.sh plan-check ms-1` must pass.
 | T-0xx | frontend | Landing page (only if `F-LANDING`; in the sign-up milestone) | design foundation | M |
 | T-0yy | frontend | Landing page refresh for <release> (only if `F-LANDING`; last milestone of each later release) | every feature ticket of the release | S |
 

@@ -36,7 +36,7 @@ For the **frontend-engineer** in lane `build`. Every component traces to a ticke
 ### Step 2: Decide the file location
 Use the existing structure and the tree in PRD §11 (Next.js: design-architecture → FOLDER_STRUCTURES §A1, with every route inside a route group). If there's none, use: `<frontend-root>/src/components/ui/` (library and base components), `…/components/shared/` (reused across features), `…/components/features/<feature>/` (feature), `…/components/layout/`, and pages/routes per the framework's routing convention. Tests sit next to the component, or in the project's test folder.
 
-### Step 3: Write the tests first (tdd skill)
+### Step 3: Know what you will test (the tests are written after the module is built: `feature-testing` skill)
 One test per AC: rendering of each state (loading, empty, error, success, no-permission), the user interactions (with role- and label-based queries), validation messages, calls to the API client (mocked through the generated mocks), and keyboard operation.
 
 ### Step 4: Generate the component
@@ -60,7 +60,7 @@ Run the role's `lint`, `typecheck` and `test`. Start `commands.dev`, open the sc
 
 ## Integration with Other Skills
 - **design-inspiration:** always load it before UI work
-- **tdd:** the red → green → refactor loop and its evidence
+- **feature-testing:** build the whole module, then test it at feature level
 - **role-boundaries:** if you need a contract, dependency or token change
 - **review-checklists:** what the frontend-reviewer will check
 

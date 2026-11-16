@@ -28,7 +28,7 @@ With: OOP_AND_PATTERNS.md.
 - `ILogger<T>` with message templates (`logger.LogInformation("Order {OrderId} placed", id)`), never string interpolation in log calls; source-generated `LoggerMessage` on hot paths; OpenTelemetry for traces and metrics.
 
 ## Testing
-- xUnit (or NUnit); `WebApplicationFactory` for API tests; Testcontainers for the database; fakes over mocks where possible.
+- xUnit (or NUnit); `WebApplicationFactory` for API tests; the project's one database container with a separate test database (never Testcontainers); fakes over mocks where possible.
 
 ## Review checklist
 - [ ] Nullable warnings clean; warnings as errors.

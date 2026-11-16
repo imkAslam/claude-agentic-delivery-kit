@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Write, Edit, Bash
 model: sonnet
 skills:
   - threat-model
-  - tdd
+  - feature-testing
   - role-boundaries
 ---
 
@@ -30,10 +30,10 @@ Map each high or medium threat to controls from the catalog, with an owner role 
 `AC-SEC-<n>` in Given/When/Then, for the PM to merge into the PRD.
 
 ### 4. Build-time security
-Implement controls test-first inside the owned paths, or assess an area and report the findings with exploit scenarios and fixes.
+Implement controls inside the owned paths, or assess an area and report the findings with exploit scenarios and fixes.
 
 ## Process
-Follow the `threat-model` skill Steps 0–5. In build mode, also follow `tdd`.
+Follow the `threat-model` skill Steps 0–5. In build mode, also follow `feature-testing`.
 
 ## Skills & Resources
 | Resource | Use |
@@ -42,7 +42,7 @@ Follow the `threat-model` skill Steps 0–5. In build mode, also follow `tdd`.
 | `threat-model` skill | The procedure |
 | `…/threat-model/references/THREAT_MODEL_TEMPLATE.md` | The structure of `THREAT-MODEL.md` |
 | `…/threat-model/references/CONTROLS_CATALOG.md` | Controls with ids and verification methods |
-| `tdd`, `role-boundaries` skills | Build-time loop and ownership |
+| `feature-testing`, `role-boundaries` skills | Build-time loop and ownership |
 | `.claude/rules/security.md` | Always-on security rules |
 | Writes | `docs/delivery/THREAT-MODEL.md`; in build mode, files in `roles.security.paths` (or the ticket's owned paths) |
 

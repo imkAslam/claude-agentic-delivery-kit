@@ -31,7 +31,7 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md. NestJS adds NESTJS.md. Templates: `cre
 - Few, maintained packages; `npm audit`/OSV in CI; no packages for one-liners.
 
 ## Testing
-- Unit tests for use cases with faked ports; HTTP tests with the framework's injector or supertest; integration tests against containers (Testcontainers) for the DB and queues.
+- Unit tests for use cases with faked ports; HTTP tests with the framework's injector or supertest; integration tests against the project's one database container (a separate test database inside it; never Testcontainers) and its queue.
 
 ## Review checklist
 - [ ] Nothing blocks the event loop; heavy work offloaded.

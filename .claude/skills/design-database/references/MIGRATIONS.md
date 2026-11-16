@@ -6,7 +6,7 @@
 3. **One logical change per migration**, small enough to review and to roll back.
 4. **Zero-downtime by default:** the previous app version must keep working while the migration runs, and right after it.
 5. **Schema and data changes are separate:** DDL in one migration, backfills as batched data migrations or jobs.
-6. **Production migrations run only in the CI deploy job, after G3,** after a fresh backup. Locally, use disposable databases only.
+6. **Production migrations run only in the CI deploy job, after G3,** after a fresh backup. Locally, use the dev and test databases in the one local container only.
 
 ## Expand → migrate → contract (for every breaking change)
 | Change | Expand (release N) | Migrate | Contract (release N+1 or later) |

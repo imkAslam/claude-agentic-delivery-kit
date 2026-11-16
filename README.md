@@ -333,7 +333,7 @@ Reviewers are read-only. Engineers write only inside their role's owned paths. E
 | Verify & Release | `security-audit`, `release-docs` |
 | Documentation | `write-docs` |
 | Adapters | `tracker` (Linear, GitHub Issues, local files), `ci` (GitHub Actions, GitLab CI), `ship` (hosting targets), `setup-docker`, `detect-system` |
-| Shared practices | `tdd`, `role-boundaries`, `review-checklists`, `coding-foundations` (OOP, design patterns and stack guides) |
+| Shared practices | `feature-testing`, `role-boundaries`, `review-checklists`, `coding-foundations` (OOP, design patterns and stack guides) |
 
 Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, references loaded on demand, scripts under `scripts/`).
 

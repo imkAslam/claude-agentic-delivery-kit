@@ -28,7 +28,7 @@ Fill [INTEGRATIONS_TEMPLATE.md](references/INTEGRATIONS_TEMPLATE.md) for each pr
 ### Step 3: Design the adapter (build mode)
 Following [INTEGRATION_PATTERNS.md](references/INTEGRATION_PATTERNS.md): the port interface (owned by the application, in domain terms) → the adapter (provider SDK/HTTP, mapping, error translation) → registration through configuration. Choose sync or async per the user-wait rule.
 
-### Step 4: Write the tests first (tdd)
+### Step 4: Know what you will test (the tests are written after the module is built: `feature-testing` skill)
 Adapter tests against the local mock or recorded responses (happy path, provider errors, timeouts, rate limiting, malformed responses); webhook tests (valid signature, invalid signature, stale timestamp, duplicate event); a contract test that the mapping matches the provider schema.
 
 ### Step 5: Implement resilience

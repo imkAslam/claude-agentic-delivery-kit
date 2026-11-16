@@ -16,6 +16,8 @@ user-invocable: false
 - [ ] You re-ran the role's lint, typecheck and test yourself, and they're green.
 - [ ] No secrets, credentials or personal data in code, config, fixtures or logs.
 - [ ] Errors are handled at the boundaries. No swallowed exceptions or silent fallbacks.
+- [ ] Comments: one doc comment at the top of each function, method and class; no line-by-line comments in bodies.
+- [ ] Tests: the module is tested at feature level for every AC; no test-per-function padding; no second database container.
 - [ ] No dead code, debug output, commented-out blocks or TODOs without a ticket. `bash .claude/skills/integrate-milestone/scripts/check-hygiene.sh --base <integration-branch> --no-unused` is clean for the diff: no scaffold leftovers, stray files or dead doc links, and whatever the ticket replaced was removed.
 - [ ] Adopted codebases: the diff follows the existing conventions; untested code it changes got characterization tests first; no unrelated debt was "fixed" inside the ticket; new debt found is reported.
 - [ ] Performance: the PERFORMANCE.md checklist for the touched area (no N+1, no unbounded reads, lists paginated or virtualized, slow work off the request path); REALTIME.md and WORKERS.md checklists when the diff uses them.

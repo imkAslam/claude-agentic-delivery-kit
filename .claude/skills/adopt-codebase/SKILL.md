@@ -74,7 +74,7 @@ New work arrives as evidence in `docs/intake/`. Follow `workflow.md` → "Increm
 ## Working in adopted code (engineers and reviewers)
 - **Read `docs/CODEMAP.md` first,** then the as-built documents for the area you touch. Follow the conventions the codebase already has (engineering principle 15), even where the kit's defaults differ.
 - **Deepen on touch:** the ticket's discovery adds the acceptance criteria, contract detail and design detail for the area it changes. If your ticket touches behavior no document describes, report it; don't guess.
-- **Characterization tests first:** before changing code that has no tests, write tests that pin its current behavior (they pass on the old code), then make the change test-first (`tdd` skill).
+- **Characterization tests first:** before changing code that has no tests, write tests that pin its current behavior (they pass on the old code), then make the change test-first (`feature-testing` skill).
 - **Standards apply to what you add or change.** Leave the code you touch a little better; refactor beyond the ticket only through a ticket. Reviewers review the diff, and `check-hygiene.sh` runs with `--base delivery-baseline`.
 - **Debt you find** that isn't in the register is a `finding` for the orchestrator, which adds it. Never fix unrelated debt inside a feature ticket.
 - **No forced restructuring:** the existing structure, stack and UI library are the baseline. Moving to the kit's defaults is a change the human asks for.
@@ -90,7 +90,7 @@ New work arrives as evidence in `docs/intake/`. Follow `workflow.md` → "Increm
 - **deliver:** lane `adopt`, the `baseline` gate, increments
 - **detect-system, design-architecture, design-database, design-api, write-requirements, build-design-system, write-tests, release-docs, threat-model, write-docs:** the same templates as a new project, filled as built
 - **integrate-milestone:** `check-hygiene.sh --base delivery-baseline` in adopt runs
-- **tdd:** characterization tests
+- **feature-testing:** characterization tests
 
 ## File Structure
 ```

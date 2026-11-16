@@ -52,3 +52,15 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 - Before milestone 1 there is no code: engineers use the planned folder structure in PRD §11.
 - Build briefs list `docs/CODEMAP.md` in INPUTS. Engineers read it first, then open only the files it points to; they search (`grep`) instead of reading whole directories.
 - A stale map is a finding for the docs-writer, not a reason to explore the whole repository.
+
+## 8. Improvement report: the system learns, the human decides
+After every milestone's integration, before the milestone review, the orchestrator writes the **Improvement report** section of `milestones/<ms>/REVIEW.md` (at most 25 lines):
+1. **Numbers:** `delivery-state.sh stats <ms>` (per role: tickets, attempts, results sent back by review or reopened, bugs found later; the tickets with the most rework; tokens by agent).
+2. **What went wrong and what it cost:** the repeated review findings, the returns for an incomplete scope check, the hygiene and performance findings, the human's corrections, the slowest and most expensive tickets.
+3. **Why:** the likely cause of each, in one line (an unclear brief, a missing rule, a wrong assumption, a tool that was not pinned, a ticket that was too big).
+4. **Numbered suggestions,** one line each with the expected benefit and what it changes:
+   `S1 [lesson] …` a line for LESSONS.md · `S2 [agent] …` a change to an agent's instructions · `S3 [skill] …` a change to a skill or template · `S4 [plan] …` a planning change · `S5 [tool] …` a command or check to pin · add `[kit]` when it should go back to the delivery kit itself.
+
+**Report only.** Nothing in the report is applied by itself. The orchestrator shows the suggestions at the milestone review; the human names the ones to apply ("apply S1 and S3"). Only those are applied, as a normal change to the project's `.claude/` files or documents, and the choice is one row in `GATE-LOG.md`. Suggestions not chosen are dropped, not re-proposed every milestone unless the problem returns.
+
+The lessons log (§7) keeps working as before: a repeated mistake adds one line that the next briefs for that role include.

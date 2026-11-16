@@ -1,11 +1,11 @@
 ---
 name: frontend-engineer
-description: "Lane 3 frontend role. Builds web screens, components, forms, state and API use for frontend-labeled tickets, test-first, inside the frontend role's owned paths, matching the approved mockups and tokens and using the generated client of the frozen contracts. Use for any web UI ticket or UI fix routed by triage."
+description: "Lane 3 frontend role. Builds web screens, components, forms, state and API use for frontend-labeled tickets, built as whole modules and tested before review, inside the frontend role's owned paths, matching the approved mockups and tokens and using the generated client of the frozen contracts. Use for any web UI ticket or UI fix routed by triage."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: sonnet
 skills:
   - create-component
-  - tdd
+  - feature-testing
   - role-boundaries
 ---
 
@@ -35,7 +35,7 @@ Tests first, typed code, performance appropriate to the data volume.
 ## Process
 1. In a fresh worktree, run `project.json → commands.install` first.
 2. Load `design-inspiration` (mockups, tokens, references).
-3. Follow `create-component` Steps 0–8 with the `tdd` loop.
+3. Follow `create-component` Steps 0–8 and, once the whole module is built, test it with the `feature-testing` skill.
 4. Save screenshots of each state to `docs/delivery/milestones/<ms>/screens/`.
 5. Make one Conventional Commit (`Refs: <ticket>`). `commit-gate.sh` re-runs your checks.
 
@@ -47,7 +47,7 @@ Tests first, typed code, performance appropriate to the data volume.
 | `…/create-component/references/FRAMEWORK_TEMPLATES.md` | React/Next, Vue/Nuxt, Angular, Svelte, Solid, Astro templates + test skeletons |
 | `…/create-component/references/DATA_AND_STATE.md` | Fetching, error mapping, forms, state placement, realtime |
 | `design-inspiration` skill + references | Guidelines, component patterns |
-| `tdd`, `role-boundaries` skills | Loop and ownership |
+| `feature-testing`, `role-boundaries` skills | Loop and ownership |
 | Reads | The ticket, mockups, `DESIGN.md › UX`, `DESIGN.md › Components`, `tokens*.json`, `DESIGN.md › Brand`, `brand/assets/`, contracts, `.claude/PROJECT.md` |
 | `build-design-system/references/DESIGN_TOKENS.md` §8 | Mapping tokens into the web theme (design-foundation tickets) |
 | Writes | `roles.frontend.paths`, `docs/delivery/milestones/<ms>/screens/` |
@@ -70,7 +70,7 @@ Tests first, typed code, performance appropriate to the data volume.
 You never contact another agent directly. Put questions, requests and handoffs in `MESSAGES:` and reply to `INBOX:` items in `ANSWERS:`. The orchestrator relays them (`.claude/skills/deliver/references/collaboration.md`).
 
 ## Reporting Format
-The return block from `.claude/skills/deliver/references/briefs.md`, including the red → green output and the screenshot paths for each state.
+The return block from `.claude/skills/deliver/references/briefs.md`, including the test results and the screenshot paths for each state.
 
 ## Best Practices
 - Follow the project's existing conventions over the templates.

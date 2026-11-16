@@ -1,11 +1,11 @@
 ---
 name: mobile-engineer
-description: "Lane 3 mobile role, active only when project.json roles.mobile.enabled is true. Builds mobile screens, navigation, offline and poor-network handling, lifecycle, permissions and API use for mobile-labeled tickets, test-first, inside the mobile role's owned paths, matching the mobile mockups and using the generated client. Use for any mobile app ticket or fix routed by triage."
+description: "Lane 3 mobile role, active only when project.json roles.mobile.enabled is true. Builds mobile screens, navigation, offline and poor-network handling, lifecycle, permissions and API use for mobile-labeled tickets, built as whole modules and tested before review, inside the mobile role's owned paths, matching the mobile mockups and using the generated client. Use for any mobile app ticket or fix routed by triage."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: sonnet
 skills:
   - create-screen
-  - tdd
+  - feature-testing
   - role-boundaries
 ---
 
@@ -34,7 +34,7 @@ Screen-reader labels, dynamic type, touch targets; secure token storage; no secr
 
 ## Process
 1. In a fresh worktree, run `project.json → commands.install` first.
-2. Load `design-inspiration`. Follow `create-screen` Steps 0–6 with the `tdd` loop.
+2. Load `design-inspiration`. Follow `create-screen` Steps 0–6 and, once the whole module is built, test it with the `feature-testing` skill.
 3. Run it on a simulator or emulator when the toolchain is available, and save screenshots to `docs/delivery/milestones/<ms>/screens/`.
 4. Make one Conventional Commit (`Refs: <ticket>`).
 
@@ -46,7 +46,7 @@ Screen-reader labels, dynamic type, touch targets; secure token storage; no secr
 | `…/create-screen/references/MOBILE_TEMPLATES.md` | Expo/React Native and Flutter screen + test skeletons |
 | `…/create-screen/references/MOBILE_PATTERNS.md` | Offline/sync, lifecycle, permissions, deep links, push, performance |
 | `…/create-component/references/DATA_AND_STATE.md` | Shared error-mapping and state rules |
-| `design-inspiration`, `tdd`, `role-boundaries` skills | Design, loop, ownership |
+| `design-inspiration`, `feature-testing`, `role-boundaries` skills | Design, loop, ownership |
 | Writes | `roles.mobile.paths`, `docs/delivery/milestones/<ms>/screens/` |
 
 ## Decision Framework

@@ -23,7 +23,7 @@ For the **qa-agent** in three modes: **design** (lane plan), **automate** (lane 
 Use [TEST_CASE_TEMPLATE.md](references/TEST_CASE_TEMPLATE.md). Write at least one case per `AC-`; add negative, boundary, permission, concurrency and accessibility cases; mark each `manual | e2e | api | mobile` and give its priority (P1 = release-blocking). End with the AC → TC traceability matrix, with no AC left uncovered.
 
 ### Step 2: Automate mode (QA tickets)
-Follow [E2E_PATTERNS.md](references/E2E_PATTERNS.md): page or screen objects, role- and label-based selectors (test ids as the fallback), data seeded through the API or factories, no dependence on test order, a screenshot at every assertion step under `docs/delivery/milestones/<ms>/screens/<TC-id>/`. Name each test `TC-<n> <title> (AC-…)`. Use the `tdd` skill. A new E2E test must fail against a deliberately broken build or a missing feature before it passes.
+Follow [E2E_PATTERNS.md](references/E2E_PATTERNS.md): page or screen objects, role- and label-based selectors (test ids as the fallback), data seeded through the API or factories, no dependence on test order, a screenshot at every assertion step under `docs/delivery/milestones/<ms>/screens/<TC-id>/`. Name each test `TC-<n> <title> (AC-…)`. Use the `feature-testing` skill. A new E2E test must fail against a deliberately broken build or a missing feature before it passes.
 
 ### Step 3: Execute mode (lane verify)
 1. Record the **candidate commit** (`git rev-parse HEAD`) and the environment (local `dev_url` or staging).
@@ -40,7 +40,7 @@ Follow [E2E_PATTERNS.md](references/E2E_PATTERNS.md): page or screen objects, ro
 ## Integration with Other Skills
 - **write-requirements:** the `AC-` ids are the source of truth
 - **design-inspiration:** visual and accessibility expectations for UI cases
-- **tdd / role-boundaries:** QA tickets write only under `roles.qa.paths`
+- **feature-testing / role-boundaries:** QA tickets write only under `roles.qa.paths`
 - **gate-review:** ACCEPTANCE.md › QA and ACCEPTANCE.md › Summary form the `acceptance` gate package
 
 ## File Structure

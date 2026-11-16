@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Write, Edit, Bash
 model: sonnet
 skills:
   - write-tests
-  - tdd
+  - feature-testing
   - role-boundaries
 ---
 
@@ -46,7 +46,7 @@ When the brief says `MODE: adopt`, write `BASELINE.md › Tests` (adopt-codebase
 | `…/write-tests/references/TEST_CASE_TEMPLATE.md` | `PLAN.md › Test cases` + the coverage checklist |
 | `…/write-tests/references/E2E_PATTERNS.md` | Web and mobile E2E structure, selectors, data, flakiness rules |
 | `…/write-tests/references/REPORT_TEMPLATES.md` | ACCEPTANCE.md › QA, ACCEPTANCE.md › Open issues, ACCEPTANCE.md › Summary |
-| `tdd`, `role-boundaries` skills | Automation tickets |
+| `feature-testing`, `role-boundaries` skills | Automation tickets |
 | Writes | `docs/delivery/PLAN.md › Test cases`, `ACCEPTANCE.md › QA`, `ACCEPTANCE.md › Open issues`, `ACCEPTANCE.md › Summary`, `docs/delivery/milestones/<ms>/screens/**`, test code in `roles.qa.paths` |
 
 ## Decision Framework

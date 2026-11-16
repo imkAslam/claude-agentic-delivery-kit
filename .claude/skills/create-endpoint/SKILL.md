@@ -23,13 +23,13 @@ Read `.claude/project.json`: `stack.backend`, `stack.orm`, `stack.database`, `ro
 - `BR-` rules and `AC-` criteria from the PRD and BA analysis
 - The data model (ARCHITECTURE §7) and the security controls (ARCHITECTURE §10, THREAT-MODEL)
 
-### Step 2: Write the tests first (tdd skill)
+### Step 2: Know what you will test (the tests are written after the module is built: `feature-testing` skill)
 1. **Contract conformance:** status codes, response shape and error bodies for each operation (validate against the schema where tooling allows).
 2. **Rules:** one unit test per `BR-`, including boundaries.
 3. **Authorization:** each role allowed and denied; object-level access (user A can't read user B's resource → 404/403 per the contract).
 4. **Validation:** missing, invalid and over-limit inputs → `validation_failed` with field details.
 5. **Concurrency / idempotency:** a repeated `Idempotency-Key` returns the original result; a version mismatch → `conflict`.
-6. Integration tests run against a disposable database (a container or a test schema), not mocks of the ORM.
+6. Feature tests run against a **test database inside the project's one database container** (or SQLite when there is no Docker), not mocks of the ORM and never a second container.
 
 ### Step 3: Implement (layered)
 Follow [BACKEND_TEMPLATES.md](references/BACKEND_TEMPLATES.md) for the framework, and [API_CONVENTIONS.md](references/API_CONVENTIONS.md) for the rules:
@@ -49,7 +49,7 @@ Run the role's `lint`, `typecheck` and `test`. Start the server and exercise eac
 ## Integration with Other Skills
 - **design-architecture:** the source of the contracts and the error model ([API_CONTRACTS.md](../design-architecture/references/API_CONTRACTS.md))
 - **threat-model:** the controls to implement (authn/z, rate limits, audit)
-- **tdd / role-boundaries / review-checklists:** the loop, the ownership rules, and what the backend-reviewer checks
+- **feature-testing / role-boundaries / review-checklists:** the loop, the ownership rules, and what the backend-reviewer checks
 
 ## File Structure
 ```

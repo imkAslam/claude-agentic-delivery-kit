@@ -103,7 +103,7 @@ delivery-state.sh <command> [args]
                                                open a change request (invalidates the gate); prints the id.
                                                Needs the human's explicit yes first (a major decision)
   cr-close <CR-id>
-  ticket add <id> <role> <milestone> "<title>" [dep1,dep2] [--type feature|chore|spike|bug] [--size S|M|L]
+  ticket add <id> <role> <milestone> "<title>" [dep1,dep2] [--type feature|chore|spike|bug] [--size S|M|L] [--paths <glob,glob>]
              [--status ready|backlog] [--of <original-id>|none] [--severity P1|P2|P3] [--found-in "<where>"]
                                                a bug needs --of and --severity; it is linked both ways
   ticket status <id> <status> [--note "<text>"] [--force "<reason>"]
@@ -114,6 +114,11 @@ delivery-state.sh <command> [args]
   ticket attempt <id>                          increment attempts (exit 3 + CAP_REACHED at the cap)
   ticket set <id> <branch|tracker_ref|title|size> <value>
   ready <ms-n>                                 list ready tickets whose dependencies are done (or verified)
+  plan-check <ms-n>                            are the milestone's tickets independent? fails when a feature ticket depends on
+                                               another feature ticket in the same milestone, or when two tickets that can run
+                                               together touch the same files (ticket add --paths); prints how many can start together
+  board                                        who is working on what right now (ticket, role, status, attempts, agent)
+  stats [ms-n]                                 rework and cost per role: attempts, returns from review, reopened, bugs, tokens
   bugs [open|all] [ms-n]                       list bug tickets with severity, status and the original ticket
   fail <ticket> <role> <attempts> <report-path>
   msg add <from> <to> <question|request|handoff|finding|info|decision-needed> "<re>" "<body>" [blocking]
@@ -319,9 +324,9 @@ case "$cmd" in
     need_state; sub="${1:-}"; shift || true
     case "$sub" in
       add)
-        [ $# -ge 4 ] || die "usage: ticket add <id> <role> <milestone> <title> [deps] [--type t] [--size S|M|L] [--status ready|backlog] [--of <id>|none] [--severity P1|P2|P3] [--found-in <where>]"
+        [ $# -ge 4 ] || die "usage: ticket add <id> <role> <milestone> <title> [deps] [--type t] [--size S|M|L] [--status ready|backlog] [--of <id>|none] [--severity P1|P2|P3] [--found-in <where>] [--paths <glob,glob>]"
         id="$1" role="$2" ms="$3" title="$4"; shift 4
-        deps="" type="feature" size="" of="" sev="" found="" st="ready"
+        deps="" type="feature" size="" of="" sev="" found="" st="ready" paths=""
         if [ $# -gt 0 ] && [ "${1#--}" = "$1" ]; then deps="$1"; shift; fi
         while [ $# -gt 0 ]; do
           [ $# -ge 2 ] || die "option $1 needs a value"
@@ -332,6 +337,7 @@ case "$cmd" in
             --severity) sev="$2" ;;
             --found-in) found="$2" ;;
             --status) st="$2" ;;
+            --paths) paths="$2" ;;
             *) die "unknown option: $1" ;;
           esac
           shift 2
@@ -351,14 +357,14 @@ case "$cmd" in
         fi
         upd '.tickets[$i] = {title: $t, type: $ty, role: $r, milestone: $m, status: $st,
               size: (if $sz == "" then null else $sz end), attempts: 0,
-              depends_on: ($d | split(",") | map(select(length > 0))), branch: null, tracker_ref: null,
+              depends_on: ($d | split(",") | map(select(length > 0))), paths: ($p | split(",") | map(select(length > 0))), branch: null, tracker_ref: null,
               bug_of: (if $of == "" or $of == "none" then null else $of end),
               severity: (if $sev == "" then null else $sev end),
               found_in: (if $f == "" then null else $f end), bugs: [],
               history: [{from: null, to: $st, ts: $now, note: "created"}]}
             | if $of != "" and $of != "none" then .tickets[$of].bugs = ((.tickets[$of].bugs // []) + [$i]) else . end' \
           --arg i "$id" --arg r "$role" --arg m "$ms" --arg t "$title" --arg d "$deps" --arg ty "$type" \
-          --arg sz "$size" --arg of "$of" --arg sev "$sev" --arg f "$found" --arg st "$st"
+          --arg sz "$size" --arg of "$of" --arg sev "$sev" --arg f "$found" --arg st "$st" --arg p "$paths"
         ;;
       status)
         [ $# -ge 2 ] || die "usage: ticket status <id> <status> [--note \"<text>\"] [--force \"<reason>\"]"
@@ -417,6 +423,52 @@ case "$cmd" in
       | select(.value.milestone == $m and .value.status == "ready")
       | select(all(.value.depends_on[]?; (($t[.].status // "") | IN("done", "verified"))))
       | "\(.key)\t\(.value.role)\t\(.value.title)"' "$STATE"
+    ;;
+  plan-check)
+    need_state; [ $# -eq 1 ] || die "usage: plan-check <ms-n>"
+    res=$(jq -r --arg m "$1" '
+      def root: split("*")[0] | sub("/$"; "");
+      def overlap($a; $b): ($a | root) as $x | ($b | root) as $y
+        | ($x == $y) or ($x == "") or ($y == "") or ($x | startswith($y + "/")) or ($y | startswith($x + "/"));
+      .tickets as $t
+      | [$t | to_entries[] | select(.value.milestone == $m and .value.status != "cancelled")] as $ms
+      | ($ms | map(select((.value.type // "feature") != "chore"))) as $feat
+      | ( $feat[] | . as $a | ($a.value.depends_on // [])[] as $d
+          | select(($t[$d].milestone // "") == $m and (($t[$d].type // "feature") != "chore"))
+          | "FAIL\t\($a.key) depends on \($d) in the same milestone: feature tickets must be independent (depend only on foundation tickets or an earlier milestone)" ),
+        ( range(0; $ms | length) as $i | range($i + 1; $ms | length) as $j | $ms[$i] as $a | $ms[$j] as $b
+          | select((($a.value.depends_on // []) | index($b.key)) == null and (($b.value.depends_on // []) | index($a.key)) == null)
+          | [ ($a.value.paths // [])[] as $pa | ($b.value.paths // [])[] as $pb | select(overlap($pa; $pb)) | "\($pa) and \($pb)" ] as $o
+          | select(($o | length) > 0)
+          | "FAIL\t\($a.key) and \($b.key) can run at the same time but touch the same files (\($o[0])): split the files, or put the shared file in a foundation ticket" ),
+        ( $ms[] | select(((.value.paths // []) | length) == 0) | "WARN\t\(.key) has no paths, so overlaps cannot be checked (ticket add --paths)" ),
+        ( ($feat | map(select(all((.value.depends_on // [])[]; ($t[.].milestone != $m) or (($t[.].type // "feature") == "chore")))) | length) as $par
+          | "plan: \($ms | length) tickets in \($m), \($feat | length) feature tickets, \($par) can start together once the foundation is done" )' "$STATE")
+    printf '%s\n' "$res"
+    printf '%s\n' "$res" | grep -q '^FAIL' && exit 1
+    exit 0
+    ;;
+  board)
+    need_state
+    jq -r '(.agents // {}) as $ag
+      | [.tickets | to_entries[] | select(.value.status | IN("in_progress", "in_review", "changes_requested", "reopened", "blocked", "approved"))] as $a
+      | if ($a | length) == 0 then "board: nothing in progress"
+        else ("TICKET\tROLE\tSTATUS\tATTEMPTS\tSINCE (UTC)\tAGENT\tTITLE",
+              ($a[] | "\(.key)\t\(.value.role)\t\(.value.status)\t\(.value.attempts // 0)\t\((.value.history // [])[-1].ts // "-")\t\($ag["ticket:" + .key] // "-")\t\(.value.title)")) end' "$STATE"
+    ;;
+  stats)
+    need_state
+    jq -r --arg m "${1:-}" '
+      def returns: [(.value.history // [])[] | select(.to == "changes_requested" or .to == "reopened")] | length;
+      [.tickets | to_entries[] | select($m == "" or .value.milestone == $m)] as $ts
+      | "Tickets: \($ts | length)   done: \([$ts[] | select(.value.status | IN("done", "verified"))] | length)   bugs: \([$ts[] | select((.value.type // "") == "bug")] | length)",
+        ( $ts | group_by(.value.role)[] | . as $g
+          | "\($g[0].value.role): \($g | length) tickets, \([$g[].value.attempts // 0] | add) attempts, \([$g[] | returns] | add) sent back by review or reopened, \([$g[] | select(((.value.bugs // []) | length) > 0)] | length) with bugs found later" ),
+        ( [$ts[] | {k: .key, n: returns, a: (.value.attempts // 0)} | select((.n + .a) > 1)] | sort_by(-(.n + .a)) | .[0:5]
+          | if length > 0 then "Most rework: " + (map("\(.k) (\(.a) attempts, \(.n) returns)") | join(", ")) else "Most rework: none" end ),
+        ( (.usage // []) as $u | if ($u | length) > 0
+          then "Tokens by agent (whole run): " + ([$u | group_by(.agent)[] | {a: .[0].agent, t: ([.[].tokens] | add), n: length}] | sort_by(-.t) | .[0:8] | map("\(.a) \(.t) in \(.n) runs") | join(" · "))
+          else empty end )' "$STATE"
     ;;
   bugs)
     need_state; scope="${1:-open}"; ms="${2:-}"

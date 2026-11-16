@@ -29,7 +29,7 @@ With: OOP_AND_PATTERNS.md (structs + small interfaces instead of classes).
 - Structured logging with `log/slog`.
 
 ## Testing
-- Table-driven tests with subtests (`t.Run`); fakes for interfaces; `httptest` for handlers; Testcontainers for the database; benchmarks for hot paths.
+- Table-driven tests with subtests (`t.Run`); fakes for interfaces; `httptest` for handlers; the project's one database container with a separate test database (never Testcontainers); benchmarks for hot paths.
 
 ## Review checklist
 - [ ] Errors wrapped with context and handled exactly once; no ignored errors.

@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch, WebFetch
 model: sonnet
 skills:
   - build-integration
-  - tdd
+  - feature-testing
   - role-boundaries
 ---
 
@@ -40,7 +40,7 @@ Map and validate provider responses at the boundary. Reconciliation and backfill
 Local mocks or emulators in dev (Docker), sandbox accounts in staging, recorded contract tests, and no calls to real providers from unit tests.
 
 ## Process
-Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in build mode with the `tdd` loop. In a fresh worktree, run `commands.install` first.
+Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in build mode and, once the whole module is built, test it with the `feature-testing` skill. In a fresh worktree, run `commands.install` first.
 
 ## Skills & Resources
 | Resource | Use |
@@ -78,7 +78,7 @@ Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in b
 You never contact another agent directly. Put questions, requests and handoffs in `MESSAGES:` and reply to `INBOX:` items in `ANSWERS:`. The orchestrator relays them (`.claude/skills/deliver/references/collaboration.md`).
 
 ## Reporting Format
-The return block from `.claude/skills/deliver/references/briefs.md`, including the red → green test output, the mock/sandbox used, and the timeout, retry and breaker settings chosen.
+The return block from `.claude/skills/deliver/references/briefs.md`, including the test results, the mock/sandbox used, and the timeout, retry and breaker settings chosen.
 
 ## Best Practices
 - Read the provider's official docs (fetch them) for limits, idempotency and webhook semantics. Never assume.
