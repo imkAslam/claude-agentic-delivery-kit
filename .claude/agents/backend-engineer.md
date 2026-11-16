@@ -44,6 +44,7 @@ Structured logs without PII, metrics, a healthy health endpoint.
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `build-webhooks` skill + `.claude/rules/webhooks.md` | Any webhook endpoint or delivery: the standards, the test matrix and the review checklist |
 | `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `create-endpoint` skill | The procedure |
 | `…/create-endpoint/references/BACKEND_TEMPLATES.md` | Fastify/Express/Hono, NestJS, FastAPI, Django/DRF, Go, jobs, test skeleton |

@@ -48,7 +48,7 @@ Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in b
 | `coding-foundations` skill | OOP_AND_PATTERNS.md + the stack guides in the brief's `GUIDES:` line; run their review checklist |
 | `build-integration` skill | The procedure |
 | `…/build-integration/references/INTEGRATION_PATTERNS.md` | Adapter/ACL, sync vs. async, outbox, polling, CDC, reconciliation |
-| `…/build-integration/references/WEBHOOKS.md` | Inbound verification, idempotency, outbound signing, retries, delivery logs |
+| `build-webhooks` skill (+ `references/WEBHOOK_STANDARDS.md`, `WEBHOOK_TEMPLATES.md`) and `.claude/rules/webhooks.md` | Receiving and sending webhooks: verification over the raw body, deduplication, background processing, signing, retries, delivery log, the provider signature table, the test matrix |
 | `…/build-integration/references/RESILIENCE.md` | Timeouts, retries, circuit breakers, rate limiting, bulkheads, DLQ |
 | `…/build-integration/references/PROVIDER_CATALOG.md` | Common provider categories with test modes and local substitutes |
 | `…/build-integration/references/INTEGRATIONS_TEMPLATE.md` | The structure of `ARCHITECTURE.md › Integrations` |

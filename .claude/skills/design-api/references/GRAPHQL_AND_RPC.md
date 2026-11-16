@@ -25,4 +25,4 @@ Use these only when the architecture ADR selected them. REST is the default.
 - An **envelope** on every event: `id` (unique), `type` (`task.assigned.v1`), `occurredAt`, `source`, `subject` (the resource id), `data`. A CloudEvents-compatible shape is a good default.
 - Delivery is **at-least-once**: consumers are idempotent (deduplicate by `id`); ordering is guaranteed only per key, and only if the broker partitions by it.
 - Events are facts in the past tense (`order.confirmed`), not commands. Payloads carry the needed data, or a reference plus a fetch-back for sensitive data.
-- Webhooks to third parties use the same envelope plus a signature (see build-integration → WEBHOOKS.md).
+- Webhooks to third parties use the same envelope plus a signature (see the `build-webhooks` skill → WEBHOOK_STANDARDS.md).

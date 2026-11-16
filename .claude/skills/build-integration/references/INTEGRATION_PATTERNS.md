@@ -23,7 +23,7 @@ Write the business change **and** an `outbox_events` row in one DB transaction; 
 ## 4. Inbound data: webhooks, polling, CDC
 | Mechanism | Use | Must also have |
 |---|---|---|
-| Webhooks | The provider pushes events | Signature verification, dedup, async processing (WEBHOOKS.md) |
+| Webhooks | The provider pushes events | Signature verification, dedup, async processing (`build-webhooks` skill → WEBHOOK_STANDARDS.md) |
 | Polling | No webhooks; small volumes | A cursor/`updated_since` checkpoint, backoff, rate-limit respect |
 | Change data capture / event streams | Internal systems, high volume | Ordering per key, idempotent consumers |
 | Batch file import (CSV/SFTP) | Partners, back office | Schema validation, row-level error report, idempotent re-import |

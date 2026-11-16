@@ -35,7 +35,7 @@ Adapter tests against the local mock or recorded responses (happy path, provider
 Per [RESILIENCE.md](references/RESILIENCE.md): timeouts, retry policy, circuit breaker, client-side rate limiting, bulkhead, fallback, DLQ for async work.
 
 ### Step 6: Webhooks
-Inbound and outbound per [WEBHOOKS.md](references/WEBHOOKS.md).
+Inbound and outbound per the **`build-webhooks` skill** (`.claude/skills/build-webhooks/SKILL.md`: standards, templates per stack, provider signature table, test matrix) and `.claude/rules/webhooks.md`.
 
 ### Step 7: Verify and evidence
 Run the role's checks; exercise the integration end to end against the local mock (and the sandbox, if the brief allows and it's configured); record the settings chosen (timeouts, retries, breaker thresholds) in the ARCHITECTURE.md › Integrations entry.
@@ -56,7 +56,6 @@ Run the role's checks; exercise the integration end to end against the local moc
 ├── SKILL.md
 └── references/
     ├── INTEGRATION_PATTERNS.md   # ports/adapters, ACL, sync vs async, outbox, polling, CDC, reconciliation, idempotency
-    ├── WEBHOOKS.md               # inbound verification and processing, outbound signing and delivery
     ├── RESILIENCE.md             # timeouts, retries, breakers, rate limits, bulkheads, DLQ, fallbacks
     ├── PROVIDER_CATALOG.md       # provider categories, test modes, local substitutes, gotchas
     └── INTEGRATIONS_TEMPLATE.md  # ARCHITECTURE.md › Integrations structure

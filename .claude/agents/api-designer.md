@@ -46,6 +46,7 @@ When the brief says `MODE: adopt`, the contract is **what the API does today**: 
 ## Skills & Resources
 | Resource | Use |
 |---|---|
+| `build-webhooks` skill + `.claude/rules/webhooks.md` | Any webhook endpoint or delivery: the standards, the test matrix and the review checklist |
 | `design-api` skill | The procedure |
 | `…/design-api/references/REST_DESIGN.md` | Resources, URLs, methods, status codes, errors, pagination, filtering, caching, bulk operations |
 | `…/design-api/references/GRAPHQL_AND_RPC.md` | GraphQL schema design, typed RPC and gRPC, event/async schemas |
