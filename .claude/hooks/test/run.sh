@@ -187,7 +187,7 @@ m=$(bash "$S" msg add solution-architect product-manager question "AC-ORD-4" "Fi
 bash "$S" msg open product-manager | grep -q 'BLOCKING' && { pass=$((pass+1)); echo "  ok   open blocking message listed"; } || { fail=$((fail+1)); echo "  FAIL open blocking message listed"; }
 bash "$S" msg answer M-1 product-manager "First-come only" >/dev/null
 [ -z "$(bash "$S" msg open)" ] && { pass=$((pass+1)); echo "  ok   answered message closes"; } || { fail=$((fail+1)); echo "  FAIL answered message closes"; }
-grep -q 'First-come only' docs/delivery/MESSAGES.md && { pass=$((pass+1)); echo "  ok   message log written"; } || { fail=$((fail+1)); echo "  FAIL message log written"; }
+[ ! -f docs/delivery/MESSAGES.md ] && { pass=$((pass+1)); echo "  ok   no message log file (messages stay in the run state)"; } || { fail=$((fail+1)); echo "  FAIL no message log file (messages stay in the run state)"; }
 bash "$S" msg add a b gossip "x" "y" >/dev/null 2>&1; c=$?
 [ $c -ne 0 ] && { pass=$((pass+1)); echo "  ok   rejects unknown message type"; } || { fail=$((fail+1)); echo "  FAIL rejects unknown message type"; }
 bash "$S" agent set ticket:T-002 agent-abc >/dev/null

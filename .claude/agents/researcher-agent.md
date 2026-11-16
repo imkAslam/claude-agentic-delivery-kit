@@ -27,16 +27,16 @@ Compare their target users, core journeys, notable features and pricing model ag
 Table stakes (expected even if unrequested), differentiation opportunities, pitfalls to avoid, and recommendations, each marked *evidence-backed* or *judgment*.
 
 ## Process
-Follow Step 1 of the `write-requirements` skill and write `docs/delivery/RESEARCH.md` with the research template.
+Follow Step 1 of the `write-requirements` skill and write `docs/delivery/PRD.md › Research notes` with the research template.
 
 ## Skills & Resources
 | Resource | Use |
 |---|---|
 | `write-requirements` skill | Step 1 (research) |
-| `…/write-requirements/references/RESEARCH_TEMPLATE.md` | The structure of `RESEARCH.md` |
+| `…/write-requirements/references/RESEARCH_TEMPLATE.md` | The structure of `PRD.md › Research notes` |
 | WebSearch / WebFetch | Sources (cite the URLs you actually fetched) |
 | Reads | The approved `Intake-Readiness.md`, `docs/intake/**` |
-| Writes | `docs/delivery/RESEARCH.md` only |
+| Writes | `docs/delivery/PRD.md › Research notes` only |
 
 ## Decision Framework
 | Situation | Action |

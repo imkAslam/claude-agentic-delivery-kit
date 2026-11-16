@@ -3,7 +3,7 @@
 Agents talk to each other **through the orchestrator**, which works like a message bus. Claude Code subagents can't start other subagents or message them directly, so the main session relays every message:
 - It delivers each message to the recipient, either by **continuing** that agent with its context intact (SendMessage with the agent's id or name) or by putting the message in the recipient's next brief under `INBOX:`.
 - It routes the answer back the same way.
-- It logs every message in the run state and in `docs/delivery/MESSAGES.md`, so the whole conversation is auditable.
+- It logs every message in the run state (`delivery-state.sh msg add|answer|open`). There is no message file.
 
 ## Message types
 | Type | Meaning | What the orchestrator does |

@@ -31,4 +31,4 @@ We choose **<option>** because <the reasons, tied to the drivers>.
 
 **Write an ADR for:** language/framework, database, hosting target, auth approach, API style, monorepo vs. multi-repo, any queue/cache/realtime addition, and any deviation from a kit default.
 
-**Lifecycle and index:** never delete or rewrite an accepted ADR; supersede it with a new one. Every ADR is listed in `docs/adr/README.md` (write-docs → ADR_GUIDE.md).
+**Lifecycle:** never delete or rewrite an accepted ADR; supersede it with a new one and link both ways. There is no index file. ADRs are for major decisions only (`write-docs` → ADR_GUIDE.md); other choices are one line in ARCHITECTURE.md.

@@ -25,7 +25,7 @@ You are the architecture specialist. You decide **how** the system is built, fro
 ### 1. Architecture research
 - Extract and weight the drivers from the PRD (scale, latency, availability, realtime, offline, data sensitivity, integrations, team skills, budget, hosting)
 - Shortlist 3 candidate styles; fetch at least 5 authoritative sources (cloud architecture frameworks, pattern catalogs, official docs)
-- Score the candidates with evidence, and write `ARCHITECTURE-RESEARCH.md` plus the style ADR
+- Score the candidates with evidence, and write `ARCHITECTURE.md › Research` plus the style ADR
 
 ### 2. Framework selection guidance
 - **Frontend:** React with an SSR meta-framework, a React SPA, Vue/Nuxt, Angular, SvelteKit, SolidStart, Astro, chosen by SEO, interactivity, team and ecosystem
@@ -70,7 +70,7 @@ When the brief says `MODE: adopt`, you **map** an existing codebase instead of d
 | `…/references/REFERENCE_SOURCES.md` | Authoritative sources, search queries, evidence rules |
 | `…/references/ARCHITECTURE_PATTERNS.md` | Styles, frameworks, data stores, API/realtime, scalability, design patterns, worked decisions |
 | `…/references/STACK_SELECTION.md` | Drivers, weighted matrix, defaults, hosting fit |
-| `…/references/ARCH_RESEARCH_TEMPLATE.md` | `ARCHITECTURE-RESEARCH.md` |
+| `…/references/ARCH_RESEARCH_TEMPLATE.md` | `ARCHITECTURE.md › Research` |
 | `…/references/LAYERED_BLUEPRINT.md` | Layer blocks, dependency rule, flows, scaling stages, the PRD §10–§12 format |
 | `…/references/DIAGRAMS.md` | Diagrams in the PRD (source) and mirrored in ARCHITECTURE §14, the required set D0–D8, diagram rules, the "Why this architecture" template |
 | `…/references/FOLDER_STRUCTURES.md` | Folder tree templates + ownership rules |
@@ -79,7 +79,7 @@ When the brief says `MODE: adopt`, you **map** an existing codebase instead of d
 | `…/references/ARCHITECTURE_TEMPLATE.md` · `ADR_TEMPLATE.md` · `API_CONTRACTS.md` | ARCHITECTURE §1–§13, ADRs, contracts |
 | `.claude/skills/deliver/references/manifest.md` | The `project.json` schema |
 | `.claude/skills/deliver/references/collaboration.md` | Messaging other agents |
-| Writes | `ARCHITECTURE-RESEARCH.md`, `ARCHITECTURE.md`, the architect sections of `PRD.md` (§10–§12, every diagram), `docs/adr/*`, `contracts.paths`, `.claude/project.json`, `.claude/PROJECT.md` |
+| Writes | `ARCHITECTURE.md › Research`, `ARCHITECTURE.md`, the architect sections of `PRD.md` (§10–§12, every diagram), `docs/adr/*`, `contracts.paths`, `.claude/project.json`, `.claude/PROJECT.md` |
 
 ## Decision Framework
 1. **Requirements:** which weighted driver decides this?

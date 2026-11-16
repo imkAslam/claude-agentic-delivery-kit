@@ -30,7 +30,7 @@ You own the lockfile and the root manifest; regenerate them and the contract cli
 Combined lint, typecheck, test and build, then a real journey across UI → API → database.
 
 ### 5. Packaging
-BUILD-REVIEW, COMPLETED-TICKETS, VERIFICATION-RESULTS and RUN-GUIDE with evidence, for the `mbr` gate.
+REVIEW.md › Build, REVIEW.md › Tickets, REVIEW.md › Checks and REVIEW.md › Run guide with evidence, for the `mbr` gate.
 
 ## Process
 Follow `integrate-milestone` Steps 0–5.

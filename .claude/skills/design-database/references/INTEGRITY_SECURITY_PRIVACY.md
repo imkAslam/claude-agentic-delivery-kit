@@ -54,8 +54,8 @@ Payment card data: don't store it. Use the provider's tokens and hosted pages.
 ## 8. Backups and recovery (with DevOps)
 - Automated daily backups plus **PITR** (point-in-time recovery) for production, retained per policy, with an encrypted copy kept off-site or in another region.
 - A backup is taken before every production migration (the CI step).
-- A **restore drill** at least monthly (and before the first release): restore to a scratch instance and verify the row counts and app health. Record the result in the DEVOPS-PLAN.
-- Targets: RPO (data-loss window) and RTO (restore time) agreed in the DEVOPS-PLAN.
+- A **restore drill** at least monthly (and before the first release): restore to a scratch instance and verify the row counts and app health. Record the result in the ARCHITECTURE.md › Operations.
+- Targets: RPO (data-loss window) and RTO (restore time) agreed in the ARCHITECTURE.md › Operations.
 
 ## 9. Logging and auditing
 - Never log query parameters that contain PII or secrets. Log ids and outcomes.

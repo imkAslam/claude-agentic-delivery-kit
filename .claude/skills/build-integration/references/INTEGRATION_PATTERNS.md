@@ -41,4 +41,4 @@ Validate provider responses against the schema we expect (zod/pydantic-style) at
 OIDC/OAuth providers: authorization-code + PKCE flow through the vetted library; validate the `state` and `nonce`; map provider identities to local users by a stable subject id (not by email alone); handle account linking explicitly.
 
 ## 8. Configuration
-Every integration is configured by environment-variable **names** (base URL, keys, webhook secret, timeouts) listed in `.env.example`, `project.json → deploy.required_secrets` and INTEGRATIONS.md. Use separate test and live credentials per environment.
+Every integration is configured by environment-variable **names** (base URL, keys, webhook secret, timeouts) listed in `.env.example`, `project.json → deploy.required_secrets` and ARCHITECTURE.md › Integrations. Use separate test and live credentials per environment.

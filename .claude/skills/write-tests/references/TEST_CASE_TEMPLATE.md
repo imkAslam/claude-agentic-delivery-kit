@@ -1,7 +1,7 @@
-# TEST-CASES.md template
+# PLAN.md › Test cases template
 
 ```markdown
-> Status: in-review · Owner: qa-agent · Sources: PRD.md, BA-ANALYSIS.md, UI-UX.md, contracts · Updated: <ISO>
+> Status: in-review · Owner: qa-agent · Sources: PRD.md, PRD.md › Analysis, DESIGN.md › UX, contracts · Updated: <ISO>
 
 # Test cases
 
@@ -18,7 +18,7 @@ Priority: P1 release-blocking · P2 important · P3 minor. Type: manual | e2e | 
 - **Expected:**
   1. The checkout page shows a total of 120.00
   2. A confirmation page with the order number is shown; the order list shows the status "Confirmed"
-- **Evidence:** docs/delivery/evidence/TC-001/
+- **Evidence:** docs/delivery/milestones/<ms>/screens/TC-001/
 
 ## TC-002 Missing postcode blocks checkout (AC-ORD-2)
 …

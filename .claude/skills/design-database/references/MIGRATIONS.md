@@ -31,9 +31,9 @@ Set `lock_timeout` and `statement_timeout` in migration sessions, so a migration
 Run them in batches (by primary-key range, 1–10k rows per batch), idempotently and resumably; throttle under load; record progress; verify counts and checksums at the end. Large backfills run as jobs, not inside the deploy-blocking migration.
 
 ## Rollback
-- Each migration states its rollback: a `down` migration where the tool supports it, or the documented manual steps in `ROLLBACK-RUNBOOK.md`.
+- Each migration states its rollback: a `down` migration where the tool supports it, or the documented manual steps in `RELEASE.md › Rollback`.
 - Destructive steps (drops) happen only in the contract phase, after a backup, once the previous app version no longer needs the object.
-- Data rollback = restore from a backup or PITR. Its time and data-loss window are documented in DEVOPS-PLAN.
+- Data rollback = restore from a backup or PITR. Its time and data-loss window are documented in ARCHITECTURE.md › Operations.
 
 ## Seeds and fixtures
 - **Dev seeds:** synthetic, deterministic and idempotent; they create demo accounts that work locally only.

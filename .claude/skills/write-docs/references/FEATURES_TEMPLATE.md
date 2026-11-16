@@ -1,4 +1,4 @@
-# docs/FEATURES.md: the feature catalog
+# docs/delivery/PLAN.md › Features: the feature catalog
 
 ```markdown
 # Features
@@ -20,7 +20,7 @@
 - **Value:** the client's goal it serves (PRD §1 G-…)
 - **Behavior:** 2–4 lines in plain language; business rules BR-…
 - **Out of scope:** what this feature deliberately doesn't do
-- **Evidence:** the E2E test and screenshots once built (`milestones/<ms>/evidence/…`)
+- **Evidence:** the E2E test and screenshots once built (`milestones/<ms>/screens/…`)
 - **Changes:** CR ids that changed it, if any
 ```
 

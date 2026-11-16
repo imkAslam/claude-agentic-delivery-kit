@@ -127,9 +127,8 @@ EOF
 
 MSG_LOG="docs/delivery/MESSAGES.md"
 MSG_TYPES="question request handoff finding info decision-needed"
-log_msg() {
-  mkdir -p "$(dirname "$MSG_LOG")"
-  [ -f "$MSG_LOG" ] || printf '# Agent messages\n\n| When (UTC) | Id | From | To | Type | Re | Message |\n|---|---|---|---|---|---|---|\n' > "$MSG_LOG"
+log_msg() { # messages live in the run state; the file is only kept up for older runs that already have it
+  [ -f "$MSG_LOG" ] || return 0
   printf '| %s | %s | %s | %s | %s | %s | %s |\n' "$(now)" "$1" "$2" "$3" "$4" "$5" "$(printf '%s' "$6" | tr '\n|' '  ')" >> "$MSG_LOG"
 }
 

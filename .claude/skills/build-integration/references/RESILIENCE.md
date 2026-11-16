@@ -21,4 +21,4 @@ Map the provider's errors into our categories at the adapter:
 | `auth_failed` | 401/403 from the provider | No retry; alert ops (credential problem) |
 
 ## Observability
-Metrics per provider: request count, error rate by category, latency percentiles, breaker state, retry count, DLQ depth. Alert on breaker-open, rising error rates and DLQ growth. Dashboards are listed in OPERATIONS-HANDOFF.
+Metrics per provider: request count, error rate by category, latency percentiles, breaker state, retry count, DLQ depth. Alert on breaker-open, rising error rates and DLQ growth. Dashboards are listed in RELEASE.md › Operations handoff.

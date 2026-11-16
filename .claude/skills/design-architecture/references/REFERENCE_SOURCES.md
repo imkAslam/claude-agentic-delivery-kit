@@ -32,7 +32,7 @@ Thoughtworks Technology Radar (https://www.thoughtworks.com/radar) for adoption 
 4. **Fetch** at least **5 sources**: at least 2 tier-1 cloud architecture sources, at least 1 pattern source (microservices.io or Fowler), and the official docs for each technology you choose. Record the URL, title, fetch date and the specific claim each one supports.
 5. **Score** the candidates in the weighted matrix ([STACK_SELECTION.md](STACK_SELECTION.md)), adding the evidence column.
 6. **Decide** the style, then build the **layer-by-layer blueprint** ([LAYERED_BLUEPRINT.md](LAYERED_BLUEPRINT.md)) and the **folder structure** ([FOLDER_STRUCTURES.md](FOLDER_STRUCTURES.md)).
-7. **Write** `docs/delivery/ARCHITECTURE-RESEARCH.md` ([ARCH_RESEARCH_TEMPLATE.md](ARCH_RESEARCH_TEMPLATE.md)) and an ADR for the style.
+7. **Write** `docs/delivery/ARCHITECTURE.md › Research` ([ARCH_RESEARCH_TEMPLATE.md](ARCH_RESEARCH_TEMPLATE.md)) and an ADR for the style.
 
 ## Rules
 - Cite only the pages you actually fetched. If one fails to load, say so and use another source.

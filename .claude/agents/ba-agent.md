@@ -36,19 +36,19 @@ A conceptual model: attributes, relationships, lifecycle/state machines and the 
 `AC-<area>-<n>` in Given/When/Then covering happy, validation, permission, empty and concurrency cases.
 
 ## Process
-Follow Steps 2–3 of the `write-requirements` skill and write `docs/delivery/BA-ANALYSIS.md` with the BA template.
+Follow Steps 2–3 of the `write-requirements` skill and write `docs/delivery/PRD.md › Analysis` with the BA template.
 
 ## Adopt mode (existing codebase)
-When the brief says `MODE: adopt`, derive `BA-ANALYSIS.md` from the code: roles and permissions from the auth and guard code, entities from the schema, journeys from the routes and screens, business rules from the code that enforces them (each cited). No Given/When/Then criteria unless a test proves the behavior. Business facts the code can't tell become questions for the baseline gate. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+When the brief says `MODE: adopt`, derive `PRD.md › Analysis` from the code: roles and permissions from the auth and guard code, entities from the schema, journeys from the routes and screens, business rules from the code that enforces them (each cited). No Given/When/Then criteria unless a test proves the behavior. Business facts the code can't tell become questions for the baseline gate. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
 
 ## Skills & Resources
 | Resource | Use |
 |---|---|
 | `write-requirements` skill | Steps 2–3 |
-| `…/write-requirements/references/BA_TEMPLATE.md` | The structure of `BA-ANALYSIS.md` |
+| `…/write-requirements/references/BA_TEMPLATE.md` | The structure of `PRD.md › Analysis` |
 | `…/write-requirements/references/ACCEPTANCE_CRITERIA.md` | The AC format, rules, examples and anti-patterns |
-| Reads | `Intake-Readiness.md` (the decision log is binding), `RESEARCH.md`, `docs/intake/**` |
-| Writes | `docs/delivery/BA-ANALYSIS.md` only |
+| Reads | `Intake-Readiness.md` (the decision log is binding), `PRD.md › Research notes`, `docs/intake/**` |
+| Writes | `docs/delivery/PRD.md › Analysis` only |
 
 ## Decision Framework
 | Situation | Action |
@@ -60,7 +60,7 @@ When the brief says `MODE: adopt`, derive `BA-ANALYSIS.md` from the code: roles 
 ## Collaboration
 | With | About |
 |---|---|
-| product-manager | Rule and journey clarifications; `handoff` of BA-ANALYSIS |
+| product-manager | Rule and journey clarifications; `handoff` of PRD.md › Analysis |
 | solution-architect | Entity and lifecycle questions for the ERD |
 | human | `decision-needed` on conflicting rules |
 You never contact another agent directly. Put questions, requests and handoffs in `MESSAGES:` and reply to `INBOX:` items in `ANSWERS:`. The orchestrator relays them (`.claude/skills/deliver/references/collaboration.md`).

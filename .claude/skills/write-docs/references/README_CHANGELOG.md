@@ -18,7 +18,7 @@ One paragraph: what it does and for whom (from PRD §1).
 <one row per project.json command: install, dev, lint, typecheck, test, e2e, build, migrate, seed>
 
 ## Architecture
-3–5 lines, then links: PRD §10 (layers and D1), docs/adr/README.md, docs/database/DATABASE.md, the contracts.
+3–5 lines, then links: PRD §10 (layers and D1), docs/adr/, docs/database/DATABASE.md, the contracts.
 
 ## Project structure
 The top-level folders and their owners (PRD §11).
@@ -27,9 +27,9 @@ The top-level folders and their owners (PRD §11).
 Branches, commits and reviews (the git rules), test-first, and where tickets live (the tracker).
 
 ## Documentation
-Link to docs/README.md.
+Link to docs/CODEMAP.md and docs/SYSTEM-FLOWS.md.
 ```
-Only commands from `project.json`; a quick start that doesn't match `RUN-GUIDE.md` is a finding.
+Only commands from `project.json`; a quick start that doesn't match `REVIEW.md › Run guide` is a finding.
 
 ## CHANGELOG.md (Keep a Changelog + semantic versioning)
 ```markdown

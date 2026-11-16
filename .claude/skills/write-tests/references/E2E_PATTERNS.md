@@ -12,13 +12,13 @@ test('TC-001 create order with valid payment (AC-ORD-1)', async ({ page, seed, e
   await seed.cart('twoItems');                                  // API/factory seeding, never via the UI
   const checkout = await new CartPage(page).open().then((c) => c.checkout());
   await expect(checkout.total).toHaveText('120.00');
-  await evidence(page, 'TC-001', '1-checkout');                  // screenshot to docs/delivery/evidence/TC-001/
+  await evidence(page, 'TC-001', '1-checkout');                  // screenshot to docs/delivery/milestones/<ms>/screens/TC-001/
   const confirmation = await checkout.pay();
   await expect(confirmation.heading).toHaveText(/order confirmed/i);
   await evidence(page, 'TC-001', '2-confirmation');
 });
 ```
-Evidence helper: `await page.screenshot({ path: \`docs/delivery/evidence/${tc}/${step}.png\`, fullPage: true })`.
+Evidence helper: `await page.screenshot({ path: \`docs/delivery/milestones/<ms>/screens/${tc}/${step}.png\`, fullPage: true })`.
 
 ## Selectors (in priority order)
 1. Role + accessible name: `getByRole('button', { name: 'Pay' })`
@@ -49,7 +49,7 @@ appId: ${APP_ID}
 - inputText: ${TEST_PASSWORD}
 - tapOn: "Sign in"
 - assertVisible: "Welcome"
-- takeScreenshot: docs/delivery/evidence/TC-020/1-home
+- takeScreenshot: docs/delivery/milestones/<ms>/screens/TC-020/1-home
 ```
 Detox-style tests follow the same rules: accessibility ids, seeded data, screenshots per step.
 

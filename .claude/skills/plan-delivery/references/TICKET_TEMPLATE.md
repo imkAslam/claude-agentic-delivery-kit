@@ -9,7 +9,7 @@ depends_on: [T-…]
 acceptance: [AC-…]            test_cases: [TC-…]            contracts: [<operationId>…]
 owned_paths: ["<subset of project.json roles.<role>.paths>"]
 mockups: [docs/delivery/mockups/<screen>-*.png]                (UI tickets)
-components: [<DESIGN-SYSTEM.md components used>]                  (UI tickets)
+components: [<DESIGN.md › Components components used>]                  (UI tickets)
 
 ## Goal
 One or two sentences: the user-visible outcome of the whole capability.
@@ -28,7 +28,7 @@ Business rules (BR-…), edge cases, data/migration notes, feature flags, securi
 ## Definition of done
 - [ ] Every checklist item done; tests written first and failing, then passing (red/green evidence)
 - [ ] Role lint, typecheck and test green (commit gate)
-- [ ] All AC listed above demonstrably met; evidence in docs/delivery/evidence/<ticket>/
+- [ ] All AC listed above demonstrably met; evidence in docs/delivery/milestones/<ms>/screens/
 - [ ] Independent reviewer APPROVE (plus the database-reviewer for data changes)
 - [ ] One Conventional Commit with `Refs: T-<nnn>`
 ```
@@ -43,7 +43,7 @@ found_in: <ms-n integration | mbr:ms-n | QA TC-… | acceptance | quality-securi
 
 ## Reproduce
 1. … 2. … 3. …
-**Expected:** … (the AC)    **Actual:** …    **Evidence:** docs/delivery/evidence/<bug>/…
+**Expected:** … (the AC)    **Actual:** …    **Evidence:** the failing command and its output, or milestones/<ms>/screens/<screen>.png
 
 ## Root cause
 <filled by the engineer>

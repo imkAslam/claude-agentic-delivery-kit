@@ -22,11 +22,11 @@ Read `project.json`: `stack.mobile`, `stack.mobile_e2e`, `roles.mobile.paths`, `
 ### Step 1: Resolve the inputs from artifacts
 | Input | Source |
 |---|---|
-| Layout, states, look | Mobile mockups `docs/delivery/mockups/*.mobile.png`, `UI-UX.md`, `DESIGN-SYSTEM.md` (load **design-inspiration**) |
+| Layout, states, look | Mobile mockups `docs/delivery/mockups/*.mobile.png`, `DESIGN.md › UX`, `DESIGN.md › Components` (load **design-inspiration**) |
 | Colors, type, spacing, dark mode | The theme generated from `docs/delivery/tokens.json` (build-design-system → DESIGN_TOKENS.md §8). Never raw values |
 | Data and errors | The ticket's contract operations → the generated client |
 | Offline needs | PRD NFRs ("works offline", "sync") and the ticket's AC |
-| Permissions and deep links | `UI-UX.md` flows, ticket AC |
+| Permissions and deep links | `DESIGN.md › UX` flows, ticket AC |
 
 ### Step 2: Write the tests first (tdd skill)
 Component tests for each state (loading, empty, error, offline, success); interactions through accessible queries; navigation assertions; API calls via the generated mocks. Add an E2E flow (e.g. Maestro/Detox) when the ticket is a primary journey and the QA ticket doesn't already cover it.
@@ -45,7 +45,7 @@ Follow [MOBILE_TEMPLATES.md](references/MOBILE_TEMPLATES.md) for the framework a
 No secrets in the bundle or in source. Tokens go in secure storage (Keychain/Keystore via the platform's secure store); no PII in logs; certificate pinning only if the threat model asks for it.
 
 ### Step 6: Verify
-Run the role's commands. Run on a simulator or emulator when the toolchain is available, and save screenshots of each state to `docs/delivery/evidence/<ticket>/`. Say so if it isn't available.
+Run the role's commands. Run on a simulator or emulator when the toolchain is available, and save screenshots of each state to `docs/delivery/milestones/<ms>/screens/`. Say so if it isn't available.
 
 ## Integration with Other Skills
 - **design-inspiration:** load it before UI work

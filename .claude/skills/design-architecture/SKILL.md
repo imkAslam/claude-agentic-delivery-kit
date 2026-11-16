@@ -1,7 +1,7 @@
 ---
 name: design-architecture
 description: "Solution architecture toolkit: researches proven, scalable reference architectures from authoritative sources and scores candidates against PRD drivers; selects style, frameworks, data stores, API style and realtime approach with ADRs; designs the system layer by layer (clients, edge, API/BFF, application, domain, infrastructure, data, async, cross-cutting) with the application folder structure and the complete diagram set, written into the PRD (the single home of every diagram) and ARCHITECTURE.md; defines project.json boundaries, ERD, modules and complete API contracts. Also the architect-reviewer's checklists."
-when_to_use: "Use when researching or choosing an architecture or stack, writing ARCHITECTURE-RESEARCH.md, ARCHITECTURE.md, PRD §10–§12 (architecture, folders, diagrams) or ADRs, defining contracts or project.json, reviewing a PRD technically, reviewing the DevOps plan or design alignment, or handling a contract change request."
+when_to_use: "Use when researching or choosing an architecture or stack, writing ARCHITECTURE.md › Research, ARCHITECTURE.md, PRD §10–§12 (architecture, folders, diagrams) or ADRs, defining contracts or project.json, reviewing a PRD technically, reviewing the DevOps plan or design alignment, or handling a contract change request."
 ---
 
 # Design architecture
@@ -20,7 +20,7 @@ Lane `understand`: research, technical review, layered architecture and folder s
 ## Instructions
 
 ### Step 0: Load the inputs
-`PRD.md` (NFRs, release slicing), `BA-ANALYSIS.md` (entities, rules), `RESEARCH.md`, `THREAT-MODEL.md` (if present), `docs/delivery/SYSTEM-PROFILE.md` (tools, accounts, hosting), the existing `docs/adr/*`, and the INBOX messages in your brief.
+`PRD.md` (NFRs, release slicing), `PRD.md › Analysis` (entities, rules), `PRD.md › Research notes`, `THREAT-MODEL.md` (if present), `docs/delivery/SYSTEM-PROFILE.md` (tools, accounts, hosting), the existing `docs/adr/*`, and the INBOX messages in your brief.
 
 ### Step 1: Research the architecture (round 1, then whenever the drivers change)
 Follow [REFERENCE_SOURCES.md](references/REFERENCE_SOURCES.md):
@@ -29,7 +29,7 @@ Follow [REFERENCE_SOURCES.md](references/REFERENCE_SOURCES.md):
 2. Shortlist **3 candidates** from [ARCHITECTURE_PATTERNS.md](references/ARCHITECTURE_PATTERNS.md), one of them the simplest that could work.
 3. Search and **fetch at least 5 authoritative sources**: at least 2 cloud architecture frameworks, at least 1 pattern source, plus the official docs for each chosen technology. Record the claim each one supports.
 4. Score them in the weighted matrix ([STACK_SELECTION.md](references/STACK_SELECTION.md)) with an evidence column.
-5. Write `docs/delivery/ARCHITECTURE-RESEARCH.md` ([ARCH_RESEARCH_TEMPLATE.md](references/ARCH_RESEARCH_TEMPLATE.md)) and an ADR for the chosen style ([ADR_TEMPLATE.md](references/ADR_TEMPLATE.md)).
+5. Write `docs/delivery/ARCHITECTURE.md › Research` ([ARCH_RESEARCH_TEMPLATE.md](references/ARCH_RESEARCH_TEMPLATE.md)) and an ADR for the chosen style ([ADR_TEMPLATE.md](references/ADR_TEMPLATE.md)).
 
 ### Step 2: Technical review of the PRD (every discovery round)
 Return findings `[P1|P2|P3] §section — technical issue — proposed requirement change` covering feasibility, hidden complexity, NFR conflicts, cost drivers and integration risk. Questions for the PM or BA go out as `MESSAGES:`. Never edit the PM's sections.
@@ -94,7 +94,7 @@ The PRD is approved at G1, so the orchestrator first opens a change request limi
     ├── REFERENCE_SOURCES.md      # authoritative sources + research procedure
     ├── ARCHITECTURE_PATTERNS.md  # styles, frameworks, data stores, API/realtime, scalability, design patterns, worked decisions
     ├── STACK_SELECTION.md        # drivers, weighted matrix, defaults, hosting fit
-    ├── ARCH_RESEARCH_TEMPLATE.md # ARCHITECTURE-RESEARCH.md
+    ├── ARCH_RESEARCH_TEMPLATE.md # ARCHITECTURE.md › Research
     ├── LAYERED_BLUEPRINT.md      # L0–L7 + X1–X3 blocks, dependency rule, flows, scaling stages, PRD section format
     ├── DIAGRAMS.md               # diagrams in the PRD (source) and mirrored in ARCHITECTURE §14, the required set D0–D8, and the 'Why this architecture' template
     ├── FOLDER_STRUCTURES.md      # monorepo, clean service, frontend, microservices, infra templates

@@ -1,6 +1,6 @@
 ---
 name: integration-engineer
-description: "Third-party and system integration specialist. Plan mode catalogs every external integration (payments, email, SMS, identity providers, storage, maps, AI and other SaaS APIs, partner systems) in INTEGRATIONS.md with purpose, auth, data flows, sandbox/test mode, limits, failure modes and cost. Build mode implements integration tickets test-first inside its owned paths: adapters behind ports (anti-corruption layer), inbound and outbound webhooks with signatures and idempotency, sync and backfill jobs, retries, timeouts and circuit breakers, local mocks and contract tests. Use for anything that talks to a system the product doesn't own."
+description: "Third-party and system integration specialist. Plan mode catalogs every external integration (payments, email, SMS, identity providers, storage, maps, AI and other SaaS APIs, partner systems) in ARCHITECTURE.md › Integrations with purpose, auth, data flows, sandbox/test mode, limits, failure modes and cost. Build mode implements integration tickets test-first inside its owned paths: adapters behind ports (anti-corruption layer), inbound and outbound webhooks with signatures and idempotency, sync and backfill jobs, retries, timeouts and circuit breakers, local mocks and contract tests. Use for anything that talks to a system the product doesn't own."
 tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch, WebFetch
 model: sonnet
 skills:
@@ -14,7 +14,7 @@ skills:
 You connect the product to systems it doesn't own, so that **their failures never become our outages** and their data never corrupts ours.
 
 ## When Invoked
-- **Plan mode:** lane `plan`, `design-fork`: `docs/delivery/INTEGRATIONS.md` (in parallel with the other designers)
+- **Plan mode:** lane `plan`, `design-fork`: `docs/delivery/ARCHITECTURE.md › Integrations` (in parallel with the other designers)
 - **Build mode:** integration-labeled tickets in lane `build` (`roles.integration.paths`)
 - Triage routes an external-API, webhook, provider or sync finding
 - INBOX questions about provider behavior, limits or sandboxes
@@ -51,10 +51,10 @@ Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in b
 | `…/build-integration/references/WEBHOOKS.md` | Inbound verification, idempotency, outbound signing, retries, delivery logs |
 | `…/build-integration/references/RESILIENCE.md` | Timeouts, retries, circuit breakers, rate limiting, bulkheads, DLQ |
 | `…/build-integration/references/PROVIDER_CATALOG.md` | Common provider categories with test modes and local substitutes |
-| `…/build-integration/references/INTEGRATIONS_TEMPLATE.md` | The structure of `INTEGRATIONS.md` |
+| `…/build-integration/references/INTEGRATIONS_TEMPLATE.md` | The structure of `ARCHITECTURE.md › Integrations` |
 | `…/setup-docker/references/LOCAL_SERVICES.md` | Local mocks and emulators |
 | `.claude/rules/integrations.md`, `.claude/rules/secure-coding.md` | Always-on rules (SSRF, secrets) |
-| Writes | `docs/delivery/INTEGRATIONS.md` (plan mode); `roles.integration.paths` (build mode) |
+| Writes | `docs/delivery/ARCHITECTURE.md › Integrations` (plan mode); `roles.integration.paths` (build mode) |
 
 ## Decision Framework
 | Situation | Choice |
@@ -62,7 +62,7 @@ Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in b
 | A user waits for the result | A synchronous call with a short timeout + a fallback message |
 | The user doesn't need to wait | Enqueue it (outbox → worker) and notify on completion |
 | The provider offers webhooks | Use webhooks + a periodic reconciliation, not polling alone |
-| No sandbox exists | A local mock + contract tests; flag the risk in INTEGRATIONS.md |
+| No sandbox exists | A local mock + contract tests; flag the risk in ARCHITECTURE.md › Integrations |
 | Two providers would work | Pick per the ADR criteria: test mode, data residency, limits, cost. A cost difference is a gate item |
 
 ## Collaboration

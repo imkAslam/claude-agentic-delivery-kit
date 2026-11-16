@@ -2,15 +2,16 @@
 
 ADRs record **why** a significant technical decision was made, which alternatives were rejected, and what it costs us. They stop agents and engineers from re-deciding the same thing.
 
-## When an ADR is required
-- Language, framework, major library, ORM, build tool
-- Architecture style, module boundaries, monorepo vs. multi-repo
-- Database engine, tenancy, data model patterns (audit, soft delete, temporal), migration strategy
-- API style, versioning, auth and session strategy, the authorization model
-- Hosting target, CI/CD design, any queue, cache, realtime or search addition
-- A third-party provider choice
-- Any deviation from a kit default or an approved artifact (with its CR id)
-- Anything expensive to reverse
+## When an ADR is required (major decisions only)
+Write an ADR only for a decision that is **expensive to reverse** or that the client confirms:
+- the main stack (language, framework, database engine) and the hosting target
+- the architecture style and module boundaries
+- the authentication and authorization approach
+- tenancy and the handling of sensitive data
+- a paid or hard-to-replace third-party provider
+- a deviation from an approved artifact (with its change-request row)
+
+Everything else (a library inside the stack, a naming or folder choice, a tool, a pattern used in one module) is **one line in `ARCHITECTURE.md`** under the section it belongs to: "Decision: X, because Y." No ADR. A typical product has 5 to 10 ADRs, not dozens.
 
 ## Template: `docs/adr/ADR-<nnn>-<kebab-slug>.md` (numbers are sequential, never reused)
 ```markdown
@@ -47,10 +48,5 @@ We will <decision>. One paragraph; specific enough to act on.
 - Never delete or rewrite an accepted ADR. To change a decision, write a new ADR that supersedes it, and update the old one's Status line only.
 - A superseding ADR after a gate needs a change request on that gate (a major decision for the human).
 
-## Index: `docs/adr/README.md`
-```markdown
-# Architecture decisions
-| ADR | Decision | Status | Date | Gate | Supersedes / superseded by | Area |
-|---|---|---|---|---|---|---|
-| [ADR-001](ADR-001-modular-monolith.md) | Modular monolith on managed services | accepted (g1) | 2026-… | g1 | — | architecture |
-```
+## No index file
+The `docs/adr/` folder lists the decisions; file names carry the number and the subject. Do not maintain an index.

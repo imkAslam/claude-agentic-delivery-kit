@@ -1,7 +1,7 @@
-# BA-ANALYSIS.md template
+# PRD.md › Analysis template
 
 ```markdown
-> Status: in-review · Owner: ba-agent · Sources: Intake-Readiness.md (D-…), RESEARCH.md · Updated: <ISO>
+> Status: in-review · Owner: ba-agent · Sources: Intake-Readiness.md (D-…), PRD.md › Research notes · Updated: <ISO>
 
 # Business analysis
 

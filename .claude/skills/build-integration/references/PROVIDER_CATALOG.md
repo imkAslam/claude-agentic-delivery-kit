@@ -1,6 +1,6 @@
 # Provider categories: test modes and local substitutes
 
-The provider itself is chosen per project (an ADR + INTEGRATIONS.md; cost and contracts are business decisions). This table lists what to plan for each **category**.
+The provider itself is chosen per project (an ADR + ARCHITECTURE.md › Integrations; cost and contracts are business decisions). This table lists what to plan for each **category**.
 
 | Category | Typical needs | Test / sandbox | Local substitute (dev) | Gotchas |
 |---|---|---|---|---|

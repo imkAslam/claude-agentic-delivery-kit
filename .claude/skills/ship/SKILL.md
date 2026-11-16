@@ -21,7 +21,7 @@ Target: `.claude/project.json → deploy.target` (plus `deploy.mobile_target` fo
 2. **CI deploy steps** for the `ci` skill's deploy job, building or promoting **one immutable artifact**.
 3. **Required secret names** → `project.json → deploy.required_secrets`.
 4. **Health check:** `deploy.health_path` returns 200 and checks its dependencies (database reachable). The CI smoke step curls it.
-5. **Rollback:** concrete commands or console steps for app **and** data, written into `ROLLBACK-RUNBOOK.md` and rehearsed on staging.
+5. **Rollback:** concrete commands or console steps for app **and** data, written into `RELEASE.md › Rollback` and rehearsed on staging.
 6. **Bootstrap checklist:** the one-time human steps (accounts, projects, DNS, secrets, protected environments), written into `docs/delivery/BOOTSTRAP.md`.
 
 ## Rules

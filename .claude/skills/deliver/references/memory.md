@@ -6,7 +6,7 @@
 | Layer | Where | Holds | Survives compaction / restart |
 |---|---|---|---|
 | **Run state** | `.claude/delivery/state.json` (only via `delivery-state.sh`) | Lane, step, milestone, gates + hashes, tickets + attempts, rounds, CRs, messages, failures, usage, agent ids, notes | Yes (local, git-ignored) |
-| **Project knowledge** | `docs/` (PRD, architecture, data model, contracts, tickets, ADRs, FEATURES, DATABASE, CODEMAP, LESSONS, GATE-LOG, MESSAGES) | Every decision, requirement and design, and why | Yes (committed) |
+| **Project knowledge** | `docs/` (PRD, architecture, data model, contracts, tickets, ADRs, FEATURES, DATABASE, CODEMAP, LESSONS, GATE-LOG; the lean set in documents.md) | Every decision, requirement and design, and why | Yes (committed) |
 | **Working context** | The orchestrator's conversation; each subagent's own context window | The current step only | No, by design |
 
 The kit does **not** rely on Claude Code's personal auto memory for project facts. That memory belongs to one user on one machine; project knowledge belongs in `docs/` where every agent and teammate can read it.
@@ -19,8 +19,8 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 - **Worktrees isolate build work:** one worktree per ticket, so parallel agents never share files or context.
 
 ## 3. Append-only logs: never read them whole
-`docs/delivery/MESSAGES.md`, `GATE-LOG.md`, `LESSONS.md`, `failures/` and `git log` only grow. Read them by query:
-- open messages: `delivery-state.sh msg open`; one thread: `grep -n "M-012" docs/delivery/MESSAGES.md`
+`GATE-LOG.md`, `LESSONS.md`, `failures/` and `git log` only grow. Read them by query:
+- open messages: `delivery-state.sh msg open`
 - recent gate decisions: `tail -n 30 docs/delivery/GATE-LOG.md`
 - lessons for one role: `grep -n "\[backend\]\|\[all\]" docs/delivery/LESSONS.md`
 - history: `git log --oneline -20`, `git log --oneline -- <path>`

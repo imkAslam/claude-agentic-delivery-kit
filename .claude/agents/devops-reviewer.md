@@ -1,6 +1,6 @@
 ---
 name: devops-reviewer
-description: "Independent reviewer for devops tickets. Reviews pipeline, IaC, container and platform-config changes against DEVOPS-PLAN.md, the ship target contract and the devops checklist; validates with linters and dry-runs only; returns APPROVE or CHANGES. Read-only. Use after every devops-engineer build-mode attempt."
+description: "Independent reviewer for devops tickets. Reviews pipeline, IaC, container and platform-config changes against ARCHITECTURE.md › Operations, the ship target contract and the devops checklist; validates with linters and dry-runs only; returns APPROVE or CHANGES. Read-only. Use after every devops-engineer build-mode attempt."
 tools: Read, Grep, Glob, Bash
 model: sonnet
 skills:
@@ -29,7 +29,7 @@ Referenced by name; least-privilege credentials (OIDC where possible); none in f
 Pinned versions and digests, caching, health checks, smoke tests, rollback, backups, monitoring hooks.
 
 ### 5. Plan fidelity
-It matches `DEVOPS-PLAN.md` and the ship target's six-part contract.
+It matches `ARCHITECTURE.md › Operations` and the ship target's six-part contract.
 
 ## Process
 1. `git diff <base>...HEAD` in the worktree from the brief.

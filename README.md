@@ -161,21 +161,21 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 |---|---|---|
 | `intake` | intake-agent | `Intake-Readiness.md`: readiness score over 10 weighted dimensions, gaps, consequences, questions |
 | `intake-gate` | **you** | Start, update, provisional scope or hold (80% readiness threshold) |
-| `research` (conditional) | researcher-agent | `RESEARCH.md`: 5 comparable products, table stakes, pitfalls |
-| `ba` | ba-agent | `BA-ANALYSIS.md`: personas, permissions, journeys, business rules, entities, NFRs, Given/When/Then AC |
-| `discovery` | product-manager ⇄ product-owner-reviewer, solution-architect, cybersecurity-agent (cond.), uiux-agent (brand) ⇄ design-reviewer | `PRD.md` (complete, with every diagram D0–D8 inline), `ARCHITECTURE-RESEARCH.md`, `ARCHITECTURE.md`, `THREAT-MODEL.md`, `BRAND-DIRECTIONS.md`, ADRs |
+| `research` (conditional) | researcher-agent | `PRD.md › Research notes`: 5 comparable products, table stakes, pitfalls |
+| `ba` | ba-agent | `PRD.md › Analysis`: personas, permissions, journeys, business rules, entities, NFRs, Given/When/Then AC |
+| `discovery` | product-manager ⇄ product-owner-reviewer, solution-architect, cybersecurity-agent (cond.), uiux-agent (brand) ⇄ design-reviewer | `PRD.md` (complete, with every diagram D0–D8 inline), `ARCHITECTURE.md › Research`, `ARCHITECTURE.md`, `THREAT-MODEL.md`, `DESIGN.md › Directions`, ADRs |
 | `g1` | **you** | Approve the PRD and architecture direction, **confirm the tech stack** (or name your own), and **pick the visual direction**. Does not start coding |
 
 ### 2 · Plan & Design (lane `plan`)
 | Step | Who | Output |
 |---|---|---|
 | `boundaries` | solution-architect | `.claude/project.json` (roles, owned paths, contracts, commands, tracker, CI, deploy) and `.claude/PROJECT.md` |
-| `docs-init` | docs-writer | `docs/README.md`, `docs/FEATURES.md`, `docs/adr/README.md` |
-| `design-fork` (parallel) | database-architect, api-designer, integration-engineer, uiux-agent ⇄ design-reviewer, qa-agent, devops-engineer ⇄ architect-reviewer | `DATA-MODEL.md`, machine-readable contracts + `API-GUIDELINES.md`, `INTEGRATIONS.md`, `UI-UX.md`, `BRAND-BRIEF.md`, `tokens.json`, `DESIGN-SYSTEM.md`, mockups (HTML → PNG), brand assets, `TEST-CASES.md`, `DEVOPS-PLAN.md`, `LOCAL_SERVICES.md` |
+| `docs-init` | docs-writer | `docs/README.md`, `docs/delivery/PLAN.md › Features`, `docs/adr/README.md` |
+| `design-fork` (parallel) | database-architect, api-designer, integration-engineer, uiux-agent ⇄ design-reviewer, qa-agent, devops-engineer ⇄ architect-reviewer | `DATA-MODEL.md`, machine-readable contracts + `ARCHITECTURE.md › API conventions`, `ARCHITECTURE.md › Integrations`, `DESIGN.md › UX`, `DESIGN.md › Brand`, `tokens.json`, `DESIGN.md › Components`, mockups (HTML → PNG), brand assets, `PLAN.md › Test cases`, `ARCHITECTURE.md › Operations`, `LOCAL_SERVICES.md` |
 | `design-join` | architect-reviewer (alignment) | Cross-checks contracts, data model, UI, tests and DevOps for consistency |
 | `prd-sync` | solution-architect | Diagram refinements folded back into the PRD (a change request you approve) |
-| `planning` | delivery-planner | `DELIVERY-PLAN.md`, `TICKETS.md` (single-role, parallel-safe tickets with dependencies), `QUALITY-RELEASE-PLAN.md`, tracker tickets |
-| `docs-plan` | docs-writer | FEATURES.md with milestones and tickets, `docs/database/DATABASE.md` |
+| `planning` | delivery-planner | `PLAN.md › Milestones`, `PLAN.md › Tickets` (single-role, parallel-safe tickets with dependencies), `PLAN.md › Quality`, tracker tickets |
+| `docs-plan` | docs-writer | docs/delivery/PLAN.md › Features with milestones and tickets, `docs/database/DATABASE.md` |
 | `g2` | **you** | **"Approve the plan and start coding?"** Freezes the contracts, the data model and the design |
 
 ### 3 · Build & Review (lane `build`, repeats per milestone)
@@ -184,23 +184,23 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | `foundation` | orchestrator | Validates the stack and CI foundation; the design-foundation tickets come first |
 | `dispatch` | orchestrator | Picks ready tickets whose dependencies are done; checks they don't touch the same files |
 | `build-fork` (parallel) | frontend-, backend-, mobile-, devops-, integration-engineer, cybersecurity-agent, each in its own worktree, each paired with its reviewer (+ database-reviewer on data changes) | Code + tests (red → green), screenshots or logs, one commit per ticket |
-| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Merges in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `DESIGN-QA.md` and `PERFORMANCE-REVIEW.md`). Failures go through triage to the right role |
+| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Merges in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `REVIEW.md › Design QA` and `REVIEW.md › Performance`). Failures go through triage to the right role |
 | `mbr` | **you** | Milestone Build Review: approve or request fixes |
 
 ### 4 · Verify & Accept (lane `verify`)
 | Step | Who | Output |
 |---|---|---|
-| `verify-fork` | qa-agent, quality-security-agent, security-auditor, performance-specialist | `QA-REPORT.md`, `OPEN-ISSUES.md`, `QUALITY-SECURITY-REPORT.md`, `SECURITY-AUDIT-REPORT.md`, `PERFORMANCE-REVIEW.md` (dynamic testing only on owned, authorized environments) |
+| `verify-fork` | qa-agent, quality-security-agent, security-auditor, performance-specialist | `ACCEPTANCE.md › QA`, `ACCEPTANCE.md › Open issues`, `ACCEPTANCE.md › Quality and security`, `ACCEPTANCE.md › Security audit`, `REVIEW.md › Performance` (dynamic testing only on owned, authorized environments) |
 | `evidence-policy` | orchestrator | Missing, failing or stale evidence goes back to triage |
 | `acceptance` | **you** | Accept, or send bug feedback |
 
 ### 5 · Release & Operate (lane `release`)
 | Step | Who | Output |
 |---|---|---|
-| `release-prep` | devops-engineer → release-reviewer, docs-writer | `RELEASE-REVIEW.md`, `DEPLOYMENT-PLAN.md`, `ROLLBACK-RUNBOOK.md`, `OPERATIONS-HANDOFF.md`, CHANGELOG version |
+| `release-prep` | devops-engineer → release-reviewer, docs-writer | `RELEASE.md › Review`, `RELEASE.md › Deployment plan`, `RELEASE.md › Rollback`, `RELEASE.md › Operations handoff`, CHANGELOG version |
 | `g3` | **you** | Approve a **named release**: the exact artifact, configuration and environment |
 | `deploy`, `smoke` | devops-engineer | Deploys through CI only, smoke-tests, runs the approved rollback if checks fail |
-| `handoff` | devops-engineer | `DEPLOYMENT-RESULT.md`, final handoff |
+| `handoff` | devops-engineer | `RELEASE.md › Result`, final handoff |
 | `ops_ack` | **you** | Operations acknowledges the handoff. This does not authorize another deploy |
 
 ---
@@ -233,7 +233,7 @@ Illegal jumps such as `ready → done` are rejected. `ticket show <id>` prints a
 **Bugs are linked to their original ticket:**
 - **Found before the milestone review approves the work:** the original ticket is reopened.
 - **Found after it** (in QA, acceptance, scans, staging or production): a **bug ticket** is created with `bug_of: <original>`, a severity (P1/P2/P3), where it was found, the steps to reproduce, and a regression test that must fail before the fix. The original lists its bugs.
-- **Where the link appears:** in the local tracker, GitHub (labels, a "Bug of: #n" line, sub-issues) and Linear (a "related" relation), and in `TICKETS.md`, `OPEN-ISSUES.md` and `docs/FEATURES.md` (the open bugs per feature).
+- **Where the link appears:** in the local tracker, GitHub (labels, a "Bug of: #n" line, sub-issues) and Linear (a "related" relation), and in `PLAN.md › Tickets`, `ACCEPTANCE.md › Open issues` and `docs/delivery/PLAN.md › Features` (the open bugs per feature).
 - **When a bug is closed:** QA re-runs the reproduction on the candidate and marks the bug `verified`.
 - **Where to see open bugs:** `delivery-state.sh bugs open` and `/delivery-status`.
 
@@ -398,24 +398,24 @@ The non-negotiable rules (see `CLAUDE.md`):
 docs/
 ├── intake/                       client evidence (your input)
 ├── README.md                     documentation index
-├── FEATURES.md                   feature catalog: priority, milestone, AC, screens, APIs, tickets, status
+├── docs/delivery/PLAN.md › Features                   feature catalog: priority, milestone, AC, screens, APIs, tickets, status
 ├── SYSTEM-FLOWS.md               how each built journey works step by step, state machines, cross-cutting behavior
 ├── CODEMAP.md                    where the code lives (read before opening code)
 ├── database/DATABASE.md          database design + as-built dictionary, indexes, access rules, pooling, seeds, capacity, operations
 ├── adr/                          architecture decision records + README.md index (proposed → accepted → superseded)
 └── delivery/
-    ├── Intake-Readiness.md  RESEARCH.md  BA-ANALYSIS.md
+    ├── Intake-Readiness.md  PRD.md › Research notes  PRD.md › Analysis
     ├── PRD.md                    the complete PRD, incl. §10–§12 architecture and every diagram (Mermaid, inline)
-    ├── ARCHITECTURE-RESEARCH.md  ARCHITECTURE.md (text + the same diagrams in §14)  THREAT-MODEL.md
-    ├── DATA-MODEL.md  API-GUIDELINES.md  INTEGRATIONS.md
-    ├── BRAND-DIRECTIONS.md  BRAND-BRIEF.md  UI-UX.md  DESIGN-SYSTEM.md  tokens.json  tokens.dark.json
+    ├── ARCHITECTURE.md › Research  ARCHITECTURE.md (text + the same diagrams in §14)  THREAT-MODEL.md
+    ├── DATA-MODEL.md  ARCHITECTURE.md › API conventions  ARCHITECTURE.md › Integrations
+    ├── DESIGN.md › Directions  DESIGN.md › Brand  DESIGN.md › UX  DESIGN.md › Components  tokens.json  tokens.dark.json
     ├── mockups/  brand/          HTML mockups + PNGs, logo set, favicon, app icons, OG image
-    ├── TEST-CASES.md  DEVOPS-PLAN.md  LOCAL_SERVICES.md  BOOTSTRAP.md
-    ├── DELIVERY-PLAN.md  TICKETS.md  QUALITY-RELEASE-PLAN.md
-    ├── milestones/<ms>/          BUILD-REVIEW, COMPLETED-TICKETS, VERIFICATION-RESULTS, RUN-GUIDE, DESIGN-QA, PERFORMANCE-REVIEW, evidence/
-    ├── QA-REPORT.md  OPEN-ISSUES.md  ACCEPTANCE-REVIEW.md  QUALITY-SECURITY-REPORT.md  SECURITY-AUDIT-REPORT.md
-    ├── RELEASE-REVIEW.md  DEPLOYMENT-PLAN.md  ROLLBACK-RUNBOOK.md  OPERATIONS-HANDOFF.md  DEPLOYMENT-RESULT.md
-    ├── GATE-LOG.md  MESSAGES.md  LESSONS.md  failures/
+    ├── PLAN.md › Test cases  ARCHITECTURE.md › Operations  LOCAL_SERVICES.md  BOOTSTRAP.md
+    ├── PLAN.md › Milestones  PLAN.md › Tickets  PLAN.md › Quality
+    ├── milestones/<ms>/          REVIEW.md › Build, REVIEW.md › Tickets, REVIEW.md › Checks, REVIEW.md › Run guide, REVIEW.md › Design QA, REVIEW.md › Performance, evidence/
+    ├── ACCEPTANCE.md › QA  ACCEPTANCE.md › Open issues  ACCEPTANCE.md › Summary  ACCEPTANCE.md › Quality and security  ACCEPTANCE.md › Security audit
+    ├── RELEASE.md › Review  RELEASE.md › Deployment plan  RELEASE.md › Rollback  RELEASE.md › Operations handoff  RELEASE.md › Result
+    ├── GATE-LOG.md  LESSONS.md  failures/
 README.md  CHANGELOG.md            quick start and commands; user-visible changes (Keep a Changelog)
 ```
 

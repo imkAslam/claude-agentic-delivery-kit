@@ -31,7 +31,7 @@ Social sign-in (e.g. Google) has no local substitute. In development, use the mo
 - Local credentials are obvious dev placeholders defined in `.env.example` (for example `postgres`/`postgres` on localhost). The real `.env` is git-ignored.
 - Seed scripts create synthetic data and buckets/queues on startup (idempotently).
 - Tests use their **own** disposable instances (Testcontainers, or a separate compose project/database). They never share the dev database.
-- Document every service in DEVOPS-PLAN §0 and `project.json → services`.
+- Document every service in ARCHITECTURE.md › Operations §0 and `project.json → services`.
 
 ## Remote fallback (ask the human once)
 Use it when `SYSTEM-PROFILE.md` shows Docker missing or not running, or when a service has no local substitute.
@@ -41,4 +41,4 @@ Use it when `SYSTEM-PROFILE.md` shows Docker missing or not running, or when a s
 4. Agents never sign up for accounts or choose a paid tier. Costs are the human's decision.
 
 ## Staging and production
-Hosting is planned separately (the `ship` skill, DEVOPS-PLAN §1–§7) within the budget the human approved. Prefer free or low-cost tiers where they meet the NFRs, and present any recurring cost at G1/G2 as a business decision.
+Hosting is planned separately (the `ship` skill, ARCHITECTURE.md › Operations §1–§7) within the budget the human approved. Prefer free or low-cost tiers where they meet the NFRs, and present any recurring cost at G1/G2 as a business decision.

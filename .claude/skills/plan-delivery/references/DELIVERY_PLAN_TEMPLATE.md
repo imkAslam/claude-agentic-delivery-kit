@@ -1,7 +1,7 @@
-# DELIVERY-PLAN.md template
+# PLAN.md › Milestones template
 
 ```markdown
-> Status: in-review · Owner: delivery-planner · Sources: PRD.md §7, ARCHITECTURE.md, UI-UX.md, TEST-CASES.md, DEVOPS-PLAN.md · Updated: <ISO>
+> Status: in-review · Owner: delivery-planner · Sources: PRD.md §7, ARCHITECTURE.md, DESIGN.md › UX, PLAN.md › Test cases, ARCHITECTURE.md › Operations · Updated: <ISO>
 
 # Delivery plan
 

@@ -56,8 +56,8 @@ The scaling stage from ARCHITECTURE (single instance → pooler → read replica
 ## 10. Operations
 - **Run locally:** <the project.json command>, against the Docker database (setup-docker → LOCAL_SERVICES.md)
 - **Migration workflow:** create → review (`check-migrations.sh`, database-reviewer) → apply, with the exact commands from `project.json`; expand → migrate → contract for breaking changes; never edit an applied migration
-- **Migrate in CI/CD:** the pipeline step and its order relative to the deploy (DEVOPS-PLAN)
-- **Backups:** method, schedule, retention, where they are stored, encryption (DEVOPS-PLAN)
+- **Migrate in CI/CD:** the pipeline step and its order relative to the deploy (ARCHITECTURE.md › Operations)
+- **Backups:** method, schedule, retention, where they are stored, encryption (ARCHITECTURE.md › Operations)
 - **Restore:** the step-by-step procedure, the recovery time and recovery point targets, and **the last restore drill: date and result**
 - **Performance notes:** hot queries, their plans, and any EXPLAIN findings worth keeping
 
@@ -65,4 +65,4 @@ The scaling stage from ARCHITECTURE (single instance → pooler → read replica
 None, or one line per difference with the CR id that approved it.
 ```
 
-How to build §2–§6: read the migration files in order (and the ORM schema if it exists); never connect to a shared or remote database to introspect. §7–§10 come from the code's database configuration, `project.json`, DATA-MODEL and DEVOPS-PLAN: link to them where they already say it, and write "not set yet" instead of guessing a value. No connection strings, passwords or hostnames, only environment-variable names. Any difference from DATA-MODEL.md without a CR goes in §11 **and** is reported as a finding for the database-reviewer.
+How to build §2–§6: read the migration files in order (and the ORM schema if it exists); never connect to a shared or remote database to introspect. §7–§10 come from the code's database configuration, `project.json`, DATA-MODEL and ARCHITECTURE.md › Operations: link to them where they already say it, and write "not set yet" instead of guessing a value. No connection strings, passwords or hostnames, only environment-variable names. Any difference from DATA-MODEL.md without a CR goes in §11 **and** is reported as a finding for the database-reviewer.

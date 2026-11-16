@@ -1,6 +1,6 @@
-# TEST-INVENTORY.md template (what the existing tests cover)
+# BASELINE.md › Tests template (what the existing tests cover)
 
-Written by the qa-agent in an adopt run, instead of TEST-CASES.md (which is written later, per increment, for the acceptance criteria that increment adds). It tells engineers what safety net exists before they change anything.
+Written by the qa-agent in an adopt run, instead of PLAN.md › Test cases (which is written later, per increment, for the acceptance criteria that increment adds). It tells engineers what safety net exists before they change anything.
 
 ```markdown
 > Status: in-review · Owner: qa-agent · Commit: <sha> · Updated: <ISO>

@@ -18,16 +18,16 @@ For the **frontend-engineer** in lane `build`. Every component traces to a ticke
 ### Step 0: Detect the stack (don't guess)
 1. Read `.claude/project.json`: `stack.frontend`, `stack.languages`, `roles.frontend.paths`, `roles.frontend.commands`, `contracts.codegen_cmd`.
 2. Inside the owned paths, detect the component library (e.g. a `components.json` → a copy-in component system; a material, chakra, mantine, antd, vuetify or primevue dependency), the styling (utility CSS, CSS modules, CSS-in-JS, SCSS), and the token source (theme config, CSS custom properties, theme provider).
-3. **Library first:** if the project's UI library has the component, add it with the library's command (e.g. `shadcn add <component>`) and compose it. Write a custom base component only when the library has none and DESIGN-SYSTEM.md specifies it (coding-foundations → REACT.md).
+3. **Library first:** if the project's UI library has the component, add it with the library's command (e.g. `shadcn add <component>`) and compose it. Write a custom base component only when the library has none and DESIGN.md › Components specifies it (coding-foundations → REACT.md).
 4. Find the existing conventions: the folder layout (`ui/`, `features/`, `layouts/`), naming, test location, and the story/preview setup. **Follow them over the defaults below.**
 5. If anything is ambiguous, report `NEEDS_HUMAN` with the options. Don't pick one silently.
 
 ### Step 1: Resolve the inputs from artifacts (subagents don't ask the user)
 | Question | Where the answer lives |
 |---|---|
-| What does it look like, and in which states? | `docs/delivery/mockups/<screen>-*.png`, `UI-UX.md` (load the **design-inspiration** skill) |
+| What does it look like, and in which states? | `docs/delivery/mockups/<screen>-*.png`, `DESIGN.md › UX` (load the **design-inspiration** skill) |
 | Which colors, spacing and type? | `docs/delivery/tokens.json` → the project's generated theme (build-design-system → DESIGN_TOKENS.md §8). Never raw values |
-| Which variants, sizes and states? | The component spec in `DESIGN-SYSTEM.md` |
+| Which variants, sizes and states? | The component spec in `DESIGN.md › Components` |
 | Which data, and which errors? | Contract operations in the ticket → the generated client and its types |
 | How much data, and how often does it update? | PRD NFRs + the ticket (decides on pagination, virtualization, polling or realtime) |
 | Server or client component (SSR frameworks)? | ARCHITECTURE §8 + whether it needs interactivity |
@@ -43,7 +43,7 @@ One test per AC: rendering of each state (loading, empty, error, success, no-per
 Use the matching template in [FRAMEWORK_TEMPLATES.md](references/FRAMEWORK_TEMPLATES.md) and the data and state patterns in [DATA_AND_STATE.md](references/DATA_AND_STATE.md):
 - Typed props, with no `any`
 - The generated client for every API call, handling each error code the contract defines
-- All states from `UI-UX.md`
+- All states from `DESIGN.md › UX`
 - Semantic HTML first, ARIA only where it's needed
 
 ### Step 5: Apply the tokens
@@ -56,7 +56,7 @@ Labels for every control; visible focus; keyboard support (Tab order, Enter/Spac
 More than about 200 rendered rows → virtualize. Frequent updates → memoize, or use fine-grained state. Heavy computation → move it off the main thread. Route-level code splitting for large pages. Size images and lazy-load them. Follow coding-foundations → PERFORMANCE.md §3 and keep the PRD §6 budgets.
 
 ### Step 8: Verify and capture evidence
-Run the role's `lint`, `typecheck` and `test`. Start `commands.dev`, open the screen, and save a screenshot of each state to `docs/delivery/evidence/<ticket>/`, so the reviewer can compare them with the mockups.
+Run the role's `lint`, `typecheck` and `test`. Start `commands.dev`, open the screen, and save a screenshot of each state to `docs/delivery/milestones/<ms>/screens/`, so the reviewer can compare them with the mockups.
 
 ## Integration with Other Skills
 - **design-inspiration:** always load it before UI work

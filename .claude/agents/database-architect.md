@@ -28,7 +28,7 @@ You own the **data model**: how information is structured, kept correct, kept fa
 Primary keys, foreign keys with explicit `ON DELETE` behavior, unique and check constraints, NOT NULL where the business requires it. Invariants are enforced in the database, not only in code.
 
 ### 3. Access-pattern-driven indexing
-List the top queries per journey (from the contracts and UI-UX). Design the composite, partial and covering indexes for them. Name the pagination strategy (keyset for large lists).
+List the top queries per journey (from the contracts and DESIGN.md › UX). Design the composite, partial and covering indexes for them. Name the pagination strategy (keyset for large lists).
 
 ### 4. Cross-cutting data patterns
 Multi-tenancy (shared schema with a tenant id plus row-level security, schema-per-tenant, or DB-per-tenant), audit trails, soft delete vs. hard delete, temporal/history tables, enums vs. lookup tables, JSON columns (when and when not), money/time/locale handling.
@@ -57,7 +57,7 @@ When the brief says `MODE: adopt`, write `DATA-MODEL.md` **from the migration fi
 | `…/design-database/references/NOSQL_PATTERNS.md` | Document, key-value and wide-column modeling, when NoSQL is chosen |
 | `…/design-database/references/DATA_MODEL_TEMPLATE.md` | The structure of `DATA-MODEL.md` |
 | `.claude/rules/database-standards.md` | The always-on standards for schema and migration files |
-| Reads | `BA-ANALYSIS.md` (entities, rules), `PRD.md` (NFRs, retention), `ARCHITECTURE.md` (§10, §12), contracts, `UI-UX.md` (lists, filters), `THREAT-MODEL.md` |
+| Reads | `PRD.md › Analysis` (entities, rules), `PRD.md` (NFRs, retention), `ARCHITECTURE.md` (§10, §12), contracts, `DESIGN.md › UX` (lists, filters), `THREAT-MODEL.md` |
 | Writes | `docs/delivery/DATA-MODEL.md`, `docs/adr/*` (data decisions) |
 
 ## Decision Framework

@@ -1,7 +1,7 @@
 ---
 name: design-api
 description: "API design toolkit: consumer-first resource modeling, REST conventions (URLs, methods, status codes, error model, pagination, filtering, sorting, caching, bulk and async operations), GraphQL, typed RPC, gRPC and event/webhook schema design, auth and scopes, idempotency and concurrency, versioning, evolution and deprecation, API guidelines, docs, linting, mock servers, contract tests and SDK generation."
-when_to_use: "Use when designing or changing API contracts, writing API-GUIDELINES.md, reviewing an API for consistency, planning a breaking change or deprecation, setting up mocks or contract tests, or answering API semantics questions."
+when_to_use: "Use when designing or changing API contracts, writing ARCHITECTURE.md › API conventions, reviewing an API for consistency, planning a breaking change or deprecation, setting up mocks or contract tests, or answering API semantics questions."
 ---
 
 # Design API
@@ -9,20 +9,20 @@ when_to_use: "Use when designing or changing API contracts, writing API-GUIDELIN
 For the **api-designer** (owner of the contracts), plus the **solution-architect** (style, L2 layer), the **backend-engineer** (implementation), and the **frontend, mobile and QA roles** (consumers).
 
 ## When to Use
-- Lane plan, `design-fork`: contracts + `API-GUIDELINES.md`, after the architect's boundaries and alongside the DATA-MODEL
+- Lane plan, `design-fork`: contracts + `ARCHITECTURE.md › API conventions`, after the architect's boundaries and alongside the DATA-MODEL
 - Contract change requests after G2
 - Reviewing contracts at the design join (architect-reviewer) or diffs that implement them (backend-reviewer)
 
 ## Instructions
 
 ### Step 0: Load the inputs
-PRD (stories and `AC-`), UI-UX (screen inventory and states), DATA-MODEL (entities, access patterns), ARCHITECTURE (style ADR, L2 layer, §10 security), THREAT-MODEL (auth, rate limits), INTEGRATIONS (webhooks and events), `project.json → contracts`.
+PRD (stories and `AC-`), DESIGN.md › UX (screen inventory and states), DATA-MODEL (entities, access patterns), ARCHITECTURE (style ADR, L2 layer, §10 security), THREAT-MODEL (auth, rate limits), ARCHITECTURE.md › Integrations (webhooks and events), `project.json → contracts`.
 
 ### Step 1: Inventory the consumers' needs
 For each screen, journey and integration, list the data read and the actions taken. Group them into resources and operations. **One screen shouldn't need N+1 calls**: add expansions or a BFF view where it justifies itself.
 
 ### Step 2: Write the API guidelines
-`docs/delivery/API-GUIDELINES.md` (template in REST_DESIGN §10): naming and casing, URL shape, ids, timestamps, money, the error model, pagination, filtering and sorting syntax, auth and scopes, idempotency, concurrency, rate-limit headers, versioning. Decide these yourself (decision policy) and record the significant ones as ADRs.
+`docs/delivery/ARCHITECTURE.md › API conventions` (template in REST_DESIGN §10): naming and casing, URL shape, ids, timestamps, money, the error model, pagination, filtering and sorting syntax, auth and scopes, idempotency, concurrency, rate-limit headers, versioning. Decide these yourself (decision policy) and record the significant ones as ADRs.
 
 ### Step 3: Design the operations
 REST per [REST_DESIGN.md](references/REST_DESIGN.md), or GraphQL, RPC or events per [GRAPHQL_AND_RPC.md](references/GRAPHQL_AND_RPC.md). Every operation is complete per the architect's [API_CONTRACTS.md](../design-architecture/references/API_CONTRACTS.md): auth, request, responses, every error, limits, examples.
@@ -56,7 +56,7 @@ Send `handoff` messages to the frontend, mobile, backend, QA and integration rol
 .claude/skills/design-api/
 ├── SKILL.md
 └── references/
-    ├── REST_DESIGN.md                     # REST conventions + the API-GUIDELINES.md template
+    ├── REST_DESIGN.md                     # REST conventions + the ARCHITECTURE.md › API conventions template
     ├── GRAPHQL_AND_RPC.md                 # GraphQL, typed RPC, gRPC, events/AsyncAPI
     ├── VERSIONING_AND_EVOLUTION.md        # breaking vs. additive, versioning, deprecation, changelog
     └── DOCS_MOCKS_AND_CONTRACT_TESTS.md   # lint, docs, mock server, contract tests, SDKs

@@ -45,12 +45,12 @@ Use the standard error body from API_CONTRACTS.md (`error.code`, `message`, `det
 ## 9. Security in the contract
 Auth scheme per operation (cookie session or bearer); roles or scopes listed; object-level authorization noted ("caller must be a member of the project"); request size limits; rate limits per operation class; never put tokens or PII in query strings; CORS policy documented for browser clients.
 
-## 10. API-GUIDELINES.md template
+## 10. ARCHITECTURE.md › API conventions template
 ```markdown
 > Status: in-review · Owner: api-designer · Updated: <ISO>
 # API guidelines
 1. Style and base URL (/api/v1) · 2. Naming and casing · 3. Ids, timestamps, money, enums
 4. Methods and status codes · 5. Error model (codes catalogue) · 6. Pagination / filter / sort / fields
 7. Auth, scopes, object-level rules · 8. Idempotency and concurrency (ETag/If-Match) · 9. Rate limits and headers
-10. Async jobs and bulk · 11. Webhooks/events (see INTEGRATIONS) · 12. Versioning and deprecation · 13. Mocks, docs, codegen commands
+10. Async jobs and bulk · 11. Webhooks/events (see ARCHITECTURE.md › Integrations) · 12. Versioning and deprecation · 13. Mocks, docs, codegen commands
 ```

@@ -16,4 +16,4 @@ paths:
 - Run only the commands in `.claude/project.json` (`roles.<role>.commands`, or `commands`). Don't invent commands.
 - No real network calls, third-party services or production data in unit tests. Use fixtures, factories and contract-generated mocks.
 - Integration tests run against disposable local resources (containers, an in-memory or test database) and clean up after themselves.
-- E2E tests use stable selectors (test IDs, roles, labels) and save screenshots as evidence under `docs/delivery/evidence/`.
+- E2E tests use stable selectors (test IDs, roles, labels). Results go in the return block; save one screenshot per screen to `docs/delivery/milestones/<ms>/screens/`, never logs or per-test folders.

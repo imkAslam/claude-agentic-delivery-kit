@@ -20,7 +20,7 @@ Follow the phases in [AUDIT_WORKFLOW.md](references/AUDIT_WORKFLOW.md). Each pha
 
 | Phase | Goal | Key references |
 |---|---|---|
-| 0. Scope and authorization | The assets, environments, standards and authorization recorded | `DEVOPS-PLAN.md`, the brief |
+| 0. Scope and authorization | The assets, environments, standards and authorization recorded | `ARCHITECTURE.md › Operations`, the brief |
 | 1. Attack surface (owned assets only) | Entry points, technologies, exposed services, data flows | ARCHITECTURE, contracts, THREAT-MODEL |
 | 2. Automated scanning | SAST, dependencies/SBOM, secrets, containers, IaC | [DEVSECOPS_PIPELINE.md](references/DEVSECOPS_PIPELINE.md) |
 | 3. Manual review | Data-flow tracing, adversarial feature analysis, auth and middleware choke points | [OWASP_CHECKLISTS.md](references/OWASP_CHECKLISTS.md) |
@@ -38,7 +38,7 @@ Follow the phases in [AUDIT_WORKFLOW.md](references/AUDIT_WORKFLOW.md). Each pha
 - [ ] The report contains no secrets, live exploit payloads or personal data
 
 ## Safety
-- **Authorization first.** Dynamic and intrusive testing only on environments listed as owned in `DEVOPS-PLAN.md`, with authorization recorded in the brief. Never on production without written approval from the human, recorded at a gate.
+- **Authorization first.** Dynamic and intrusive testing only on environments listed as owned in `ARCHITECTURE.md › Operations`, with authorization recorded in the brief. Never on production without written approval from the human, recorded at a gate.
 - Reconnaissance covers **the project's own assets only.** No third-party scanning, and no internet-wide search engines against other people's systems.
 - Exploitation stays at proof-of-concept level: show impact with the minimum necessary action, never destructive, and roll back any test data.
 
@@ -58,5 +58,5 @@ Follow the phases in [AUDIT_WORKFLOW.md](references/AUDIT_WORKFLOW.md). Each pha
     ├── OWASP_CHECKLISTS.md        # Top 10:2021, API Top 10:2023, ASVS, headers, adversarial prompts
     ├── DEVSECOPS_PIPELINE.md      # CI security stages, tools by category, policies
     ├── COMPLIANCE_MAP.md          # GDPR, HIPAA, PCI DSS, SOC 2, ISO 27001, NIST CSF mapping
-    └── AUDIT_REPORT_TEMPLATE.md   # SECURITY-AUDIT-REPORT.md, CVSS guidance
+    └── AUDIT_REPORT_TEMPLATE.md   # ACCEPTANCE.md › Security audit, CVSS guidance
 ```

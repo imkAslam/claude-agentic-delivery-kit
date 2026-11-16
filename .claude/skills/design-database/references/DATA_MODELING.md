@@ -3,7 +3,7 @@
 ## 1. Modeling levels
 | Level | Question | Output |
 |---|---|---|
-| Conceptual | Which business things exist, and how are they related? | Entities, relationships, cardinality, lifecycles (from BA-ANALYSIS) |
+| Conceptual | Which business things exist, and how are they related? | Entities, relationships, cardinality, lifecycles (from PRD.md › Analysis) |
 | Logical | How do we structure them correctly, independent of the engine? | Normalized tables, keys, attributes, constraints |
 | Physical | How does this engine store and serve them efficiently? | Types, indexes, partitioning, storage parameters |
 

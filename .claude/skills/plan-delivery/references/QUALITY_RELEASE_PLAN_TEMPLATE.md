@@ -1,7 +1,7 @@
-# QUALITY-RELEASE-PLAN.md template
+# PLAN.md › Quality template
 
 ```markdown
-> Status: in-review · Owner: delivery-planner · Sources: PRD.md (NFRs), DEVOPS-PLAN.md, SYSTEM-PROFILE.md · Updated: <ISO>
+> Status: in-review · Owner: delivery-planner · Sources: PRD.md (NFRs), ARCHITECTURE.md › Operations, SYSTEM-PROFILE.md · Updated: <ISO>
 
 # Quality and release plan
 

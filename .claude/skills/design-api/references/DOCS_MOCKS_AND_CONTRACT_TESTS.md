@@ -1,6 +1,6 @@
 # Docs, linting, mocks, contract tests and SDKs
 
-Use the tools that fit the stack and are available; record the commands in `project.json` and API-GUIDELINES §13.
+Use the tools that fit the stack and are available; record the commands in `project.json` and ARCHITECTURE.md › API conventions §13.
 
 ## Lint (before every handoff)
 - OpenAPI: a Spectral-style ruleset (e.g. `npx @stoplight/spectral-cli lint contracts/openapi.yaml`) with rules for operationId presence, summaries, examples, error responses, pagination parameters on list operations, and casing.
@@ -13,7 +13,7 @@ Generate human-readable docs from the contract (e.g. Redocly or Scalar for OpenA
 ## Mock server (unblocks parallel work)
 - OpenAPI: a contract-driven mock (e.g. `npx @stoplight/prism-cli mock contracts/openapi.yaml`) that returns the examples and validates requests.
 - GraphQL: a mock from the schema (mocked resolvers). In tests: MSW-style handlers generated from the contract.
-- The mock-server command goes in API-GUIDELINES §13 and in the `handoff` message. Frontend and mobile tickets build against it until the backend is ready.
+- The mock-server command goes in ARCHITECTURE.md › API conventions §13 and in the `handoff` message. Frontend and mobile tickets build against it until the backend is ready.
 
 ## Contract tests
 | Side | What | How |

@@ -15,7 +15,7 @@ Every route lives in a **route group**, chosen by its layout and its access leve
 - Each group has its own `layout.tsx`, `error.tsx`, `loading.tsx` and, where useful, `not-found.tsx`. Two shells never share one layout through conditionals.
 - **Access is enforced on the server:** in the group layout or a server-side guard that reads the session, plus middleware for the cheap redirect. Hiding a link is never the access control.
 - Add a group when a set of screens needs a different shell or a different access rule (e.g. `(admin)`, `(onboarding)`); don't add one per feature. Features are folders inside a group.
-- Dynamic segments `[id]`, parallel routes `@slot` and intercepting routes are used only where the UI-UX flows need them, and are named after the domain term.
+- Dynamic segments `[id]`, parallel routes `@slot` and intercepting routes are used only where the DESIGN.md › UX flows need them, and are named after the domain term.
 - Route constants live in one place (`config/routes.ts`); components never build paths from string fragments.
 
 ## Server and client components (must)

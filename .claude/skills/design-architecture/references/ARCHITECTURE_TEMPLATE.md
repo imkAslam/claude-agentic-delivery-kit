@@ -1,7 +1,7 @@
 # ARCHITECTURE.md template
 
 ```markdown
-> Status: in-review · Owner: solution-architect · Sources: PRD.md, BA-ANALYSIS.md, THREAT-MODEL.md, docs/adr/* · Updated: <ISO>
+> Status: in-review · Owner: solution-architect · Sources: PRD.md, PRD.md › Analysis, THREAT-MODEL.md, docs/adr/* · Updated: <ISO>
 
 # Architecture: <product name>
 
@@ -9,7 +9,7 @@
 
 ## 0. Overview
 - **Main system diagram:** §14 · D1 (source: PRD §10). Summarize in 3–5 lines how a request crosses the layers.
-- **Why this architecture:** see PRD §10. Add here only the technical detail behind it (the scoring matrix lives in ARCHITECTURE-RESEARCH §4).
+- **Why this architecture:** see PRD §10. Add here only the technical detail behind it (the scoring matrix lives in ARCHITECTURE.md › Research §4).
 
 ## 1. Drivers
 Top NFRs and constraints that shape the design (each linked to its PRD section), e.g. p95 latency, data residency, budget, team skills.

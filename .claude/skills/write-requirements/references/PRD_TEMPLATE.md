@@ -1,7 +1,7 @@
 # PRD.md template
 
 ```markdown
-> Status: in-review · Owner: product-manager · Sources: Intake-Readiness.md, BA-ANALYSIS.md, RESEARCH.md · Updated: <ISO>
+> Status: in-review · Owner: product-manager · Sources: Intake-Readiness.md, PRD.md › Analysis, PRD.md › Research notes · Updated: <ISO>
 
 # Product Requirements Document: <product name>
 
@@ -33,7 +33,7 @@ Personas and jobs-to-be-done (link to the BA §1).
   - AC-LAND-3 Given a mobile Lighthouse run, Then performance, accessibility, best practices and SEO are each ≥ 90
   - AC-LAND-4 Given the primary CTA, When it is used, Then the visitor reaches the sign-up or contact journey
   - AC-LAND-5 Given the footer, Then the legal links (privacy, terms) open the client-provided pages; marketing and legal copy is client-approved
-- Refreshed at every release from `docs/FEATURES.md` (LANDING_PAGE §6)
+- Refreshed at every release from `docs/delivery/PLAN.md › Features` (LANDING_PAGE §6)
 
 ## 5. UX principles
 Key flows, tone, accessibility target (WCAG 2.2 AA), supported devices and locales.
@@ -62,7 +62,7 @@ Key flows, tone, accessibility target (WCAG 2.2 AA), supported devices and local
 ## 10. Solution architecture (layer by layer)
 <!-- architect:begin -->
 Written by the solution-architect (format: design-architecture/references/LAYERED_BLUEPRINT.md → "PRD section format").
-The D1 main system diagram (whole app), the plain-language "Why this architecture" summary, an evidence link (ARCHITECTURE-RESEARCH.md), a layer table (L0 clients … L7 async, plus cross-cutting X1–X3),
+The D1 main system diagram (whole app), the plain-language "Why this architecture" summary, an evidence link (ARCHITECTURE.md › Research), a layer table (L0 clients … L7 async, plus cross-cutting X1–X3),
 the dependency rule, and the critical request flow.
 
 ## 11. Application folder structure

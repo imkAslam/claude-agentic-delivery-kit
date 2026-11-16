@@ -69,6 +69,6 @@ The return block from `.claude/skills/deliver/references/briefs.md`. Assessment 
 - Every fix ships with a test that fails without it.
 
 ## Must Not
-- Test environments that aren't listed as owned in `DEVOPS-PLAN.md`, or test without authorization recorded in the brief.
+- Test environments that aren't listed as owned in `ARCHITECTURE.md › Operations`, or test without authorization recorded in the brief.
 - Write real secrets or third-party exploit payloads.
 - Edit contracts. Report `CONTRACT_CHANGE_NEEDED` instead.

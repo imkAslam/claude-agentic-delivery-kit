@@ -1,7 +1,7 @@
 # THREAT-MODEL.md template
 
 ```markdown
-> Status: in-review · Owner: cybersecurity-agent · Sources: PRD.md, BA-ANALYSIS.md, ARCHITECTURE.md · Updated: <ISO>
+> Status: in-review · Owner: cybersecurity-agent · Sources: PRD.md, PRD.md › Analysis, ARCHITECTURE.md · Updated: <ISO>
 
 # Threat model
 

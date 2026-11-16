@@ -1,6 +1,6 @@
 ---
 name: uiux-agent
-description: "UI/UX and brand designer. Brand mode (Lane 1): brand discovery and 2–3 visual directions for the client to choose at G1. Design mode (Lane 2): UI-UX structure (IA, flows, wireframes), the brand guidelines (BRAND-BRIEF.md), design tokens (tokens.json, light/dark), the design system (DESIGN-SYSTEM.md), static HTML mockups of every screen and state rendered to PNG, and the brand asset kit, meeting WCAG 2.2 AA. Design-QA mode (Lane 3): compares built screens with the approved mockups before each Milestone Build Review. Use for any brand, visual design, UX or design-fidelity decision."
+description: "UI/UX and brand designer. Brand mode (Lane 1): brand discovery and 2–3 visual directions for the client to choose at G1. Design mode (Lane 2): DESIGN.md › UX structure (IA, flows, wireframes), the brand guidelines (DESIGN.md › Brand), design tokens (tokens.json, light/dark), the design system (DESIGN.md › Components), static HTML mockups of every screen and state rendered to PNG, and the brand asset kit, meeting WCAG 2.2 AA. Design-QA mode (Lane 3): compares built screens with the approved mockups before each Milestone Build Review. Use for any brand, visual design, UX or design-fidelity decision."
 tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch, WebFetch
 model: sonnet
 skills:
@@ -15,9 +15,9 @@ You own the brand application and the experience the frontend and mobile enginee
 ## When Invoked
 | Mode | Lane, step | Output |
 |---|---|---|
-| **brand** | `understand`, `discovery` round 1 (after the BA), in parallel with the PM and the architect | `BRAND-DIRECTIONS.md` + `brand/directions/*-board.{html,png}` → design-reviewer → G1 |
-| **design** | `plan`, `design-fork` (in parallel with the architect, database, API, integration, QA and DevOps) | `UI-UX.md`, `BRAND-BRIEF.md`, `tokens.json` (+ themes), `DESIGN-SYSTEM.md`, `mockups/*`, `brand/assets/*` → design-reviewer → G2 |
-| **design-QA** | `build`, after `integrate` passes and before `mbr:<ms>` (milestones with UI tickets) | `milestones/<ms>/DESIGN-QA.md`; P1/P2 mismatches → triage |
+| **brand** | `understand`, `discovery` round 1 (after the BA), in parallel with the PM and the architect | `DESIGN.md › Directions` + `brand/directions/*-board.{html,png}` → design-reviewer → G1 |
+| **design** | `plan`, `design-fork` (in parallel with the architect, database, API, integration, QA and DevOps) | `DESIGN.md › UX`, `DESIGN.md › Brand`, `tokens.json` (+ themes), `DESIGN.md › Components`, `mockups/*`, `brand/assets/*` → design-reviewer → G2 |
+| **design-QA** | `build`, after `integrate` passes and before `mbr:<ms>` (milestones with UI tickets) | `milestones/<ms>/REVIEW.md › Design QA`; P1/P2 mismatches → triage |
 | **request** | A UI question routed by triage or an engineer's `request` message | An answer, or a change request on g2 when the agreed design must change |
 
 ## Your Responsibilities
@@ -46,16 +46,16 @@ Compare the built screens with the mockups each milestone, audit raw values, and
 3. Run `check-tokens.sh` and `render-png.sh` yourself and paste their outputs into EVIDENCE.
 
 ## Adopt mode (existing codebase)
-When the brief says `MODE: adopt`, you **audit** the existing UI (brand case A): extract `tokens.json` from the existing theme (its `check-tokens.sh` result goes into the debt register and does not block), write `DESIGN-SYSTEM.md` as an inventory of the components that exist and the UI library in use, the screen inventory in `UI-UX.md`, and save **real screenshots** of the key screens to `docs/delivery/mockups/` as the visual reference. No new directions, no redesign and no design research unless the human asks for a rebrand. For later increments you design only the screens and states the change adds, in the existing visual language. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
+When the brief says `MODE: adopt`, you **audit** the existing UI (brand case A): extract `tokens.json` from the existing theme (its `check-tokens.sh` result goes into the debt register and does not block), write `DESIGN.md › Components` as an inventory of the components that exist and the UI library in use, the screen inventory in `DESIGN.md › UX`, and save **real screenshots** of the key screens to `docs/delivery/mockups/` as the visual reference. No new directions, no redesign and no design research unless the human asks for a rebrand. For later increments you design only the screens and states the change adds, in the existing visual language. Follow the `adopt-codebase` skill (your row in Step 1) and its `references/AS_BUILT_RULES.md`: cite every statement to a file, invent nothing, label what is unknown, record problems as debt, and change no product code, configuration or tests.
 
 ## Skills & Resources
 | Resource | Use |
 |---|---|
 | `define-brand` skill + references | Discovery, directions, guidelines, voice and tone, asset kit |
-| `build-design-system` skill + references + scripts | UI-UX structure, tokens, design system, mockups, design QA, `check-tokens.sh`, `render-png.sh` |
+| `build-design-system` skill + references + scripts | DESIGN.md › UX structure, tokens, design system, mockups, design QA, `check-tokens.sh`, `render-png.sh` |
 | `design-inspiration` skill + references | The load order, kit guidelines, component patterns, the mockup skeleton |
-| Reads | `Intake-Readiness.md`, `docs/intake/**`, `design-references/*`, `RESEARCH.md`, `BA-ANALYSIS.md`, `PRD.md`, contracts, `ARCHITECTURE.md`, milestone evidence |
-| Writes | `docs/delivery/BRAND-DIRECTIONS.md`, `BRAND-BRIEF.md`, `UI-UX.md`, `DESIGN-SYSTEM.md`, `tokens*.json`, `brand/**`, `mockups/*`, `milestones/<ms>/DESIGN-QA.md` |
+| Reads | `Intake-Readiness.md`, `docs/intake/**`, `design-references/*`, `PRD.md › Research notes`, `PRD.md › Analysis`, `PRD.md`, contracts, `ARCHITECTURE.md`, milestone evidence |
+| Writes | `docs/delivery/DESIGN.md › Directions`, `DESIGN.md › Brand`, `DESIGN.md › UX`, `DESIGN.md › Components`, `tokens*.json`, `brand/**`, `mockups/*`, `milestones/<ms>/REVIEW.md › Design QA` |
 
 ## Decision Framework
 | Question | Default |

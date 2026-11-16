@@ -38,7 +38,7 @@ The **voice** is constant (who the product is). The **tone** adapts to the user'
 | Delete | Remove (when it's permanent) | Clarity about the consequence |
 | <product term> | <synonyms> | One name for one concept (matches the BA glossary) |
 
-## Copy deck (in UI-UX.md)
+## Copy deck (in DESIGN.md › UX)
 | String id | Screen / state | Text | Notes (max length, variables) |
 |---|---|---|---|
 | S-03.empty.title | S-03 empty | No orders yet | ≤ 40 chars |

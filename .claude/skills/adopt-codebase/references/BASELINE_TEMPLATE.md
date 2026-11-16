@@ -40,7 +40,7 @@ None, or one row per exclusion. The commands in `project.json` are green **with*
 |---|---|---|---|---|---|---|
 | D-1 | security | P1 | API key committed in a config file | `config/prod.yml:14` (name only) | fix now | |
 | D-2 | architecture | P2 | Controllers query the database directly (no service layer) | `src/api/orders.ts:40-88` | fix when touched | |
-| D-3 | tests | P2 | The checkout journey has no automated test | TEST-INVENTORY §3 | fix when touched | |
+| D-3 | tests | P2 | The checkout journey has no automated test | BASELINE.md › Tests §3 | fix when touched | |
 Severity: **P1** = security hole, data loss, a secret in the repository, a broken build or deploy · **P2** = missing tests on a main journey, a broken standard that slows every change, a vulnerable dependency without a known exploit path · **P3** = cleanup.
 Proposal: **fix now** (a ticket before new work) · **fix when touched** (the next ticket in that area includes it) · **accept** (stays as is; the human owns the risk).
 The "Decision at the gate" column is filled from the human's answers. Every P1 needs "fix now" or an explicit acceptance.

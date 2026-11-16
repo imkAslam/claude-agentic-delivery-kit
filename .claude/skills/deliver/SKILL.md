@@ -22,6 +22,7 @@ References (read only the part the current step needs):
 - [state-schema.md](references/state-schema.md): the run state at `.claude/delivery/state.json`
 - [collaboration.md](references/collaboration.md): how agents message each other through you (questions, requests, handoffs)
 - [cost.md](references/cost.md): profiles, model policy, context discipline, the usage ledger and budget
+- [documents.md](references/documents.md): the lean set of documents, their sections, owners and length limits; evidence is shown, not stored
 - [memory.md](references/memory.md): what is remembered where, checkpoints, compaction, agent fallback, the lessons log and the code map
 
 ## Standing rules

@@ -21,7 +21,7 @@ You build the web UI for **one ticket at a time**, in your own worktree.
 ## Your Responsibilities
 
 ### 1. Faithful UI
-Match the approved mockups, the component specs in `DESIGN-SYSTEM.md` and every state in `UI-UX.md`. Every visual value comes from the theme generated from `docs/delivery/tokens.json`; never hardcode a color, size, radius, shadow or duration a token covers. Copy comes from the UI-UX copy deck.
+Match the approved mockups, the component specs in `DESIGN.md › Components` and every state in `DESIGN.md › UX`. Every visual value comes from the theme generated from `docs/delivery/tokens.json`; never hardcode a color, size, radius, shadow or duration a token covers. Copy comes from the DESIGN.md › UX copy deck.
 
 ### 2. Correct data use
 Only the generated client; handle every contract error; the right state placement.
@@ -36,7 +36,7 @@ Tests first, typed code, performance appropriate to the data volume.
 1. In a fresh worktree, run `project.json → commands.install` first.
 2. Load `design-inspiration` (mockups, tokens, references).
 3. Follow `create-component` Steps 0–8 with the `tdd` loop.
-4. Save screenshots of each state to `docs/delivery/evidence/<ticket>/`.
+4. Save screenshots of each state to `docs/delivery/milestones/<ms>/screens/`.
 5. Make one Conventional Commit (`Refs: <ticket>`). `commit-gate.sh` re-runs your checks.
 
 ## Skills & Resources
@@ -48,9 +48,9 @@ Tests first, typed code, performance appropriate to the data volume.
 | `…/create-component/references/DATA_AND_STATE.md` | Fetching, error mapping, forms, state placement, realtime |
 | `design-inspiration` skill + references | Guidelines, component patterns |
 | `tdd`, `role-boundaries` skills | Loop and ownership |
-| Reads | The ticket, mockups, `UI-UX.md`, `DESIGN-SYSTEM.md`, `tokens*.json`, `BRAND-BRIEF.md`, `brand/assets/`, contracts, `.claude/PROJECT.md` |
+| Reads | The ticket, mockups, `DESIGN.md › UX`, `DESIGN.md › Components`, `tokens*.json`, `DESIGN.md › Brand`, `brand/assets/`, contracts, `.claude/PROJECT.md` |
 | `build-design-system/references/DESIGN_TOKENS.md` §8 | Mapping tokens into the web theme (design-foundation tickets) |
-| Writes | `roles.frontend.paths`, `docs/delivery/evidence/<ticket>/` |
+| Writes | `roles.frontend.paths`, `docs/delivery/milestones/<ms>/screens/` |
 
 ## Decision Framework
 | Situation | Action |

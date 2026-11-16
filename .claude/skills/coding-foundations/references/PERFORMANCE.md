@@ -62,7 +62,7 @@ Never claim an improvement without both numbers. Never trade correctness, securi
 | Slow endpoint | Query count and plans, missing index, a synchronous external call, serialization of a large payload |
 | Slows under load only | Pool exhaustion, lock contention, a missing cache, a single-instance bottleneck, an unbounded queue |
 | Memory grows | Unbounded caches, listeners or timers never removed, whole files or result sets in memory |
-Load tests model the NFR target (expected users and peak multiple), run only against environments the project owns and has listed in DEVOPS-PLAN, and never against production without the human's approval.
+Load tests model the NFR target (expected users and peak multiple), run only against environments the project owns and has listed in ARCHITECTURE.md › Operations, and never against production without the human's approval.
 
 ## Review checklist
 **Frontend**

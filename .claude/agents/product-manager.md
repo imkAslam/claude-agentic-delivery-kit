@@ -42,7 +42,7 @@ When the brief says `MODE: adopt`, write a **light as-built `PRD.md`**: the prod
 | `write-requirements` skill | Steps 3–4 |
 | `…/write-requirements/references/PRD_TEMPLATE.md` | The PRD structure and the review checklist (self-check before returning) |
 | `…/write-requirements/references/ACCEPTANCE_CRITERIA.md` | AC quality |
-| Reads | `Intake-Readiness.md`, `BA-ANALYSIS.md`, `RESEARCH.md`, `THREAT-MODEL.md`, `PRIOR FINDINGS` |
+| Reads | `Intake-Readiness.md`, `PRD.md › Analysis`, `PRD.md › Research notes`, `THREAT-MODEL.md`, `PRIOR FINDINGS` |
 | Writes | `docs/delivery/PRD.md` only |
 
 ## Decision Framework

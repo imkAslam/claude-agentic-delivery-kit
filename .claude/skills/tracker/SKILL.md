@@ -1,6 +1,6 @@
 ---
 name: tracker
-description: "Ticket tracker adapter with one operation set (create, create-bug, list, get, update-status, comment) over local markdown tickets, Linear (MCP) or GitHub Issues (gh CLI), selected by project.json tracker.kind. Keeps docs/delivery/TICKETS.md and the run state in sync."
+description: "Ticket tracker adapter with one operation set (create, create-bug, list, get, update-status, comment) over local markdown tickets, Linear (MCP) or GitHub Issues (gh CLI), selected by project.json tracker.kind. Keeps docs/delivery/PLAN.md › Tickets and the run state in sync."
 when_to_use: "Use when publishing, listing, updating or commenting on delivery tickets, or when a ticket status must match the run state."
 ---
 
@@ -46,11 +46,11 @@ Illegal jumps (for example `ready → done`) are rejected. `--force "<reason>"` 
 ## Operations
 | Operation | Effect |
 |---|---|
-| `create <ticket>` | Create it in the backend, record `tracker_ref`, append a row to `docs/delivery/TICKETS.md` |
+| `create <ticket>` | Create it in the backend, record `tracker_ref`, append a row to `docs/delivery/PLAN.md › Tickets` |
 | `list [milestone] [status] [role]` | List tickets, filtered |
 | `get <id>` | Full ticket, including comments |
-| `create-bug <bug> --of <original>` | Create the bug ticket (bug template), link it to the original in both directions in the backend, comment on the original ("Bug T-… reported: <symptom>"), and add it to the Bugs table in `TICKETS.md` |
-| `update-status <id> <status> [note]` | Run `delivery-state.sh ticket status` first (it validates the transition), then set the status in the backend and in `TICKETS.md`, and append the change to the ticket's status history |
+| `create-bug <bug> --of <original>` | Create the bug ticket (bug template), link it to the original in both directions in the backend, comment on the original ("Bug T-… reported: <symptom>"), and add it to the Bugs table in `PLAN.md › Tickets` |
+| `update-status <id> <status> [note]` | Run `delivery-state.sh ticket status` first (it validates the transition), then set the status in the backend and in `PLAN.md › Tickets`, and append the change to the ticket's status history |
 | `comment <id> <text>` | Add a comment (findings, failure-report link, evidence links) |
 
 ## Rules

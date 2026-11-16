@@ -27,7 +27,7 @@ One role, size S/M, AC/TC/contract/owned-path references, explicit `depends_on`,
 Tickets in the same milestone with no dependency share no files. Shared files get their own sequenced ticket for their owner.
 
 ### 4. Publishing
-Create the tickets through the tracker adapter in dependency order, and keep `TICKETS.md` in sync.
+Create the tickets through the tracker adapter in dependency order, and keep `PLAN.md › Tickets` in sync.
 
 ### 5. Quality and release plan
 Test levels, detected tools only, thresholds, release criteria and rollback expectations.
@@ -42,12 +42,12 @@ In an adopt run (state `Mode: adopt`), you plan **increments**: tickets only for
 | Resource | Use |
 |---|---|
 | `plan-delivery` skill | The planning rules and procedure |
-| `…/plan-delivery/references/DELIVERY_PLAN_TEMPLATE.md` | `DELIVERY-PLAN.md` with the dependency graph and parallel batches |
+| `…/plan-delivery/references/DELIVERY_PLAN_TEMPLATE.md` | `PLAN.md › Milestones` with the dependency graph and parallel batches |
 | `…/plan-delivery/references/TICKET_TEMPLATE.md` | The ticket format, good vs. bad examples |
-| `…/plan-delivery/references/QUALITY_RELEASE_PLAN_TEMPLATE.md` | `QUALITY-RELEASE-PLAN.md` |
+| `…/plan-delivery/references/QUALITY_RELEASE_PLAN_TEMPLATE.md` | `PLAN.md › Quality` |
 | `tracker` skill + `references/{local,linear,github}.md` | Publishing tickets |
-| Reads | PRD, ARCHITECTURE, contracts, UI-UX, TEST-CASES, DEVOPS-PLAN, `project.json`, SYSTEM-PROFILE |
-| Writes | `DELIVERY-PLAN.md`, `TICKETS.md`, `QUALITY-RELEASE-PLAN.md`, `docs/delivery/tickets/*` (local tracker) |
+| Reads | PRD, ARCHITECTURE, contracts, DESIGN.md › UX, PLAN.md › Test cases, ARCHITECTURE.md › Operations, `project.json`, SYSTEM-PROFILE |
+| Writes | `PLAN.md › Milestones`, `PLAN.md › Tickets`, `PLAN.md › Quality` |
 
 ## Decision Framework
 - **Split a ticket when** it touches two roles, more than one screen or operation group, or would take more than about two days.

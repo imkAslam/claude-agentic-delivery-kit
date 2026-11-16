@@ -1,7 +1,7 @@
 ---
 name: write-requirements
 description: "Requirements toolkit for research, business analysis and product management: 5-product market comparison, BA analysis (personas, journeys, business rules, entities, acceptance criteria), PRD authoring and revision, and the product-owner review checklist. Includes templates and a Given/When/Then acceptance-criteria guide."
-when_to_use: "Use when writing RESEARCH.md, BA-ANALYSIS.md or PRD.md, when revising the PRD after review findings, or when reviewing a PRD for value, scope and testability."
+when_to_use: "Use when writing PRD.md › Research notes, PRD.md › Analysis or PRD.md, when revising the PRD after review findings, or when reviewing a PRD for value, scope and testability."
 ---
 
 # Write requirements
@@ -17,7 +17,7 @@ Lane `understand`, steps `research` → `ba` → `discovery`. Produces the input
 ## Instructions
 
 ### Step 0: Load the inputs
-Read the approved `docs/delivery/Intake-Readiness.md` (the decision log is binding), the evidence in `docs/intake/`, and whatever earlier artifacts exist: `RESEARCH.md`, `BA-ANALYSIS.md`, `PRD.md`. In a revision round, read the brief's `PRIOR FINDINGS` first.
+Read the approved `docs/delivery/Intake-Readiness.md` (the decision log is binding), the evidence in `docs/intake/`, and whatever earlier artifacts exist: `PRD.md › Research notes`, `PRD.md › Analysis`, `PRD.md`. In a revision round, read the brief's `PRIOR FINDINGS` first.
 
 ### Step 1: Research (researcher-agent)
 Follow [RESEARCH_TEMPLATE.md](references/RESEARCH_TEMPLATE.md). Choose 5 comparable products or approaches and cite fetched sources. Close with *table stakes* (features users will expect) and *differentiators*. Skip the whole step, recording the reason, for a known or narrow change.
