@@ -345,6 +345,19 @@ pst ticket status T-002 in_progress; pst agent set ticket:T-002 agent-abc
 pst board; printf '%s\n' "$out" | grep -q 'T-002.backend.in_progress.*agent-abc' && { pass=$((pass+1)); echo "  ok   the board shows who has which ticket"; } || { fail=$((fail+1)); echo "  FAIL the board shows who has which ticket"; printf '%s\n' "$out" | sed 's/^/       /'; }
 pst stats ms-1; printf '%s\n' "$out" | grep -q '^backend: ' && { pass=$((pass+1)); echo "  ok   stats report rework per role"; } || { fail=$((fail+1)); echo "  FAIL stats report rework per role"; }
 
+echo "app commands"
+AP="$REPO/.claude/skills/deliver/scripts/app.sh"; AD="$TMP/app"; mkdir -p "$AD/.claude" "$AD/fakebin"; ( cd "$AD" && git init -q )
+ap() { out=$(PATH="$AD/fakebin:$PATH" bash "$AP" "$@" --root "$AD" 2>&1); c=$?; }
+ap start; expect 0 "no app yet is a plain message, not an error"; has 'There is no app yet' "it says there is no app yet"
+printf '{"commands":{"test":"echo 12 passed; echo DB=$DATABASE_URL","build":"echo built"},"stack":{"database":"postgresql"}}\n' > "$AD/.claude/project.json"
+ap start; expect 0 "a missing start command is explained"; has 'no start command yet' "it names the missing command"
+ap build; expect 0 "build runs the project's build command"
+ap test; expect 0 "test runs the project's tests"; has 'All tests passed' "passing tests are reported in plain words"
+printf 'services:\n  db:\n    image: postgres:16-alpine\n' > "$AD/compose.yml"; printf '#!/bin/sh\nexit 1\n' > "$AD/fakebin/docker"; chmod +x "$AD/fakebin/docker"
+ap test; expect 0 "without Docker the tests run on SQLite"; has 'DB=file:./.data/test.sqlite' "the SQLite test database is selected by DATABASE_URL"
+printf '{"commands":{"test":"echo 1 failed: orders total; exit 1"},"stack":{"database":"postgresql"}}\n' > "$AD/.claude/project.json"
+ap test; expect 1 "failing tests fail the command"; has 'Some tests failed' "failing tests are reported in plain words"
+
 echo "sync-diagrams"
 SD="$REPO/.claude/skills/design-architecture/scripts/sync-diagrams.sh"; CD="$REPO/.claude/skills/design-architecture/scripts/check-diagrams.sh"
 DD="$TMP/diag"; mkdir -p "$DD"

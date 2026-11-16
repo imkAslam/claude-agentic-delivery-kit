@@ -3,7 +3,7 @@
 The principles every role designs and builds by. The detailed rules are in `coding-standards.md` (code), `database-standards.md` (data), `secure-coding.md`, `testing.md`, `api-design.md` and `documentation.md`. When two principles conflict, the order below is the priority, and the trade-off is recorded in an ADR.
 
 1. **Correct, then secure, then simple, then fast.** Meet the acceptance criteria and the threat model first. Optimize only what a measurement or an NFR says is slow.
-2. **Simplicity (KISS, YAGNI).** Build what the ticket needs today, in the plainest way that meets it. No speculative abstraction, configuration or extension points. A modular monolith beats distributed parts until a driver says otherwise.
+2. **Simplicity (KISS, YAGNI): maintainable by a newcomer.** Prefer the fewest files, moving parts and dependencies that meet the need; names a new team member understands; one obvious way to start, test and build (`app.sh`). Build what the ticket needs today, in the plainest way that meets it. No speculative abstraction, configuration or extension points. A modular monolith beats distributed parts until a driver says otherwise.
 3. **Single responsibility and separation of concerns.** One reason to change per module, class and function. UI, application logic, domain rules and infrastructure live in separate layers.
 4. **Dependencies point inward.** Domain code depends on nothing: no framework, ORM, HTTP or vendor SDK. Infrastructure implements ports the domain defines (LAYERED_BLUEPRINT dependency rule, enforced by the import-boundary lint).
 5. **Explicit contracts at every boundary.** APIs, events, ports and modules have typed, documented interfaces. Validate input where it enters; trust nothing from outside the boundary.

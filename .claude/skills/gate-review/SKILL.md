@@ -17,7 +17,7 @@ State helper: `bash ${CLAUDE_PROJECT_DIR}/.claude/skills/deliver/scripts/deliver
 3. **Filter the questions** with `.claude/rules/decision-policy.md`. Collect the queued business questions for this gate, drop any technical ones (send them back to their agent to decide), merge duplicates, and keep **at most 5**, each in plain language with options, the consequences and a recommended default.
 4. **Present** a summary of no more than about 25 lines:
    - **Decisions made (for information):** the key technical choices by the agents, one line each with the ADR link. Not asked about, but the human may override them.
-   - What's being decided, and what approval unlocks
+   - What's being decided, and what approval unlocks, with one line **"What this means for you"** (cost, time, what you will be able to see or use)
    - Key content: scope or stack, or milestone results, or release identity, depending on the gate. For `g1`, point the human to the diagrams **inside the PRD** (§10 D1 main system diagram and "Why this architecture", §12 the rest) (the same set is mirrored in ARCHITECTURE.md §14) and quote the latest `check-diagrams.sh --mirror` result. Also show the brand directions: the board PNG paths from `DESIGN.md › Directions`, one line per direction and the recommendation, asked as one business question ("Which visual direction?"). Also present the **tech stack** from PRD §10 (recommended, and the client's preference if any) as one business question: "Confirm the tech stack?" with *Use the recommended stack* (default), *Use my preferred stack* (the human types it) and *Change parts of it*
    - Open questions and assumptions, risks and their consequences
    - Evidence links (paths) and reviewer verdicts from the AI reviews

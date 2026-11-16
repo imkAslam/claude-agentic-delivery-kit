@@ -8,9 +8,13 @@ One paragraph: what it does and for whom (from PRD §1).
 ## Quick start
 1. Prerequisites: <from SYSTEM-PROFILE / BOOTSTRAP: runtime versions, Docker>
 2. `cp .env.example .env` (fill values locally; never commit them)
-3. Start local services: <project.json command, e.g. docker compose up -d>
-4. Install and run: <project.json commands.install>, <commands.dev>
-5. Open <local URL>; sign in with the seeded test user from the seed file
+3. **Run it locally** (three commands, the same on every project; inside Claude Code: `/start-app`, `/test-app`, `/build-app`):
+   - `bash .claude/skills/deliver/scripts/app.sh start`: starts the local services (one database container; SQLite when Docker is not running), prepares the database and starts the app
+   - `bash .claude/skills/deliver/scripts/app.sh test`: runs the tests
+   - `bash .claude/skills/deliver/scripts/app.sh build`: runs the production build
+   - `… app.sh stop` and `… app.sh status`
+4. Open <local URL>; sign in with the sample accounts listed here (local only): <role → email>
+5. **How this app is organised:** five to ten plain lines: the main folders, what lives where, and where to start reading (details: docs/CODEMAP.md)
 
 ## Commands
 | Command | What it does |
