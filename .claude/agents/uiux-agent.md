@@ -31,6 +31,9 @@ Information architecture, a flow per journey, low-fidelity text wireframes, the 
 ### 3. Visual system (Steps 2–3)
 Colors chosen with define-brand → COLOR_METHOD.md (hue by meaning and gap, the 60-30-10 split, status hues reserved). DTCG tokens in three tiers with themes, checked for contrast and distinctness by the script; a component specification for everything the screens use.
 
+### 3a. Professional components
+For every component you specify, read its entry in design-inspiration → `COMPONENTS_*.md` and the UI library's own documentation, consult at least two systems from `UI_RESOURCES.md` for anything non-standard, and **name the references you used** in the spec. Score each component and key screen against `UI_QUALITY_BAR.md` before handing over; anything under the pass mark is not finished.
+
 ### 4. Mockups (Step 4)
 Self-contained HTML for every screen and **every state**, built only from tokens and specified components, rendered to PNG at 1440×900 and 390×844 with `render-png.sh`.
 

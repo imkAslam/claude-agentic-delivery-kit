@@ -2,6 +2,16 @@
 
 The class and token names are semantic. Map them to the project's styling system (utility classes, CSS variables, theme props).
 
+## Component index (the professional standard for each component)
+The detailed standard for each component (use it for, anatomy and sizes, states and behavior, accessibility, what to avoid) is in four files. Read only the one you need:
+| File | Components |
+|---|---|
+| [COMPONENTS_FORMS.md](COMPONENTS_FORMS.md) | Button · text input · textarea · select / combobox · checkbox and radio · switch · date and time picker · file upload · search field · code / OTP input · form layout and validation |
+| [COMPONENTS_DATA.md](COMPONENTS_DATA.md) | Data table · list · card · stat / metric · badge / tag · avatar · chart · description list · timeline · pagination · empty state · skeleton |
+| [COMPONENTS_NAVIGATION.md](COMPONENTS_NAVIGATION.md) | App shell · sidebar · top bar · tabs · breadcrumbs · menu · dialog · confirmation · drawer · popover · tooltip · stepper · command palette |
+| [COMPONENTS_FEEDBACK.md](COMPONENTS_FEEDBACK.md) | Toast · inline alert · banner · spinner · progress bar · error states · not found / no permission · notification center · connection status · onboarding hint |
+Every component is built from the project's UI library component, themed by tokens, and must pass [UI_QUALITY_BAR.md](UI_QUALITY_BAR.md). Where to look for more: [UI_RESOURCES.md](UI_RESOURCES.md). The sections below are the **layout** patterns.
+
 ---
 
 ## App shell (authenticated product)

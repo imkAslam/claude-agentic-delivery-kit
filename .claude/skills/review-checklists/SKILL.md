@@ -105,6 +105,7 @@ user-invocable: false
 - [ ] Colors follow COLOR_METHOD: a stated rationale, the 60-30-10 split per screen, brand colors never mistakable for status colors.
 - [ ] If `F-LANDING`: the landing page shows only released features, every section has its LANDING_PAGE.md source, client copy is marked and approved.
 - [ ] Every component shown is specified in DESIGN.md › Components, with all its states, and looks the same everywhere.
+- [ ] Every component and key screen passes design-inspiration → `UI_QUALITY_BAR.md` (16 of 20, no zero) and follows its `COMPONENTS_*.md` entry; built components are on the dev-only gallery page.
 - [ ] Every screen state exists at desktop and mobile size, as a real render.
 - [ ] Copy follows the brand voice, the word list and the BA glossary; client copy is marked.
 - [ ] Accessibility: contrast, visible focus, targets, labels, landmarks and headings, no color-only meaning, 320 px reflow, reduced motion.

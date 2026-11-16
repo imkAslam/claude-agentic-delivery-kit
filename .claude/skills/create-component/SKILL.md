@@ -40,6 +40,7 @@ Use the existing structure and the tree in PRD §11 (Next.js: design-architectur
 One test per AC: rendering of each state (loading, empty, error, success, no-permission), the user interactions (with role- and label-based queries), validation messages, calls to the API client (mocked through the generated mocks), and keyboard operation.
 
 ### Step 4: Generate the component
+Read the component's entry in design-inspiration → `COMPONENTS_FORMS.md`, `COMPONENTS_DATA.md`, `COMPONENTS_NAVIGATION.md` or `COMPONENTS_FEEDBACK.md` and the UI library's documentation for it first: sizes, every state, behavior, accessibility, what to avoid.
 Use the matching template in [FRAMEWORK_TEMPLATES.md](references/FRAMEWORK_TEMPLATES.md) and the data and state patterns in [DATA_AND_STATE.md](references/DATA_AND_STATE.md):
 - Typed props, with no `any`
 - The generated client for every API call, handling each error code the contract defines
@@ -56,7 +57,7 @@ Labels for every control; visible focus; keyboard support (Tab order, Enter/Spac
 More than about 200 rendered rows → virtualize. Frequent updates → memoize, or use fine-grained state. Heavy computation → move it off the main thread. Route-level code splitting for large pages. Size images and lazy-load them. Follow coding-foundations → PERFORMANCE.md §3 and keep the PRD §6 budgets.
 
 ### Step 8: Verify and capture evidence
-Run the role's `lint`, `typecheck` and `test`. Start `commands.dev`, open the screen, and save a screenshot of each state to `docs/delivery/milestones/<ms>/screens/`, so the reviewer can compare them with the mockups.
+Run the role's `lint`, `typecheck` and `test`. Add the component to the **dev-only gallery page** in all its states with realistic content (design-inspiration → `UI_QUALITY_BAR.md` §4), start the app (`app.sh start`), check it against the ten quality checks at desktop and mobile width, and save one screenshot of the screen (and one of the component's gallery section) to `docs/delivery/milestones/<ms>/screens/`, so the reviewer can compare them with the mockups.
 
 ## Integration with Other Skills
 - **design-inspiration:** always load it before UI work

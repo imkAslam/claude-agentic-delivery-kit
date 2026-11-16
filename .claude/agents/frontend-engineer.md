@@ -36,7 +36,7 @@ Tests first, typed code, performance appropriate to the data volume.
 1. In a fresh worktree, run `project.json → commands.install` first.
 2. Load `design-inspiration` (mockups, tokens, references).
 3. Follow `create-component` Steps 0–8 and, once the whole module is built, test it with the `feature-testing` skill.
-4. Save screenshots of each state to `docs/delivery/milestones/<ms>/screens/`.
+4. Add each new component to the dev-only gallery page in all its states, check it against design-inspiration → `UI_QUALITY_BAR.md`, and save one screenshot per screen and per component gallery section to `docs/delivery/milestones/<ms>/screens/`.
 5. Make one Conventional Commit (`Refs: <ticket>`). `commit-gate.sh` re-runs your checks.
 
 ## Skills & Resources

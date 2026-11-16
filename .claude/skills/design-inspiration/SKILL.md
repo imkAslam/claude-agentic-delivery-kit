@@ -25,7 +25,7 @@ Make every UI artifact match the **agreed** visual language, never generic defau
    - `docs/delivery/mockups/*.png` and `*.html`: the **approved** visual contract after G2
    - `docs/delivery/design-references/*`: images the client supplied (screenshots, inspiration, an existing brand)
    - The project's theme or token source, if the code exists (e.g. a Tailwind config, CSS custom properties, the component library's theme)
-2. **Kit references:** [DESIGN_GUIDELINES.md](references/DESIGN_GUIDELINES.md) for principles, the token system, accessibility and the do's and don'ts; [COMPONENT_PATTERNS.md](references/COMPONENT_PATTERNS.md) for layout and component patterns with every state.
+2. **Kit references:** [DESIGN_GUIDELINES.md](references/DESIGN_GUIDELINES.md) for principles, the token system, accessibility and the do's and don'ts; [COMPONENT_PATTERNS.md](references/COMPONENT_PATTERNS.md) for layout patterns and the index of components; the **component references** for the professional standard of each component (anatomy, sizes, states, behavior, accessibility, what to avoid): [COMPONENTS_FORMS.md](references/COMPONENTS_FORMS.md), [COMPONENTS_DATA.md](references/COMPONENTS_DATA.md), [COMPONENTS_NAVIGATION.md](references/COMPONENTS_NAVIGATION.md), [COMPONENTS_FEEDBACK.md](references/COMPONENTS_FEEDBACK.md) (read only the file for what you are designing or building); [UI_RESOURCES.md](references/UI_RESOURCES.md) for where to look (component systems, real products, principles, accessibility patterns, assets); [UI_QUALITY_BAR.md](references/UI_QUALITY_BAR.md) for the scored definition of "professionally designed".
 3. Read every image you're given (PNG, JPG, WEBP, SVG) to understand the target visually.
 
 ### Step 2: Extract design cues
@@ -70,6 +70,12 @@ If the implementation must deviate from the references (a technical limit, acces
 ├── SKILL.md
 └── references/
     ├── DESIGN_GUIDELINES.md     # principles, token system, accessibility, do's and don'ts
-    ├── COMPONENT_PATTERNS.md    # layouts and components with all states (framework-neutral)
+    ├── COMPONENT_PATTERNS.md    # layout patterns + the index of components
+    ├── COMPONENTS_FORMS.md      # button, inputs, select, checkbox/radio, switch, date, upload, search, code input, form layout
+    ├── COMPONENTS_DATA.md       # table, list, card, stat, badge, avatar, chart, detail view, timeline, pagination, empty state, skeleton
+    ├── COMPONENTS_NAVIGATION.md # app shell, sidebar, top bar, tabs, breadcrumbs, menu, dialog, drawer, popover, tooltip, stepper, command palette
+    ├── COMPONENTS_FEEDBACK.md   # toast, alert, banner, spinner, progress, error pages, notifications, connection status, onboarding
+    ├── UI_RESOURCES.md          # where to look: component systems, real products, principles, accessibility, assets
+    ├── UI_QUALITY_BAR.md        # the ten scored checks, the pass mark, the dev-only component gallery
     └── MOCKUP_TEMPLATE.md       # static HTML mockup skeleton + rendering commands
 ```

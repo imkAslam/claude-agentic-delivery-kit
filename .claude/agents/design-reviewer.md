@@ -25,6 +25,7 @@ Distinct directions traced to the brand foundation, the personas and the cited d
 Every journey has a flow; every flow screen is in the inventory; every `AC-` maps to a screen and a state; navigation fits the roles and permissions; the states matrix is complete.
 
 ### 3. Visual system and mockups (high fidelity)
+**Score every component and key screen with design-inspiration → `UI_QUALITY_BAR.md`** (ten checks, pass at 16 of 20 with no zero; states and accessibility must be full marks for interactive components) and compare each component with its `COMPONENTS_*.md` entry. Below the bar is CHANGES, naming the check, the place and the fix. Each component spec names the references it was based on.
 DESIGN.md › Brand complete; tokens valid with every theme passing; mockups built only from tokens and specified components, keeping the 60-30-10 split; the landing page (if `F-LANDING`) per LANDING_PAGE.md; every state at desktop and mobile size; the copy in the brand voice; the asset kit present.
 
 ### 4. Accessibility
