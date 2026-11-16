@@ -28,7 +28,7 @@ One paragraph: what it does and for whom (from PRD §1).
 The top-level folders and their owners (PRD §11).
 
 ## Contributing
-Branches, commits and reviews (the git rules), test-first, and where tickets live (the tracker).
+Branches, commits and reviews (the git rules), build then test, and where tickets live (the tracker).
 
 ## Documentation
 Link to docs/CODEMAP.md and docs/SYSTEM-FLOWS.md.

@@ -1,6 +1,6 @@
 ---
 name: create-screen
-description: "Creates mobile app screens and flows adapted to the project's mobile framework (Expo/React Native, Flutter, or native), with navigation, the generated API client, offline and poor-network handling, lifecycle and permissions, platform accessibility, design tokens and test-first delivery."
+description: "Creates mobile app screens and flows adapted to the project's mobile framework (Expo/React Native, Flutter, or native), with navigation, the generated API client, offline and poor-network handling, lifecycle and permissions, platform accessibility, design tokens and built then tested delivery."
 when_to_use: "Use when a mobile ticket needs a new or changed screen, navigation flow, form, list, offline behavior or device-permission flow."
 ---
 

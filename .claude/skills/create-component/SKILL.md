@@ -1,6 +1,6 @@
 ---
 name: create-component
-description: "Creates web UI components and pages adapted to the project's framework (React/Next.js, Vue/Nuxt, Angular, Svelte/SvelteKit, Solid, Astro), component library and styling, using design tokens, the generated API client, every UI state, accessibility and test-first delivery. Reads the stack from project.json and the look from the approved mockups."
+description: "Creates web UI components and pages adapted to the project's framework (React/Next.js, Vue/Nuxt, Angular, Svelte/SvelteKit, Solid, Astro), component library and styling, using design tokens, the generated API client, every UI state, accessibility and feature-level tests. Reads the stack from project.json and the look from the approved mockups."
 when_to_use: "Use when a frontend ticket needs a new or changed component, page, form, table or layout."
 ---
 

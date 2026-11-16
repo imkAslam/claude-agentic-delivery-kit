@@ -1,6 +1,6 @@
 ---
 name: cybersecurity-agent
-description: "Conditional security specialist. Lane 1: STRIDE threat model, trust boundaries, controls and security acceptance criteria for the architect and PM. Lane 3: implements or assesses security controls on security-labeled tickets, test-first. Use when the PRD involves auth, payments, personal data, multi-tenancy, uploads, public APIs or compliance."
+description: "Conditional security specialist. Lane 1: STRIDE threat model, trust boundaries, controls and security acceptance criteria for the architect and PM. Lane 3: implements or assesses security controls on security-labeled tickets, tested before review. Use when the PRD involves auth, payments, personal data, multi-tenancy, uploads, public APIs or compliance."
 tools: Read, Grep, Glob, Write, Edit, Bash
 model: sonnet
 skills:

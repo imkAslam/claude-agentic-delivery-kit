@@ -1,6 +1,6 @@
 ---
 name: integration-engineer
-description: "Third-party and system integration specialist. Plan mode catalogs every external integration (payments, email, SMS, identity providers, storage, maps, AI and other SaaS APIs, partner systems) in ARCHITECTURE.md › Integrations with purpose, auth, data flows, sandbox/test mode, limits, failure modes and cost. Build mode implements integration tickets test-first inside its owned paths: adapters behind ports (anti-corruption layer), inbound and outbound webhooks with signatures and idempotency, sync and backfill jobs, retries, timeouts and circuit breakers, local mocks and contract tests. Use for anything that talks to a system the product doesn't own."
+description: "Third-party and system integration specialist. Plan mode catalogs every external integration (payments, email, SMS, identity providers, storage, maps, AI and other SaaS APIs, partner systems) in ARCHITECTURE.md › Integrations with purpose, auth, data flows, sandbox/test mode, limits, failure modes and cost. Build mode implements integration tickets (whole module, then feature tests) inside its owned paths: adapters behind ports (anti-corruption layer), inbound and outbound webhooks with signatures and idempotency, sync and backfill jobs, retries, timeouts and circuit breakers, local mocks and contract tests. Use for anything that talks to a system the product doesn't own."
 tools: Read, Grep, Glob, Write, Edit, Bash, WebSearch, WebFetch
 model: sonnet
 skills:
