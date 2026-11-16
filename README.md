@@ -38,16 +38,22 @@ The kit is generic. It contains no project-specific names, stacks or commands. T
 ## What you get
 | | Count | Where |
 |---|---|---|
-| Role subagents | 33 | `.claude/agents/` |
-| Skills (orchestrator, gates, role skills, adapters, shared practices) | 32 | `.claude/skills/` |
-| Rules (always-on and path-scoped) | 13 | `.claude/rules/` |
-| Deterministic hooks + a test suite (151 checks) | 7 | `.claude/hooks/` |
+| Role subagents (incl. the orchestrator) | 34 | `.claude/agents/` |
+| Skills (orchestrator, gates, role skills, adapters, shared practices, app commands) | 36 | `.claude/skills/` |
+| Rules (always-on and path-scoped) | 15 | `.claude/rules/` |
+| Deterministic hooks + a test suite (179 checks) | 7 | `.claude/hooks/` |
 | Human gates | 7 | intake, g1, g2, mbr:&lt;ms&gt;, acceptance, g3, ops_ack (an adopted codebase has one `baseline` approval in place of intake, g1 and g2) |
 
 Main features:
 - **One command:** `/deliver` starts or resumes the whole run; `/delivery-status` shows where it is.
 - **Independent review loops** on every artifact and ticket, capped at 3 rounds, then escalated to you with a failure report.
-- **Test-first build** in parallel git worktrees, one ticket = one Conventional Commit with red → green evidence.
+- **Independent tickets built in parallel:** after a short foundation, a milestone's feature tickets never wait for each other (`plan-check` enforces it). Each engineer builds the whole module, then tests it at feature level; one ticket = one Conventional Commit.
+- **An orchestrator agent** manages the team: it assigns work, tracks every agent, checks each result against its brief and reports to you in plain language. Agents do exactly what their brief says (numbered scope, scope check).
+- **Few documents:** about a dozen, each with an owner, a length limit and a plain summary. Evidence is shown, not stored as files.
+- **Five commands:** `/deliver`, `/delivery-status`, `/start-app`, `/test-app`, `/build-app`.
+- **One database container** for development and tests; SQLite automatically when Docker is not running.
+- **Webhooks done properly:** a dedicated rule and skill for receiving and sending them.
+- **It suggests its own improvements:** after each milestone you get numbered suggestions with their expected benefit; nothing changes unless you choose it.
 - **Hash-tied approvals:** a gate approval is bound to the sha256 of every file in its package. If an approved file changes without a change request, the approval is invalid and the hooks block further progress.
 - **No coding without approval:** code, scaffolding, code commits and build agents are blocked until you approve G2.
 - **Your stack or ours:** you can name a preferred tech stack at any time (in the evidence, at intake, or at G1). The architect scores it honestly and uses it unless it fails a must-have requirement. Otherwise the architect recommends one. Either way, you confirm the stack at G1.
@@ -63,6 +69,16 @@ Main features:
 ---
 
 ## How it works
+**In plain words:** you describe the product (or point the kit at an existing codebase), and a team of AI agents plans, designs, builds, tests and releases it. One of them, the **orchestrator**, manages the others and talks to you. You make the business decisions at seven stops; the agents make the technical ones.
+
+| You type | What happens |
+|---|---|
+| `/deliver` | Starts or continues the work, up to the next decision that needs you |
+| `/delivery-status` | Three lines: where we are, what is waiting for you, what happens next |
+| `/start-app` | Starts the product on your machine and gives you the address |
+| `/test-app` | Runs the tests and tells you what passed |
+| `/build-app` | Checks that the product builds |
+
 
 ```mermaid
 flowchart LR
@@ -78,7 +94,7 @@ flowchart LR
     PL --> G2{{Gate: g2<br/>approval to start coding}}
   end
   subgraph BU[3 · Build & Review · per milestone]
-    T[Ready tickets] --> W[Fork: engineer ⇄ reviewer<br/>in worktrees, test-first]
+    T[Ready tickets] --> W[Fork: engineer ⇄ reviewer<br/>in worktrees, build then test]
     W --> IN[Integrate + real journey] --> MB{{Gate: mbr}}
   end
   subgraph V[4 · Verify & Accept]
@@ -329,10 +345,11 @@ Reviewers are read-only. Engineers write only inside their role's owned paths. E
 | Orchestration | `deliver` (`/deliver`), `gate-review`, `delivery-status` (`/delivery-status`), `adopt-codebase` (existing codebases) |
 | Understand | `intake-readiness`, `write-requirements`, `design-architecture`, `threat-model`, `define-brand` |
 | Plan & Design | `design-database`, `design-api`, `build-integration`, `build-design-system`, `design-inspiration`, `plan-delivery`, `write-tests` |
-| Build | `create-component`, `create-endpoint`, `create-screen`, `integrate-milestone` |
+| Build | `create-component`, `create-endpoint`, `create-screen`, `build-webhooks`, `integrate-milestone` |
 | Verify & Release | `security-audit`, `release-docs` |
 | Documentation | `write-docs` |
 | Adapters | `tracker` (Linear, GitHub Issues, local files), `ci` (GitHub Actions, GitLab CI), `ship` (hosting targets), `setup-docker`, `detect-system` |
+| App commands | `start-app` (`/start-app`), `test-app` (`/test-app`), `build-app` (`/build-app`) |
 | Shared practices | `feature-testing`, `role-boundaries`, `review-checklists`, `coding-foundations` (OOP, design patterns and stack guides) |
 
 Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, references loaded on demand, scripts under `scripts/`).
@@ -344,6 +361,8 @@ Bundled scripts:
 - `render-png.sh`: mockups to PNG with Playwright, falling back to Chrome headless.
 - `check-migrations.sh`: migration safety checks.
 - `check-ownership.sh`: every changed file belongs to the role that changed it.
+- `app.sh start | stop | test | build | status`: runs the product locally from `project.json`; one set of services in Docker, or SQLite when Docker is not running.
+- `delivery-state.sh plan-check | board | stats`: are the tickets independent, who is working on what, and where the rework and cost went.
 - `check-hygiene.sh`: no scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code or dead doc links.
 - `delivery-state.sh`: the run state helper.
 
@@ -397,31 +416,30 @@ The non-negotiable rules (see `CLAUDE.md`):
 ```
 docs/
 ├── intake/                       client evidence (your input)
-├── README.md                     documentation index
-├── docs/delivery/PLAN.md › Features                   feature catalog: priority, milestone, AC, screens, APIs, tickets, status
-├── SYSTEM-FLOWS.md               how each built journey works step by step, state machines, cross-cutting behavior
 ├── CODEMAP.md                    where the code lives (read before opening code)
-├── database/DATABASE.md          database design + as-built dictionary, indexes, access rules, pooling, seeds, capacity, operations
-├── adr/                          architecture decision records + README.md index (proposed → accepted → superseded)
+├── SYSTEM-FLOWS.md               how each built journey works, as built
+├── database/DATABASE.md          database design + as-built dictionary and operations
+├── adr/                          decision records, major decisions only
 └── delivery/
-    ├── Intake-Readiness.md  PRD.md › Research notes  PRD.md › Analysis
-    ├── PRD.md                    the complete PRD, incl. §10–§12 architecture and every diagram (Mermaid, inline)
-    ├── ARCHITECTURE.md › Research  ARCHITECTURE.md (text + the same diagrams in §14)  THREAT-MODEL.md
-    ├── DATA-MODEL.md  ARCHITECTURE.md › API conventions  ARCHITECTURE.md › Integrations
-    ├── DESIGN.md › Directions  DESIGN.md › Brand  DESIGN.md › UX  DESIGN.md › Components  tokens.json  tokens.dark.json
-    ├── mockups/  brand/          HTML mockups + PNGs, logo set, favicon, app icons, OG image
-    ├── PLAN.md › Test cases  ARCHITECTURE.md › Operations  LOCAL_SERVICES.md  BOOTSTRAP.md
-    ├── PLAN.md › Milestones  PLAN.md › Tickets  PLAN.md › Quality
-    ├── milestones/<ms>/          REVIEW.md › Build, REVIEW.md › Tickets, REVIEW.md › Checks, REVIEW.md › Run guide, REVIEW.md › Design QA, REVIEW.md › Performance, evidence/
-    ├── ACCEPTANCE.md › QA  ACCEPTANCE.md › Open issues  ACCEPTANCE.md › Summary  ACCEPTANCE.md › Quality and security  ACCEPTANCE.md › Security audit
-    ├── RELEASE.md › Review  RELEASE.md › Deployment plan  RELEASE.md › Rollback  RELEASE.md › Operations handoff  RELEASE.md › Result
-    ├── GATE-LOG.md  LESSONS.md  failures/
+    ├── Intake-Readiness.md       one page
+    ├── PRD.md                    requirements, analysis, architecture summary and every diagram
+    ├── ARCHITECTURE.md           architecture, integrations, operations, security, the diagrams again in §14
+    ├── THREAT-MODEL.md           only for payments, health or other sensitive data
+    ├── DATA-MODEL.md
+    ├── DESIGN.md  tokens.json    brand, UX, components; mockups/ (key screens), brand/
+    ├── PLAN.md                   milestones, tickets, quality checks, test cases, feature status
+    ├── milestones/<ms>/          REVIEW.md (build, checks, design QA, performance, improvement report) + screens/
+    ├── ACCEPTANCE.md  RELEASE.md
+    └── GATE-LOG.md  LESSONS.md
 README.md  CHANGELOG.md            quick start and commands; user-visible changes (Keep a Changelog)
 ```
 
-Two rules hold across these documents:
+The full list with owners and length limits is in `.claude/skills/deliver/references/documents.md`. `check-hygiene.sh` fails on any file outside this set. A run that started before the lean set keeps its documents (`project.json → docs.layout: "classic"`).
+
+Three rules hold across these documents:
+- **Evidence is shown, not stored.** Each result names the command that produced it; there are no log files or per-ticket evidence folders, only one screenshot per screen.
 - **Diagrams live in the PRD and in the architecture document.** The PRD is the source: D1, the main system diagram, is at the top of §10; D0 and D2–D8 are in §12. `ARCHITECTURE.md` §14 carries an identical copy, generated by `sync-diagrams.sh` and checked at the gates, so the two can't drift. There are no separate diagram files, and other documents reference diagrams by id.
-- **Living documents are never part of a gate package,** so keeping them current never needs a change request. They are FEATURES, DATABASE, SYSTEM-FLOWS, CODEMAP, the ADR index, README and CHANGELOG. The docs-writer also removes stale entries at every milestone.
+- **Living documents are never part of a gate package,** so keeping them current never needs a change request. They are DATABASE, SYSTEM-FLOWS, CODEMAP, README and CHANGELOG. The docs-writer also removes stale entries at every milestone.
 
 ---
 
@@ -471,7 +489,7 @@ How it stays within the context window on a long, real project:
   - `standard` (the default).
   - `thorough`: every state on desktop, mobile and dark, a second opinion on P1 areas, 4 parallel agents.
 
-  Profiles never change the gates, the hooks, test-first or the evidence rules.
+  Profiles never change the gates, the hooks or the testing rule.
 - **Context discipline:**
   - short path-based briefs;
   - continue agents instead of respawning them;
@@ -579,8 +597,8 @@ It runs 91 checks against throwaway fixtures, covering:
 ```
 .claude/
 ├── settings.json              hooks registration and DELIVERY_* settings
-├── agents/                    33 role subagents
-├── skills/                    32 skills (each: SKILL.md + references/ + scripts/)
+├── agents/                    34 role subagents (the orchestrator is the project's default agent)
+├── skills/                    36 skills (each: SKILL.md + references/ + scripts/)
 │   └── deliver/
 │       ├── SKILL.md           the orchestrator
 │       ├── references/        workflow, gates, briefs, triage, collaboration, cost, memory, manifest, state schema
