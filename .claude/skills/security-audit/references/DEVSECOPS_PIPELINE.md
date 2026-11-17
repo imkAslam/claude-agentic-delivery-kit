@@ -18,11 +18,11 @@ The devops-engineer adds these stages through the `ci` skill. The security-audit
 
 ## Policies
 - **New** high/critical findings block the merge. Existing ones are tracked with an owner and a due date (no silent baseline growth).
-- Exceptions are time-boxed, with the reason and the approver recorded in OPEN-ISSUES and accepted at a gate.
+- Exceptions are time-boxed, with the reason and the approver recorded in ACCEPTANCE.md › Open issues and accepted at a gate.
 - CI credentials are least privilege (OIDC where possible), with third-party actions and images pinned by SHA or digest.
-- Secrets are managed in the platform's secret store, or a vault, with a rotation schedule documented in the DEVOPS-PLAN.
+- Secrets are managed in the platform's secret store, or a vault, with a rotation schedule documented in the ARCHITECTURE.md › Operations.
 - Production promotion requires: green security stages on the **same artifact**, plus the SBOM and provenance attached.
 
 ## Monitoring and response (production)
 - Alerts on authn anomalies, authz-denial spikes, error spikes and WAF blocks.
-- An incident response playbook (NIST-style: prepare → detect → contain → eradicate → recover → lessons learned) in OPERATIONS-HANDOFF, with breach-notification steps when personal data is involved.
+- An incident response playbook (NIST-style: prepare → detect → contain → eradicate → recover → lessons learned) in RELEASE.md › Operations handoff, with breach-notification steps when personal data is involved.

@@ -37,7 +37,7 @@ The full standards and rationale are in the `design-database` skill (`.claude/sk
 - **Zero-downtime:** expand → migrate → contract. No drop, rename, type change or NOT NULL-without-default in one step. Use lock-safe DDL (concurrent index builds, `NOT VALID` then `VALIDATE`), with `lock_timeout`/`statement_timeout` set.
 - Backfills are batched, idempotent and resumable, and kept separate from DDL.
 - Run `bash .claude/skills/design-database/scripts/check-migrations.sh --base <base>` before committing. Blocking findings must be fixed, or (contract phase only) carry `-- migration:allow <reason + runbook step>`, and the database-reviewer must approve them.
-- Each migration documents its rollback (a `down` migration, or a step in `ROLLBACK-RUNBOOK.md`).
+- Each migration documents its rollback (a `down` migration, or a step in `RELEASE.md › Rollback`).
 - Production migrations run **only in the CI deploy job after G3**, after a fresh backup. `guard-prod.sh` blocks local runs against non-local databases.
 
 ## Queries
@@ -57,7 +57,7 @@ The full standards and rationale are in the `design-database` skill (`.claude/sk
 - Index deliberately: each index serves a named query; review unused and duplicate indexes each milestone; mind write amplification on hot tables.
 - `statement_timeout` and `lock_timeout` on the application role; slow-query logging on in every environment.
 - Partitioning, read replicas, sharding and caching layers come only with a measured need and an ADR.
-- Backups are automated, encrypted and **restore-tested** (the rehearsal is in ROLLBACK-RUNBOOK.md); point-in-time recovery where the RPO requires it.
+- Backups are automated, encrypted and **restore-tested** (the rehearsal is in RELEASE.md › Rollback); point-in-time recovery where the RPO requires it.
 
 ## Testing
 - Every migration runs up (and down, where defined) on a fresh database in CI, and against a copy of the previous release's schema.

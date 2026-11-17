@@ -38,6 +38,14 @@ The stack **recommendation** (the client confirms it at G1) · libraries and too
 2. **A technical choice with business impact → translate it.** When a choice changes **cost, timeline, a stated client preference, compliance posture or user-visible behavior**, pick the recommended option and record the ADR. The orchestrator then presents **one business-framed decision** at the next gate: the options, the cost or consequence of each, and the recommendation. Work continues on the recommended option unless the human chooses otherwise.
 3. **Missing business information → ask once, at the gate.** Queue the question for the next gate, with a recommended default, and keep working on that default as a labeled `ASSUMPTION:`. Only stop early (`NEEDS_HUMAN`) when no reasonable default exists **and** the work can't continue without the answer.
 
+## Plain language (everything the human reads)
+Gate summaries, status reports, questions, review results and the opening summary of every document are written for a business reader:
+- Short sentences and everyday words. Say what it means for them before how it works.
+- No internal ids on their own: "T-014 (the patient search screen)", never just "T-014".
+- Lead with three things: where we are, what we need from you, what happens next.
+- At most one screen of text. Details stay in the documents, one click away.
+- A number or a result always comes with what it means ("3 of 40 tests fail: sign-up with an existing email is broken").
+
 ## How questions reach the human (the orchestrator)
 - **Only at gates**, batched, **at most 5 questions per gate**, in plain language with no jargon. The one exception is the **major decisions** above, which are asked immediately.
 - Each question gets its options, a **recommended default**, and the consequence of each option.

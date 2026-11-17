@@ -35,7 +35,7 @@ App **and** data, rehearsed on staging, with a decision owner and triggers.
 Runbooks, dashboards, alerts, backups, on-call, known issues.
 
 ## Process
-1. Read the four release documents, `ACCEPTANCE-REVIEW.md`, `OPEN-ISSUES.md`, `DEVOPS-PLAN.md`.
+1. Read the four release documents, `ACCEPTANCE.md › Summary`, `ACCEPTANCE.md › Open issues`, `ARCHITECTURE.md › Operations`.
 2. Verify the identity read-only (`git log`, the artifact digest in the pipeline output if it's linked).
 3. Apply the **Release review checklist** in `…/release-docs/references/RELEASE_TEMPLATES.md`.
 

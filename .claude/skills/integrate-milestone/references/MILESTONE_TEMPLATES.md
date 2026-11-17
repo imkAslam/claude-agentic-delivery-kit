@@ -1,12 +1,12 @@
 # Milestone package templates (`docs/delivery/milestones/<ms>/`)
 
-## BUILD-REVIEW.md
+## REVIEW.md › Build
 ```markdown
 > Status: in-review · Owner: integrator · Milestone: <ms> · Branch: <ms>/integration @ <sha> · Updated: <ISO>
 
 # Build review: <ms>
 ## Goal
-<the usable journey from DELIVERY-PLAN>
+<the usable journey from PLAN.md › Milestones>
 
 ## What was built
 | Feature | AC met | Tickets | Evidence |
@@ -19,18 +19,21 @@ Items moved out of scope, deviations from the mockups (with reasons), known issu
 ## Codebase hygiene
 The `check-hygiene.sh` summary line; the chore tickets that removed leftovers (ticket, role, what was removed); open warnings and allow-list entries with their reasons.
 
+## Improvement report (orchestrator; `deliver/references/memory.md` §8)
+The `delivery-state.sh stats <ms>` numbers, what went wrong and why, and numbered suggestions (S1, S2, …) with the expected benefit. Nothing is applied unless the human chooses it at the review.
+
 ## Reviewers' notes
 A summary of the role reviewers' P3 findings that are still open.
 ```
 
-## COMPLETED-TICKETS.md
+## REVIEW.md › Tickets
 ```markdown
 | Ticket | Role | Title | Commit | Reviewer verdict | Attempts |
 |---|---|---|---|---|---|
 | T-005 | backend | createOrder | <sha> | APPROVE | 1 |
 ```
 
-## VERIFICATION-RESULTS.md
+## REVIEW.md › Checks
 ```markdown
 | Check | Command | Exit | Summary |
 |---|---|---|---|
@@ -39,12 +42,12 @@ A summary of the role reviewers' P3 findings that are still open.
 | Typecheck | <commands.typecheck> | 0 | — |
 | Tests | <commands.test> | 0 | 214 passed |
 | Build | <commands.build> | 0 | artifact size … |
-| Hygiene | check-hygiene.sh | 0 | 0 findings, 2 warnings (listed in BUILD-REVIEW) |
+| Hygiene | check-hygiene.sh | 0 | 0 findings, 2 warnings (listed in REVIEW.md › Build) |
 | E2E journey | <commands.e2e> / manual walk | 0 | TC-001..TC-007 passed |
 | CI (if pushed) | pipeline <link> | green | — |
 ```
 
-## RUN-GUIDE.md
+## REVIEW.md › Run guide
 ```markdown
 # How to run and try <ms>
 1. Prerequisites: <runtime versions, docker>

@@ -29,7 +29,7 @@ Every story has happy, error and permission AC in Given/When/Then, with stable i
 No contradictions with the rules, NFRs or superseded decisions. A developer and a tester could act on it without asking.
 
 ## Process
-1. Read `Intake-Readiness.md` (decision log), `BA-ANALYSIS.md`, then the PRD.
+1. Read `Intake-Readiness.md` (decision log), `PRD.md › Analysis`, then the PRD.
 2. Apply the **Review checklist** in `…/write-requirements/references/PRD_TEMPLATE.md` item by item.
 3. Check that the previous round's findings were addressed (via the revision log).
 

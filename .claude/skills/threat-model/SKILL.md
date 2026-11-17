@@ -17,7 +17,7 @@ For the **cybersecurity-agent** (design input in lane understand, security ticke
 ## Instructions
 
 ### Step 0: Load the inputs
-`PRD.md` (data, users, NFRs), `BA-ANALYSIS.md` (entities and their data classes), `ARCHITECTURE.md` (containers, topology), contracts (auth on each operation), and `DEVOPS-PLAN.md` (environments and secrets) if it exists.
+`PRD.md` (data, users, NFRs), `PRD.md › Analysis` (entities and their data classes), `ARCHITECTURE.md` (containers, topology), contracts (auth on each operation), and `ARCHITECTURE.md › Operations` (environments and secrets) if it exists.
 
 ### Step 1: Model the system
 Follow [THREAT_MODEL_TEMPLATE.md](references/THREAT_MODEL_TEMPLATE.md): assets and data classes, actors, the data flow with its **trust boundaries**, and entry points. The diagram is **PRD §12 · D4**: send your boundary and data-class corrections to the solution-architect in a `handoff` message. Never create a separate diagram file or a copy here (`design-architecture/references/DIAGRAMS.md` → "Two homes, one source").
@@ -32,13 +32,13 @@ Choose from [CONTROLS_CATALOG.md](references/CONTROLS_CATALOG.md). Map each high
 Write `AC-SEC-<n>` in Given/When/Then form for each control that's testable (see the write-requirements acceptance guide). The PM merges them into the PRD, and QA covers them.
 
 ### Step 5: Build-time work (security tickets)
-Implement controls test-first, inside the owned paths. For an assessment: read the code, reproduce safely in a local or test environment only, and report `file:line`, severity, an exploit scenario, the fix, and a test that would fail without the fix.
+Implement controls, then test them (the `feature-testing` skill; security controls keep one test per abuse case), inside the owned paths. For an assessment: read the code, reproduce safely in a local or test environment only, and report `file:line`, severity, an exploit scenario, the fix, and a test that would fail without the fix.
 
 ### Step 6: Review and verification (security-reviewer)
 Apply the Security section of **review-checklists**. For each claimed fix, confirm a regression test exists. Scan the diff for secrets.
 
 ## Rules
-- Dynamic testing runs **only** against environments listed in `DEVOPS-PLAN.md` as owned by the project, with the authorization recorded in the brief.
+- Dynamic testing runs **only** against environments listed in `ARCHITECTURE.md › Operations` as owned by the project, with the authorization recorded in the brief.
 - Never write real secrets or exploit payloads that target third parties.
 - Severity: CRITICAL/HIGH blocks a merge or release unless the human accepts the risk at a gate.
 

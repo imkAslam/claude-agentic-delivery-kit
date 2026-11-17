@@ -1,6 +1,6 @@
 ---
 name: build-integration
-description: "Third-party and system integration toolkit: integration catalog (INTEGRATIONS.md), adapters behind ports with an anti-corruption layer, sync vs async patterns, outbox, polling, CDC and reconciliation, inbound and outbound webhooks (signatures, idempotency, retries, delivery logs), resilience (timeouts, retries with jitter, circuit breakers, rate limiting, bulkheads, DLQ), provider categories with sandbox/test modes and local mocks, data minimization and contract testing."
+description: "Third-party and system integration toolkit: integration catalog (ARCHITECTURE.md › Integrations), adapters behind ports with an anti-corruption layer, sync vs async patterns, outbox, polling, CDC and reconciliation, inbound and outbound webhooks (signatures, idempotency, retries, delivery logs), resilience (timeouts, retries with jitter, circuit breakers, rate limiting, bulkheads, DLQ), provider categories with sandbox/test modes and local mocks, data minimization and contract testing."
 when_to_use: "Use when planning or building any integration with an external system (payments, email, SMS, identity providers, storage, maps, AI or SaaS APIs, partner systems), implementing webhooks, sync or import jobs, or reviewing integration code."
 ---
 
@@ -9,7 +9,7 @@ when_to_use: "Use when planning or building any integration with an external sys
 For the **integration-engineer** (plan and build), the **integration-reviewer**, and the solution-architect and devops-engineer as collaborators.
 
 ## When to Use
-- Lane plan, `design-fork`: `docs/delivery/INTEGRATIONS.md`
+- Lane plan, `design-fork`: `docs/delivery/ARCHITECTURE.md › Integrations`
 - Lane build: integration tickets (adapters, webhooks, sync jobs)
 - Triage: external API failures, webhook issues, provider limits
 - Reviews of any code under `**/integrations/**`, `**/adapters/**` or `**/webhooks/**`
@@ -28,17 +28,17 @@ Fill [INTEGRATIONS_TEMPLATE.md](references/INTEGRATIONS_TEMPLATE.md) for each pr
 ### Step 3: Design the adapter (build mode)
 Following [INTEGRATION_PATTERNS.md](references/INTEGRATION_PATTERNS.md): the port interface (owned by the application, in domain terms) → the adapter (provider SDK/HTTP, mapping, error translation) → registration through configuration. Choose sync or async per the user-wait rule.
 
-### Step 4: Write the tests first (tdd)
+### Step 4: Know what you will test (the tests are written after the module is built: `feature-testing` skill)
 Adapter tests against the local mock or recorded responses (happy path, provider errors, timeouts, rate limiting, malformed responses); webhook tests (valid signature, invalid signature, stale timestamp, duplicate event); a contract test that the mapping matches the provider schema.
 
 ### Step 5: Implement resilience
 Per [RESILIENCE.md](references/RESILIENCE.md): timeouts, retry policy, circuit breaker, client-side rate limiting, bulkhead, fallback, DLQ for async work.
 
 ### Step 6: Webhooks
-Inbound and outbound per [WEBHOOKS.md](references/WEBHOOKS.md).
+Inbound and outbound per the **`build-webhooks` skill** (`.claude/skills/build-webhooks/SKILL.md`: standards, templates per stack, provider signature table, test matrix) and `.claude/rules/webhooks.md`.
 
 ### Step 7: Verify and evidence
-Run the role's checks; exercise the integration end to end against the local mock (and the sandbox, if the brief allows and it's configured); record the settings chosen (timeouts, retries, breaker thresholds) in the INTEGRATIONS.md entry.
+Run the role's checks; exercise the integration end to end against the local mock (and the sandbox, if the brief allows and it's configured); record the settings chosen (timeouts, retries, breaker thresholds) in the ARCHITECTURE.md › Integrations entry.
 
 ## Rules
 `.claude/rules/integrations.md` always applies. No real provider calls with production credentials outside the production runtime. No sign-ups or paid tiers by agents.
@@ -56,8 +56,9 @@ Run the role's checks; exercise the integration end to end against the local moc
 ├── SKILL.md
 └── references/
     ├── INTEGRATION_PATTERNS.md   # ports/adapters, ACL, sync vs async, outbox, polling, CDC, reconciliation, idempotency
-    ├── WEBHOOKS.md               # inbound verification and processing, outbound signing and delivery
     ├── RESILIENCE.md             # timeouts, retries, breakers, rate limits, bulkheads, DLQ, fallbacks
     ├── PROVIDER_CATALOG.md       # provider categories, test modes, local substitutes, gotchas
-    └── INTEGRATIONS_TEMPLATE.md  # INTEGRATIONS.md structure
+    ├── INTEGRATIONS_TEMPLATE.md  # ARCHITECTURE.md › Integrations structure
+    ├── EMAIL_TEMPLATES.md        # transactional email: outbox, templates, previews, tokens
+    └── AI_INTEGRATION.md         # LLM and AI APIs: ports, timeouts, safety, retrieval, fixtures
 ```

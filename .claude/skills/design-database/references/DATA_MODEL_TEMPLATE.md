@@ -1,7 +1,7 @@
 # DATA-MODEL.md template
 
 ```markdown
-> Status: in-review · Owner: database-architect · Sources: BA-ANALYSIS.md, PRD.md, ARCHITECTURE.md, contracts, THREAT-MODEL.md · Updated: <ISO>
+> Status: in-review · Owner: database-architect · Sources: PRD.md › Analysis, PRD.md, ARCHITECTURE.md, contracts, THREAT-MODEL.md · Updated: <ISO>
 
 # Data model
 

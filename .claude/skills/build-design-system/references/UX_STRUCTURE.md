@@ -1,9 +1,9 @@
-# UI-UX.md template (UX structure, before high-fidelity)
+# DESIGN.md › UX template (UX structure, before high-fidelity)
 
-Work **low-fidelity first**: the structure, the flows and the wireframes are reviewed by the design-reviewer before any high-fidelity mockup is built. Flows and wireframes live **inside UI-UX.md** (Mermaid and text wireframes), not as separate files.
+Work **low-fidelity first**: the structure, the flows and the wireframes are reviewed by the design-reviewer before any high-fidelity mockup is built. Flows and wireframes live **inside DESIGN.md › UX** (Mermaid and text wireframes), not as separate files.
 
 ```markdown
-> Status: in-review · Owner: uiux-agent · Sources: PRD.md, BA-ANALYSIS.md, contracts, BRAND-BRIEF.md · Updated: <ISO>
+> Status: in-review · Owner: uiux-agent · Sources: PRD.md, PRD.md › Analysis, contracts, DESIGN.md › Brand · Updated: <ISO>
 
 # UI / UX
 
@@ -67,5 +67,5 @@ Landmarks and heading outline per screen, focus order for complex widgets, scree
 ## 10. Copy deck
 | String id | Screen / state | Text | Notes (max length, variables) |
 |---|---|---|---|
-Written in the BRAND-BRIEF voice (define-brand → VOICE_AND_TONE.md). Legal and marketing copy is marked `CLIENT COPY` and comes from the client.
+Written in the DESIGN.md › Brand voice (define-brand → VOICE_AND_TONE.md). Legal and marketing copy is marked `CLIENT COPY` and comes from the client.
 ```

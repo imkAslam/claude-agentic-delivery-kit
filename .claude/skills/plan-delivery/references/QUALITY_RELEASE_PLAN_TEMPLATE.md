@@ -1,18 +1,18 @@
-# QUALITY-RELEASE-PLAN.md template
+# PLAN.md › Quality template
 
 ```markdown
-> Status: in-review · Owner: delivery-planner · Sources: PRD.md (NFRs), DEVOPS-PLAN.md, SYSTEM-PROFILE.md · Updated: <ISO>
+> Status: in-review · Owner: delivery-planner · Sources: PRD.md (NFRs), ARCHITECTURE.md › Operations, SYSTEM-PROFILE.md · Updated: <ISO>
 
 # Quality and release plan
 
 ## Definition of done (every ticket)
-Test first · role checks green · AC evidence · independent review APPROVE · one commit per ticket.
+Module built, then feature tests · role checks green · AC evidence · independent review APPROVE · one commit per ticket.
 
 ## Test levels per milestone
 | Level | Tool (from project.json) | Scope | Gate |
 |---|---|---|---|
 | Unit | <stack.test> | rules, components | commit gate |
-| Integration | <stack.test> + disposable DB | operations, contracts | commit gate + CI |
+| Integration | <stack.test> + the test database in the one DB container | operations, contracts | commit gate + CI |
 | E2E web | <stack.e2e> | P1 TCs per milestone | integration step + CI |
 | E2E mobile | <stack.mobile_e2e> | P1 mobile TCs | integration step |
 | Accessibility | automated scan + keyboard walkthrough | P1 screens | verify lane |

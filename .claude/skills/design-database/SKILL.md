@@ -17,7 +17,7 @@ For the **database-architect** (design), **backend-engineer** (implementation), 
 ## Instructions
 
 ### Step 0: Load the inputs
-`BA-ANALYSIS.md` (entities, rules, lifecycles, data classes), `PRD.md` (NFRs, volumes, retention, compliance), `ARCHITECTURE.md` (§10 security, §12 the L6 data layer, the chosen engine), contracts (operations → queries), `UI-UX.md` (lists, filters, sorts), `THREAT-MODEL.md`, and `project.json` (`stack.database`, `stack.orm`, the migrations owner in `shared_files`).
+`PRD.md › Analysis` (entities, rules, lifecycles, data classes), `PRD.md` (NFRs, volumes, retention, compliance), `ARCHITECTURE.md` (§10 security, §12 the L6 data layer, the chosen engine), contracts (operations → queries), `DESIGN.md › UX` (lists, filters, sorts), `THREAT-MODEL.md`, and `project.json` (`stack.database`, `stack.orm`, the migrations owner in `shared_files`).
 
 ### Step 1: Conceptual model
 Entities, attributes, relationships with cardinality, and a lifecycle state machine for each stateful entity. Every entity traces to a BA entity or a named technical need. See [DATA_MODELING.md](references/DATA_MODELING.md) §1.

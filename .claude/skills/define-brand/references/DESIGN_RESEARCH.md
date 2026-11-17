@@ -5,12 +5,12 @@ Before proposing visual directions (and before designing the landing page), the 
 ## 1. When and how much
 - **When:** brand mode, after discovery (BRAND_DISCOVERY.md) and before the directions; again briefly in design mode for the landing page and any unusual screen type.
 - **Budget:** 6–10 references in total, at most about 10 page fetches. Research serves the decision; it isn't a survey.
-- **No web access:** write "Design research: not performed (no web access)" in BRAND-DIRECTIONS and continue with the client's references, RESEARCH.md and the kit defaults. Never invent a source.
+- **No web access:** write "Design research: not performed (no web access)" in DESIGN.md › Directions and continue with the client's references, PRD.md › Research notes and the kit defaults. Never invent a source.
 
 ## 2. Where to look
 | Need | Sources (use `WebSearch` / `WebFetch`; pick 2–3 per need) |
 |---|---|
-| Real product screens and flows | Mobbin, Refero, Page Flows, the comparable products in RESEARCH.md |
+| Real product screens and flows | Mobbin, Refero, Page Flows, the comparable products in PRD.md › Research notes |
 | Visual trends and concepts | Dribbble, Behance, Awwwards, Godly, Figma Community |
 | Landing pages | Land-book, Lapa Ninja, One Page Love, SaaS Landing Page |
 | Color palettes | Coolors (trending), Adobe Color (trends), Realtime Colors, Radix Colors, the Tailwind palette, shadcn/ui themes |
@@ -20,7 +20,7 @@ Before proposing visual directions (and before designing the landing page), the 
 Search by the product's **domain and persona**, not only by style ("clinic appointment dashboard", "pharmacy inventory UI", "healthcare SaaS landing page"), and prefer recent work (the last two years).
 
 ## 3. What to record
-One row per reference, in BRAND-DIRECTIONS §1a "Design research":
+One row per reference, in DESIGN.md › Directions §1a "Design research":
 
 | # | Source (URL, date seen) | What it is | What works (layout, density, color use, type, motion) | Fits our personas? | Used in direction |
 |---|---|---|---|---|---|
@@ -39,7 +39,7 @@ Then three short lists:
 - Paid assets, paid fonts or a paid inspiration service are business decisions for the gate.
 
 ## 5. Where it shows up
-- BRAND-DIRECTIONS §1a (the table and lists) and the "what we take" line under each direction.
+- DESIGN.md › Directions §1a (the table and lists) and the "what we take" line under each direction.
 - Each direction board cites its 2–3 key references in the footer.
 - COLOR_METHOD §1 lists the research as an input to the hue choice.
 - The design-reviewer checks that the sources are real and cited, and that nothing is imitated.

@@ -7,13 +7,14 @@ Every subagent run costs tokens: its prompt, the skills it preloads, every file 
 |---|---|---|---|
 | Researcher | Only for an unfamiliar domain | When the scope is broad or unfamiliar | Always |
 | Brand directions | 2 (or the audit, if a brand exists) | 3 (or the audit) | 3 + a refinement round |
-| Mockups | Key screens: default + one unhappy state each; other states described in the states matrix | Every screen × every state that applies | Every state, desktop + mobile + dark |
+| Mockups | Key screens: default + one unhappy state; other states described in the states matrix | The same (key screens only) | Every screen and state, desktop + mobile + dark |
 | Review rounds cap | 2 | `DELIVERY_MAX_ROUNDS` (3) | 3 |
 | Ticket review | One reviewer (the role reviewer); the database or security reviewer only when the diff touches their area | Role reviewer + specialist reviewers by area | Same + a second opinion on P1 areas |
 | Performance review | The candidate only (Lane 4) | Each milestone that changes screens or data paths + the candidate | Every milestone + the candidate |
 | Security audit (Lane 4) | Automated scans; manual audit only with personal/payment data or public APIs | As the threat model warrants | Always |
 | Parallel agents | 2 | `DELIVERY_MAX_PARALLEL` (3) | 4 |
-The profile never changes the gates, the hooks, test-first or the evidence rules.
+| Documents | The lean set ([documents.md](documents.md)) in every profile | | |
+The profile never changes the gates, the hooks or the testing rule.
 
 ## 2. Model policy (the `model:` in each agent; override per call only as below)
 | Tier | Agents | Why |
@@ -34,7 +35,7 @@ The profile never changes the gates, the hooks, test-first or the evidence rules
 8. **Skip conditional steps** whose condition doesn't hold, and record why (`delivery-state.sh note`).
 9. **Scripts before agents:** deterministic checks (check-tokens, check-diagrams, check-migrations, check-ownership, lint/test commands) run as commands, not as agent reasoning.
 10. **Compact at boundaries:** each gate summary ends by suggesting `/compact` to the human (the orchestrator can't run it); automatic compaction covers the rest. The SessionStart hook restores the run summary and the last checkpoint ([memory.md](memory.md) §5).
-11. **Query logs, never read them whole:** MESSAGES.md, GATE-LOG.md, LESSONS.md, `failures/` and `git log` only grow; use `msg open`, `grep -n <id>`, `tail` ([memory.md](memory.md) §3).
+11. **Query logs, never read them whole:** GATE-LOG.md, LESSONS.md, `failures/` and `git log` only grow; use `msg open`, `grep -n <id>`, `tail` ([memory.md](memory.md) §3).
 12. **Code map before code:** build briefs point to `docs/CODEMAP.md`; engineers open only the files it names and search with `grep` instead of reading directories ([memory.md](memory.md) §8).
 
 ## 4. Usage ledger and budget

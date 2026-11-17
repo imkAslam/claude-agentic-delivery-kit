@@ -1,15 +1,15 @@
 # Color method: how the palette is chosen
 
-`check-tokens.sh` proves a palette is **readable** (WCAG contrast) and **unambiguous** (distinctness). This method decides **which colors** to use and **how much of each**. Use it for every direction (cases B and C) and to audit an existing brand (case A). The steps run in order; record the outcome of each on the direction board and in BRAND-DIRECTIONS §2.
+`check-tokens.sh` proves a palette is **readable** (WCAG contrast) and **unambiguous** (distinctness). This method decides **which colors** to use and **how much of each**. Use it for every direction (cases B and C) and to audit an existing brand (case A). The steps run in order; record the outcome of each on the direction board and in DESIGN.md › Directions §2.
 
 ## 1. Inputs
 | Input | From | What it tells you |
 |---|---|---|
 | Domain and category | Intake, PRD §1 | The meanings users already attach to colors in this category |
-| Persona context | BA-ANALYSIS personas, PRD §2 | Stress, lighting, session length, device, age, accessibility needs (e.g. clinicians on long night shifts need calm, low-glare screens) |
+| Persona context | PRD.md › Analysis personas, PRD §2 | Stress, lighting, session length, device, age, accessibility needs (e.g. clinicians on long night shifts need calm, low-glare screens) |
 | Personality sliders | BRAND_DISCOVERY §3 | Calm vs energetic and serious vs playful drive saturation and hue temperature |
 | Competitor landscape | BRAND_DISCOVERY §4 | The dominant category hue, the clichés, and the gap |
-| Design research | DESIGN_RESEARCH.md → BRAND-DIRECTIONS §1a | Current palettes and color use in good products of this kind; a trend is used only if it passes §2–§7 |
+| Design research | DESIGN_RESEARCH.md → DESIGN.md › Directions §1a | Current palettes and color use in good products of this kind; a trend is used only if it passes §2–§7 |
 | Existing brand | `docs/intake/**`, `design-references/` | Colors the client already owns (case A/B: keep them, never change them silently) |
 
 ## 2. Pick the hue family: meaning + gap
@@ -30,7 +30,7 @@ These are **heuristics, not rules**. The **safe** direction stays near the categ
 ## 3. Reserve the status hues
 Danger (red), warning (amber/orange), success (green) and info (blue/sky) carry meaning in every product. Brand colors must not be mistaken for them:
 - The primary, secondary and accent colors must be clearly distinct from danger, warning and success. `check-tokens.sh` enforces ΔE ≥ 0.10 in OKLab (DESIGN_TOKENS §5a).
-- If the client's brand *is* red or green (case A), keep the brand and **shift the status color** instead (e.g. danger to a deeper crimson with a stronger icon, or success to teal), and record why on the board and in BRAND-BRIEF §3.
+- If the client's brand *is* red or green (case A), keep the brand and **shift the status color** instead (e.g. danger to a deeper crimson with a stronger icon, or success to teal), and record why on the board and in DESIGN.md › Brand §3.
 - Status colors are always shown with an icon and text, never by color alone.
 
 ## 4. Proportion: the 60-30-10 rule
@@ -63,7 +63,7 @@ Follow DESIGN_TOKENS §6 (lighter, desaturated steps; surfaces raised with light
 About 1 in 12 men and 1 in 200 women have a color-vision deficiency, most often red/green. `check-tokens.sh` simulates protanopia and deuteranopia and **warns** when a pair collapses. A warning is acceptable only because status is never color alone; it is a design failure if the brand color and danger collapse. Chart palettes: a categorical sequence of 6–8 colors that stays distinguishable under the same simulation, with labels or patterns as backup.
 
 ## 8. Record the reasoning
-Each direction states, on its board and in BRAND-DIRECTIONS §2:
+Each direction states, on its board and in DESIGN.md › Directions §2:
 - **Color rationale:** why this hue (meaning, persona, gap) and what it avoids (clichés, status collisions)
 - **60/30/10:** which tokens fill the dominant, secondary and accent roles
 - **Checks:** the `check-tokens.sh` summary line (contrast + distinctness, failures and warnings)

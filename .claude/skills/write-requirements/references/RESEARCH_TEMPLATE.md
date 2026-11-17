@@ -1,4 +1,4 @@
-# RESEARCH.md template
+# PRD.md › Research notes template
 
 ```markdown
 > Status: in-review · Owner: researcher-agent · Sources: Intake-Readiness.md, web (see links) · Updated: <ISO>

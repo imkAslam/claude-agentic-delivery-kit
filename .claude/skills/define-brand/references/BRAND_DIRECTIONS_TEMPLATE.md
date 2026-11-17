@@ -1,7 +1,7 @@
-# BRAND-DIRECTIONS.md template (G1)
+# DESIGN.md › Directions template (G1)
 
 ```markdown
-> Status: in-review · Owner: uiux-agent · Sources: Intake-Readiness.md, design-references/*, RESEARCH.md, BA-ANALYSIS.md · Updated: <ISO>
+> Status: in-review · Owner: uiux-agent · Sources: Intake-Readiness.md, design-references/*, PRD.md › Research notes, PRD.md › Analysis · Updated: <ISO>
 
 # Brand directions
 

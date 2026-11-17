@@ -13,7 +13,7 @@ Choose the template that matches the chosen style, adapt the names to the stack'
 │   │       │   └── <feature>/{components,hooks,api,tests}
 │   │       ├── components/ui/  # reusable design-system components
 │   │       ├── lib/            # client utilities, API client wiring
-│   │       └── styles/         # tokens/theme from BRAND-BRIEF
+│   │       └── styles/         # tokens/theme from DESIGN.md › Brand
 │   ├── api/                    # L2–L5 backend                → backend
 │   │   └── src/
 │   │       ├── modules/        # one per capability (modular monolith)

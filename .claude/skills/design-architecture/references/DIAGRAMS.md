@@ -6,7 +6,7 @@ The architecture must be understandable **visually**. Every project gets the ful
 - **Every diagram is written inside `docs/delivery/PRD.md`** as a Mermaid block, so the PRD is the complete document the client reads and approves. D1 opens §10; all the others are in **§12 Architecture diagrams**. **The PRD is the source.**
 - **`docs/delivery/ARCHITECTURE.md` carries an identical copy of the whole set** in **§14 Architecture diagrams**, so engineers read the diagrams next to the architecture text. The copy is generated, never typed: `bash .claude/skills/design-architecture/scripts/sync-diagrams.sh docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md` writes it between the `<!-- diagrams:begin -->` and `<!-- diagrams:end -->` markers. Nobody edits inside the markers. Run it after every diagram change in the PRD.
 - **No separate diagram files:** no `docs/delivery/diagrams/` folder, no `.mmd`, `.svg` or `.png` diagram exports in the repository. Rendering checks happen in a temporary directory (rule 6).
-- **No copies anywhere else.** DATA-MODEL, INTEGRATIONS, DEVOPS-PLAN, THREAT-MODEL and the living docs reference a diagram by id ("see PRD §12 · D6-erd") and explain it in text. The text sections of ARCHITECTURE (§0–§13) also reference ids; the diagrams themselves sit only in its §14.
+- **No copies anywhere else.** DATA-MODEL, ARCHITECTURE.md › Integrations, ARCHITECTURE.md › Operations, THREAT-MODEL and the living docs reference a diagram by id ("see PRD §12 · D6-erd") and explain it in text. The text sections of ARCHITECTURE (§0–§13) also reference ids; the diagrams themselves sit only in its §14.
 - **One writer.** The solution-architect is the only agent that writes diagrams into the PRD (it keeps the ids and names consistent). Other authors draft their diagram and send its Mermaid source to the solution-architect in a `handoff` message.
 - **Earlier runs:** if `docs/delivery/diagrams/` exists, fold each diagram into the PRD under its id, then remove the folder (`git rm -r` if it's tracked).
 
@@ -104,9 +104,9 @@ flowchart LR
 ## "Why this architecture" (required: PRD §10, right after D1; ARCHITECTURE §0 links to it)
 ```markdown
 ## Why this architecture
-1. **Drivers that decided it** (weighted, from ARCHITECTURE-RESEARCH §1): e.g. team skills (5), EU residency (5), budget < X/month (4), p95 < 300 ms (4)
+1. **Drivers that decided it** (weighted, from ARCHITECTURE.md › Research §1): e.g. team skills (5), EU residency (5), budget < X/month (4), p95 < 300 ms (4)
 2. **Options considered:** C1 <style>, C2 <style>, C3 <style>, each in one line
-3. **Scores:** C1 <n> · C2 <n> · C3 <n> (matrix in ARCHITECTURE-RESEARCH §4), evidence S1–S5
+3. **Scores:** C1 <n> · C2 <n> · C3 <n> (matrix in ARCHITECTURE.md › Research §4), evidence S1–S5
 4. **Decision:** <style + key technologies>, ADR-00x
 5. **Why it wins:** 3–5 bullets, each tied to a driver and a source
 6. **Trade-offs we accept:** what this design is worse at, and why that's acceptable now

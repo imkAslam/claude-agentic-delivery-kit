@@ -1,6 +1,6 @@
 # QA report templates
 
-## QA-REPORT.md
+## ACCEPTANCE.md › QA
 ```markdown
 > Status: in-review · Owner: qa-agent · Candidate: <commit sha> · Environment: <dev_url | staging_url> · Run: <ISO>
 
@@ -10,7 +10,7 @@
 | Total | Passed | Failed | Blocked | Not run | Flaky |
 |---|---|---|---|---|---|
 | 48 | 44 | 2 | 1 | 1 | 0 |
-Release-blocking (P1) failures: <count>, listed in OPEN-ISSUES.md
+Release-blocking (P1) failures: <count>, listed in ACCEPTANCE.md › Open issues
 
 ## Results
 | TC | Title | AC | Type | Result | Evidence | Notes |
@@ -27,7 +27,7 @@ Release-blocking (P1) failures: <count>, listed in OPEN-ISSUES.md
 Every AC has at least one executed TC: yes / no (list the gaps)
 ```
 
-## OPEN-ISSUES.md
+## ACCEPTANCE.md › Open issues
 ```markdown
 > Status: in-review · Owner: qa-agent (+ quality-security-agent) · Updated: <ISO>
 
@@ -43,7 +43,7 @@ Every AC has at least one executed TC: yes / no (list the gaps)
 ```
 The Decision column is filled at the gate: fix before release · accept (owner, reason) · defer (target milestone).
 
-## ACCEPTANCE-REVIEW.md
+## ACCEPTANCE.md › Summary
 ```markdown
 > Status: in-review · Owner: qa-agent · Candidate: <commit sha> · Updated: <ISO>
 
@@ -57,7 +57,7 @@ Scope (milestones, features), the candidate commit, and the environment it ran i
 |---|---|---|
 
 ## Quality and security
-A summary from QUALITY-SECURITY-REPORT.md: tools run, findings by severity, accepted risks.
+A summary from ACCEPTANCE.md › Quality and security: tools run, findings by severity, accepted risks.
 
 ## Landing page changes (only if `F-LANDING`)
 The features added to or removed from the landing page in this candidate, the changed copy (`CLIENT COPY (draft)` strings for the client to approve) and the Lighthouse scores, with screenshots.

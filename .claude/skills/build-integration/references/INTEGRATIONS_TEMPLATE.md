@@ -1,4 +1,4 @@
-# INTEGRATIONS.md template
+# ARCHITECTURE.md › Integrations template
 
 ```markdown
 > Status: in-review · Owner: integration-engineer · Sources: PRD, intake decisions, ARCHITECTURE, DATA-MODEL, provider docs (cited) · Updated: <ISO>

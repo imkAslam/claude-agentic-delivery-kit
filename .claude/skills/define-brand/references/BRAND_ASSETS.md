@@ -16,6 +16,6 @@ Sources live in `docs/delivery/brand/assets/` (SVG, or HTML for composed images)
 | Store listing (if mobile) | Screenshot frames | Sizes per store; the store listing text is client copy (business) | The listing itself is an account action for the client |
 
 ## Rules
-- Every asset uses tokens.json colors and the BRAND-BRIEF fonts; nothing loads from the network.
+- Every asset uses tokens.json colors and the DESIGN.md › Brand fonts; nothing loads from the network.
 - Raster exports are rendered with `bash .claude/skills/build-design-system/scripts/render-png.sh <source.html> <out.png> <WxH>` (wrap an SVG in a minimal HTML page first); report the command and its exit code. Never fabricate a file.
 - Agent-made marks are proposals until the client approves the logo at G2.

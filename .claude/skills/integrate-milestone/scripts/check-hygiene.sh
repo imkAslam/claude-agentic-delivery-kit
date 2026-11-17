@@ -9,6 +9,11 @@
 #   deadlink   links in README.md and docs/*.md, and paths in docs/CODEMAP.md, that point to nothing
 #   commented  (warning) 3+ consecutive lines of commented-out code
 #   emptydir   (warning) empty folders in the working tree
+#   services   more than one container of the same database in a compose file, a database container for tests,
+#              or a Testcontainers dependency (tests use a test database inside the one development container)
+#   comments   (warning) files with many comment lines: one doc comment at the top of a function or class is enough
+#   docs       only the lean document set in docs/delivery/, each within its length limit (skipped when
+#              project.json -> docs.layout is "classic")
 # --base <ref>  check only files changed since <ref> (a ticket diff); default: every tracked file.
 # Exceptions: project.json -> hygiene.allow: [{ "path": "<glob>", "reason": "<why>" }] (a reason is required),
 #             or the marker "hygiene:allow <reason>" on the line itself.
@@ -21,7 +26,7 @@ while [ $# -gt 0 ]; do
     --base) base="${2:-}"; [ -n "$base" ] || { echo "--base needs a ref" >&2; exit 2; }; shift 2 ;;
     --no-unused) unused=0; shift ;;
     --root) root="${2:-}"; [ -n "$root" ] || { echo "--root needs a directory" >&2; exit 2; }; shift 2 ;;
-    -h|--help) sed -n 2,15p "$0"; exit 0 ;;
+    -h|--help) sed -n 2,20p "$0"; exit 0 ;;
     *) echo "usage: check-hygiene.sh [--base <ref>] [--no-unused] [--root <dir>]" >&2; exit 2 ;;
   esac
 done
@@ -138,7 +143,7 @@ fi
 
 # 8. dead links in the living documents
 : > "$tmp/dead"
-for doc in README.md docs/README.md docs/CODEMAP.md docs/FEATURES.md docs/SYSTEM-FLOWS.md docs/database/DATABASE.md; do
+for doc in README.md docs/CODEMAP.md docs/SYSTEM-FLOWS.md docs/database/DATABASE.md docs/delivery/PLAN.md; do
   [ -f "$doc" ] || continue
   dir=$(dirname "$doc")
   grep -noE '\]\([^)# ]+' "$doc" | sed 's/](/:/' | while IFS=: read -r ln _ target; do
@@ -154,6 +159,72 @@ if [ -f docs/CODEMAP.md ]; then
   done >> "$tmp/dead"
 fi
 report FAIL deadlink "points to a file that does not exist" < "$tmp/dead"
+
+# 9a. services: one container per database, shared by development and tests
+git ls-files 2>/dev/null | grep -E '(^|/)(docker-)?compose[^/]*\.ya?ml$' > "$tmp/compose" || true
+while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  for fam in 'postgres|postgis|timescale' 'mysql|mariadb' 'mongo'; do
+    n=$(grep -cE "^[[:space:]]*image:[[:space:]]*[\"']?([^[:space:]\"']*/)?(${fam})" "$f" || true)
+    name=${fam%%|*}
+    [ "$n" -le 1 ] || add "FAIL	services	$f	$n ${name} containers: use one container; tests get their own database inside it"
+    case "$(basename "$f")" in *test*|*e2e*|*drill*)
+      [ "$n" -eq 0 ] || add "FAIL	services	$f	a separate ${name} container for tests: tests use a test database inside the development container" ;;
+    esac
+  done
+done < "$tmp/compose"
+git ls-files 2>/dev/null | grep -E '(^|/)(package\.json|pyproject\.toml|requirements[^/]*\.txt|go\.mod|pom\.xml|build\.gradle(\.kts)?|[^/]*\.csproj)$' > "$tmp/manifests" || true
+if [ -s "$tmp/manifests" ]; then
+  tr '\n' '\0' < "$tmp/manifests" | xargs -0 grep -liE 'testcontainers' 2>/dev/null | while IFS= read -r f; do printf '%s\n' "$f"; done > "$tmp/tc"
+  while IFS= read -r f; do [ -n "$f" ] && add "FAIL	services	$f	Testcontainers starts extra database containers: use the test database inside the project's one container"; done < "$tmp/tc"
+fi
+
+# 9b. comments: one doc comment at the top of a function or class, not line-by-line (warning)
+if [ -s "$tmp/cc" ]; then
+  tr '\n' '\0' < "$tmp/cc" | xargs -0 awk '
+    function flush() { if (code >= 30 && com * 10 > code * 4) printf "%s:1:%d comment lines for %d code lines\n", file, com, code; com = 0; code = 0 }
+    FNR == 1 { flush(); file = FILENAME }
+    /^[ \t]*$/ { next }
+    { if ((file ~ /\.(py|rb)$/ && $0 ~ /^[ \t]*#/) || (file !~ /\.(py|rb)$/ && $0 ~ /^[ \t]*(\/\/|\/\*|\*)/)) com++; else code++ }
+    END { flush() }' > "$tmp/r" 2>/dev/null
+  report WARN comments "many comments: keep one doc comment at the top of each function or class" < "$tmp/r"
+fi
+
+# 9. documents: only the lean set, each within its length limit (deliver/references/documents.md)
+layout="lean"
+[ -f "$MAN" ] && command -v jq >/dev/null 2>&1 && layout=$(jq -r '.docs.layout // "lean"' "$MAN" 2>/dev/null)
+if [ "$layout" = "lean" ] && [ -d docs/delivery ]; then
+  { git ls-files docs/delivery; git ls-files --others --exclude-standard docs/delivery; } 2>/dev/null | sort -u | while IFS= read -r f; do
+    [ -e "$f" ] || continue
+    rest=${f#docs/delivery/}
+    case "$rest" in
+      Intake-Readiness.md|PRD.md|ARCHITECTURE.md|THREAT-MODEL.md|DATA-MODEL.md|DESIGN.md|PLAN.md|ACCEPTANCE.md|RELEASE.md|BASELINE.md|GATE-LOG.md|LESSONS.md|SYSTEM-PROFILE.md) : ;;
+      tokens.json|tokens.*.json|mockups/*|brand/*|design-references/*|failures/*) : ;;
+      milestones/*/REVIEW.md|milestones/*/screens/*.png|milestones/*/screens/*.jpg|milestones/*/screens/*.webp) : ;;
+      *) allowed "$f" || printf '%s\n' "$f" ;;
+    esac
+  done > "$tmp/extra"
+  while IFS= read -r f; do [ -n "$f" ] && add "FAIL	docs	$f	not in the lean document set: put it in a section of the document that owns it, or remove it"; done < "$tmp/extra"
+  for pair in Intake-Readiness.md:80 PRD.md:700 ARCHITECTURE.md:600 THREAT-MODEL.md:250 DATA-MODEL.md:500 DESIGN.md:500 ACCEPTANCE.md:300 RELEASE.md:250 BASELINE.md:300; do
+    f="docs/delivery/${pair%%:*}"; lim=${pair##*:}
+    [ -f "$f" ] || continue
+    n=$(wc -l < "$f" | tr -d ' ')
+    [ "$n" -le "$lim" ] || add "FAIL	docs	$f	$n lines, over the limit of $lim: cut what is no longer needed"
+  done
+  if [ -f docs/delivery/PLAN.md ]; then
+    n=$(wc -l < docs/delivery/PLAN.md | tr -d ' '); t=$(grep -c '^### T-' docs/delivery/PLAN.md || true); lim=$((400 + 12 * t))
+    [ "$n" -le "$lim" ] || add "FAIL	docs	docs/delivery/PLAN.md	$n lines, over the limit of $lim (400 + 12 per ticket)"
+  fi
+  for f in docs/delivery/milestones/*/REVIEW.md; do
+    [ -f "$f" ] || continue
+    n=$(wc -l < "$f" | tr -d ' '); [ "$n" -le 200 ] || add "FAIL	docs	$f	$n lines, over the limit of 200"
+  done
+  for pair in docs/CODEMAP.md:150 docs/database/DATABASE.md:400 docs/SYSTEM-FLOWS.md:300; do
+    f=${pair%%:*}; lim=${pair##*:}
+    [ -f "$f" ] || continue
+    n=$(wc -l < "$f" | tr -d ' '); [ "$n" -le "$lim" ] || add "WARN	docs	$f	$n lines, over the limit of $lim"
+  done
+fi
 
 printf '%s' "$out" | grep . | sort -u > "$tmp/out" || true
 cat "$tmp/out"

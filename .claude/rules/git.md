@@ -7,3 +7,5 @@
 - Stage only files inside your role's owned paths. The integrator checks this with `.claude/skills/deliver/scripts/check-ownership.sh`.
 - **Worktrees see only committed files.** The orchestrator commits the kit (`.claude/`), `docs/delivery/` and the contracts before Lane 3 starts any parallel work.
 - Merges to the default branch happen only after the Milestone Build Review gate, through a PR/MR when the CI adapter supports it.
+- **PR/MR titles** follow Conventional Commits, so the title reads as a changelog line. The body follows `ci/references/PR_TEMPLATE.md`.
+- **Merge requirements:** the gate is approved, the CI `checks` job is green, every review thread is resolved, and the branch is up to date with the default branch.

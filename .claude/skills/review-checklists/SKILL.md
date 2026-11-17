@@ -16,18 +16,25 @@ user-invocable: false
 - [ ] You re-ran the role's lint, typecheck and test yourself, and they're green.
 - [ ] No secrets, credentials or personal data in code, config, fixtures or logs.
 - [ ] Errors are handled at the boundaries. No swallowed exceptions or silent fallbacks.
+- [ ] Comments: one doc comment at the top of each function, method and class; no line-by-line comments in bodies.
+- [ ] Tests: the module is tested at feature level for every AC; no test-per-function padding; no second database container.
 - [ ] No dead code, debug output, commented-out blocks or TODOs without a ticket. `bash .claude/skills/integrate-milestone/scripts/check-hygiene.sh --base <integration-branch> --no-unused` is clean for the diff: no scaffold leftovers, stray files or dead doc links, and whatever the ticket replaced was removed.
+- [ ] Adopted codebases: the diff follows the existing conventions; untested code it changes got characterization tests first; no unrelated debt was "fixed" inside the ticket; new debt found is reported.
+- [ ] Webhooks (when the diff has any): the review checklist in `build-webhooks` → WEBHOOK_STANDARDS.md.
 - [ ] Performance: the PERFORMANCE.md checklist for the touched area (no N+1, no unbounded reads, lists paginated or virtualized, slow work off the request path); REALTIME.md and WORKERS.md checklists when the diff uses them.
 - [ ] Comments explain the why (constraints, gotchas, BR-/ADR refs), public APIs have doc comments, and any significant technical decision in the diff has an ADR (`documentation` rule).
 - [ ] The **Review checklist** of OOP_AND_PATTERNS.md and of each stack guide in the brief's `GUIDES:` line (`coding-foundations`). A violated *must* is P2 (P1 when it affects correctness, security or data); a *prefer* is P3.
 - [ ] Follows `engineering-principles.md` and `coding-standards.md`: domain naming, size and complexity limits, typed and validated boundaries, no swallowed errors, timeouts on remote calls, structured logs without PII, no magic values, no new lint suppressions without a reason and a ticket.
 - [ ] The commit message follows the git rules and references the ticket.
+- [ ] Review comments explain why, cite the file and line, give the fix, and name what was done well.
 
 ## Frontend
-- [ ] It matches the approved mockups and the DESIGN-SYSTEM.md component specs (compare the screenshots with `mockups/`).
+- [ ] It matches the approved mockups and the DESIGN.md › Components component specs (compare the screenshots with `mockups/`).
 - [ ] Visual values come only from the generated token theme: no raw colors, sizes, radii, shadows or durations in components.
 - [ ] Loading, empty, error, success and no-permission states all exist.
 - [ ] Accessibility: labels, focus order and visibility, keyboard operation, contrast, ARIA only where needed.
+- [ ] Dialogs: focus moves in on open and returns to the trigger on close.
+- [ ] Not the default AI look (design-inspiration UI_QUALITY_BAR §5a): palette, radii, shadows and layout come from the design system.
 - [ ] API calls use the generated client, handle every contract error, and don't trust client-side checks for security.
 - [ ] Forms (FORMS_AND_VALIDATION.md): the project's form and schema library, the shared/contract schema, validation on blur and submit, first-invalid focus, accessible errors, server field errors mapped, no double submit, schema tests with boundary values.
 - [ ] No needless re-renders, waterfalls or unbounded lists. Assets are sized.
@@ -42,7 +49,7 @@ user-invocable: false
 - [ ] Logs are structured, with no PII or secrets.
 
 ## API (architect-reviewer on contracts; backend-reviewer on implementations)
-- [ ] Every operation follows API-GUIDELINES.md (naming, methods, status codes, the standard error body with stable codes)
+- [ ] Every operation follows ARCHITECTURE.md › API conventions (naming, methods, status codes, the standard error body with stable codes)
 - [ ] Auth and scopes declared, object-level authorization stated and implemented, no secrets or PII in URLs
 - [ ] Lists paginated (cursor, limit capped) with documented filters and sorts; writes document validation errors
 - [ ] Idempotency-Key on retried creates; ETag/If-Match (or a version field) where lost updates matter; async uses 202 + a status resource
@@ -56,7 +63,7 @@ user-invocable: false
 - [ ] Outbound webhooks: signed, retried with backoff, DLQ, delivery log, subscriber URLs validated (SSRF)
 - [ ] Responses validated and mapped; only the needed data sent; residency and classification respected
 - [ ] Secrets by name; tests use local mocks or recorded responses, never real providers
-- [ ] The INTEGRATIONS.md entry is updated with the chosen timeouts, retries and breaker settings
+- [ ] The ARCHITECTURE.md › Integrations entry is updated with the chosen timeouts, retries and breaker settings
 
 ## Database (database-reviewer, plus the backend-reviewer for data-access code)
 - [ ] Design principles (`database-standards.md`): constraints in the database, normalized unless an ADR says otherwise, correct types, no EAV or JSON for queried fields, soft delete only where required, migrations tested up/down on a fresh database.
@@ -82,7 +89,7 @@ user-invocable: false
 - [ ] The same immutable artifact is promoted from staging to production.
 - [ ] Secrets are referenced by name, with least-privilege credentials (OIDC where possible).
 - [ ] Versions and actions/images are pinned. Caching is correct.
-- [ ] A health check, smoke test, rollback path and backup exist, matching `DEVOPS-PLAN.md`.
+- [ ] A health check, smoke test, rollback path and backup exist, matching `ARCHITECTURE.md › Operations`.
 - [ ] Nothing was applied or deployed from the workstation. Only dry-run validation was used.
 
 ## Security
@@ -100,7 +107,8 @@ user-invocable: false
 - [ ] `check-tokens.sh` passes for every theme (contrast and distinctness); mockups and code use tokens only.
 - [ ] Colors follow COLOR_METHOD: a stated rationale, the 60-30-10 split per screen, brand colors never mistakable for status colors.
 - [ ] If `F-LANDING`: the landing page shows only released features, every section has its LANDING_PAGE.md source, client copy is marked and approved.
-- [ ] Every component shown is specified in DESIGN-SYSTEM.md, with all its states, and looks the same everywhere.
+- [ ] Every component shown is specified in DESIGN.md › Components, with all its states, and looks the same everywhere.
+- [ ] Every component and key screen passes design-inspiration → `UI_QUALITY_BAR.md` (16 of 20, no zero) and follows its `COMPONENTS_*.md` entry; built components are on the dev-only gallery page.
 - [ ] Every screen state exists at desktop and mobile size, as a real render.
 - [ ] Copy follows the brand voice, the word list and the BA glossary; client copy is marked.
 - [ ] Accessibility: contrast, visible focus, targets, labels, landmarks and headings, no color-only meaning, 320 px reflow, reduced motion.

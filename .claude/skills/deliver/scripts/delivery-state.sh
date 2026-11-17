@@ -18,7 +18,7 @@ STATE=".claude/delivery/state.json"
 EXAMPLE=".claude/skills/deliver/references/state.example.json"
 LOG="docs/delivery/GATE-LOG.md"
 MAX="${DELIVERY_MAX_ROUNDS:-3}"
-LANES="understand plan build verify release done"
+LANES="adopt understand plan build verify release done"
 TICKET_STATUSES="backlog ready in_progress in_review changes_requested approved done verified reopened blocked cancelled"
 TICKET_TYPES="feature chore spike bug"
 SEVERITIES="P1 P2 P3"
@@ -85,14 +85,17 @@ log_gate() {
 usage() {
   cat <<'EOF'
 delivery-state.sh <command> [args]
-  init                                         create .claude/delivery/state.json (no-op if present)
+  init [--mode adopt]                          create .claude/delivery/state.json (no-op if present);
+                                               --mode adopt starts an adopt run for an existing codebase (lane adopt)
   summary                                      print lane, step, gates, tickets, CRs, failures
-  set-step <lane> <step>                       lanes: understand plan build verify release done
+  set-step <lane> <step>                       lanes: adopt understand plan build verify release done
   milestone <ms-n>                             set the current milestone
   validated                                    record that every project.json command ran green
   round <loop-id> | round-reset <loop-id>      review-round counter (exit 3 + CAP_REACHED at the cap)
   note "<text>"                                record a note (e.g. a skipped step and why)
   approve <gate> <decision> "<approver>" "<notes>" <path>...   human approval tied to file hashes
+  approve-baseline "<approver>" "<notes>" <path>...   adopt runs only: one human approval of the as-built package;
+                                               records baseline, g1 and g2 together and tags the commit delivery-baseline
   reject  <gate> <decision> "<approver>" "<notes>"             human rejection / revise decision
   verify  <gate>                               exit 0 only if approved and every package hash matches
   release "<name>" "<artifact>" "<environment>" record the release identity (required before approving g3)
@@ -100,7 +103,7 @@ delivery-state.sh <command> [args]
                                                open a change request (invalidates the gate); prints the id.
                                                Needs the human's explicit yes first (a major decision)
   cr-close <CR-id>
-  ticket add <id> <role> <milestone> "<title>" [dep1,dep2] [--type feature|chore|spike|bug] [--size S|M|L]
+  ticket add <id> <role> <milestone> "<title>" [dep1,dep2] [--type feature|chore|spike|bug] [--size S|M|L] [--paths <glob,glob>]
              [--status ready|backlog] [--of <original-id>|none] [--severity P1|P2|P3] [--found-in "<where>"]
                                                a bug needs --of and --severity; it is linked both ways
   ticket status <id> <status> [--note "<text>"] [--force "<reason>"]
@@ -111,6 +114,11 @@ delivery-state.sh <command> [args]
   ticket attempt <id>                          increment attempts (exit 3 + CAP_REACHED at the cap)
   ticket set <id> <branch|tracker_ref|title|size> <value>
   ready <ms-n>                                 list ready tickets whose dependencies are done (or verified)
+  plan-check <ms-n>                            are the milestone's tickets independent? fails when a feature ticket depends on
+                                               another feature ticket in the same milestone, or when two tickets that can run
+                                               together touch the same files (ticket add --paths); prints how many can start together
+  board                                        who is working on what right now (ticket, role, status, attempts, agent)
+  stats [ms-n]                                 rework and cost per role: attempts, returns from review, reopened, bugs, tokens
   bugs [open|all] [ms-n]                       list bug tickets with severity, status and the original ticket
   fail <ticket> <role> <attempts> <report-path>
   msg add <from> <to> <question|request|handoff|finding|info|decision-needed> "<re>" "<body>" [blocking]
@@ -124,21 +132,27 @@ EOF
 
 MSG_LOG="docs/delivery/MESSAGES.md"
 MSG_TYPES="question request handoff finding info decision-needed"
-log_msg() {
-  mkdir -p "$(dirname "$MSG_LOG")"
-  [ -f "$MSG_LOG" ] || printf '# Agent messages\n\n| When (UTC) | Id | From | To | Type | Re | Message |\n|---|---|---|---|---|---|---|\n' > "$MSG_LOG"
+log_msg() { # messages live in the run state; the file is only kept up for older runs that already have it
+  [ -f "$MSG_LOG" ] || return 0
   printf '| %s | %s | %s | %s | %s | %s | %s |\n' "$(now)" "$1" "$2" "$3" "$4" "$5" "$(printf '%s' "$6" | tr '\n|' '  ')" >> "$MSG_LOG"
 }
 
 cmd="${1:-help}"; shift || true
 case "$cmd" in
   init)
+    mode="new"
+    if [ "${1:-}" = "--mode" ]; then mode="${2:-}"; in_list "$mode" new adopt || die "unknown mode: ${mode} (new | adopt)"; fi
     mkdir -p "$(dirname "$STATE")"
     if [ ! -f "$STATE" ]; then
       [ -f "$EXAMPLE" ] || die "missing $EXAMPLE"
       cp "$EXAMPLE" "$STATE"; upd '.'
-      echo "created $STATE"
+      if [ "$mode" = "adopt" ]; then
+        upd '.mode = "adopt" | .lane = "adopt" | .step = "detect" | .gates.baseline = {status: "pending", decision: null, approver: null, ts: null, notes: null, package: {}}'
+      fi
+      echo "created $STATE (${mode} run)"
     else
+      cur=$(jq -r '.mode // "new"' "$STATE")
+      [ "$mode" = "new" ] || [ "$cur" = "$mode" ] || die "a ${cur} run already exists here; an adopt run can only start in a repository without a delivery run"
       echo "state exists: $STATE"
     fi
     if [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1; then
@@ -148,6 +162,7 @@ case "$cmd" in
   summary)
     need_state
     jq -r --arg max "$MAX" '
+      (if (.mode // "new") == "adopt" then "Mode: adopt (existing codebase)   Baseline: " + (if .baseline then "\(.baseline.tag) @ \(.baseline.commit[0:7])" else "not approved yet" end) else empty end),
       "Lane: \(.lane)   Step: \(.step)   Milestone: \(.milestone // "-")",
       "Gates: " + ([.gates | to_entries[] | "\(.key)=\(.value.status)" + (if .value.decision then "(\(.value.decision))" else "" end)] | join("  ")),
       "Tickets: " + (if (.tickets | length) == 0 then "none" else ([.tickets | to_entries | group_by(.value.status)[] | "\(.[0].value.status)=\(length)"] | join("  ")) end),
@@ -197,6 +212,37 @@ case "$cmd" in
       --arg g "$gate" --arg d "$decision" --arg a "$approver" --arg n "$notes" --argjson pkg "$pkg"
     log_gate "$gate" approved "$decision" "$approver" "$notes"
     echo "approved $gate ($(printf '%s' "$pkg" | jq 'length') files hashed)"
+    ;;
+  approve-baseline)
+    need_state; [ $# -ge 3 ] || die "usage: approve-baseline <approver> <notes> <path>..."
+    [ "$(jq -r '.mode // "new"' "$STATE")" = "adopt" ] || die "approve-baseline is only for adopt runs (delivery-state.sh init --mode adopt)"
+    [ "$(jq -r '.gates.baseline.status // "pending"' "$STATE")" != "approved" ] || die "the baseline is already approved; later changes go through change requests (cr-open)"
+    approver="$1" notes="$2"; shift 2
+    [ -n "$approver" ] || die "approver is required"
+    [ -f .claude/project.json ] || die "the baseline is incomplete: missing .claude/project.json (role boundaries and commands)"
+    for p in "$@"; do [ -e "$p" ] || die "not found: $p"; done
+    pkg=$(hash_paths "$@")
+    for req in docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; do
+      printf '%s' "$pkg" | jq -e --arg p "$req" 'has($p)' >/dev/null || die "the baseline package must include $req"
+    done
+    commit=""
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+      dirty=$(git status --porcelain -- "$@" 2>/dev/null)
+      [ -z "$dirty" ] || die "commit the baseline package before approving it (uncommitted: $(printf '%s' "$dirty" | head -3 | tr '\n' ' '))"
+      commit=$(git rev-parse HEAD 2>/dev/null) || die "the repository has no commit yet"
+      if git rev-parse -q --verify refs/tags/delivery-baseline >/dev/null 2>&1; then
+        [ "$(git rev-parse 'delivery-baseline^{commit}')" = "$commit" ] || die "the tag delivery-baseline already exists on another commit; remove it only if the human asked to redo the baseline"
+      else
+        git tag delivery-baseline || die "could not create the tag delivery-baseline"
+      fi
+    fi
+    upd '(.gates.baseline, .gates.g1, .gates.g2) = {status: "approved", decision: "baseline", approver: $a, ts: $now, notes: $n, package: $pkg}
+         | .gates.intake = {status: "approved", decision: "baseline", approver: $a, ts: $now, notes: "replaced by the adopt baseline", package: {}}
+         | .baseline = {tag: "delivery-baseline", commit: $c, ts: $now}
+         | .lane = "build" | .step = "increment-wait"' \
+      --arg a "$approver" --arg n "$notes" --arg c "$commit" --argjson pkg "$pkg"
+    for g in baseline g1 g2; do log_gate "$g" approved baseline "$approver" "$notes"; done
+    echo "approved the baseline ($(printf '%s' "$pkg" | jq 'length') files hashed); g1 and g2 recorded; tag delivery-baseline @ $(printf '%s' "$commit" | cut -c1-7); coding is unlocked"
     ;;
   reject)
     need_state; [ $# -ge 3 ] || die "usage: reject <gate> <decision> <approver> [notes]"
@@ -278,9 +324,9 @@ case "$cmd" in
     need_state; sub="${1:-}"; shift || true
     case "$sub" in
       add)
-        [ $# -ge 4 ] || die "usage: ticket add <id> <role> <milestone> <title> [deps] [--type t] [--size S|M|L] [--status ready|backlog] [--of <id>|none] [--severity P1|P2|P3] [--found-in <where>]"
+        [ $# -ge 4 ] || die "usage: ticket add <id> <role> <milestone> <title> [deps] [--type t] [--size S|M|L] [--status ready|backlog] [--of <id>|none] [--severity P1|P2|P3] [--found-in <where>] [--paths <glob,glob>]"
         id="$1" role="$2" ms="$3" title="$4"; shift 4
-        deps="" type="feature" size="" of="" sev="" found="" st="ready"
+        deps="" type="feature" size="" of="" sev="" found="" st="ready" paths=""
         if [ $# -gt 0 ] && [ "${1#--}" = "$1" ]; then deps="$1"; shift; fi
         while [ $# -gt 0 ]; do
           [ $# -ge 2 ] || die "option $1 needs a value"
@@ -291,6 +337,7 @@ case "$cmd" in
             --severity) sev="$2" ;;
             --found-in) found="$2" ;;
             --status) st="$2" ;;
+            --paths) paths="$2" ;;
             *) die "unknown option: $1" ;;
           esac
           shift 2
@@ -310,14 +357,14 @@ case "$cmd" in
         fi
         upd '.tickets[$i] = {title: $t, type: $ty, role: $r, milestone: $m, status: $st,
               size: (if $sz == "" then null else $sz end), attempts: 0,
-              depends_on: ($d | split(",") | map(select(length > 0))), branch: null, tracker_ref: null,
+              depends_on: ($d | split(",") | map(select(length > 0))), paths: ($p | split(",") | map(select(length > 0))), branch: null, tracker_ref: null,
               bug_of: (if $of == "" or $of == "none" then null else $of end),
               severity: (if $sev == "" then null else $sev end),
               found_in: (if $f == "" then null else $f end), bugs: [],
               history: [{from: null, to: $st, ts: $now, note: "created"}]}
             | if $of != "" and $of != "none" then .tickets[$of].bugs = ((.tickets[$of].bugs // []) + [$i]) else . end' \
           --arg i "$id" --arg r "$role" --arg m "$ms" --arg t "$title" --arg d "$deps" --arg ty "$type" \
-          --arg sz "$size" --arg of "$of" --arg sev "$sev" --arg f "$found" --arg st "$st"
+          --arg sz "$size" --arg of "$of" --arg sev "$sev" --arg f "$found" --arg st "$st" --arg p "$paths"
         ;;
       status)
         [ $# -ge 2 ] || die "usage: ticket status <id> <status> [--note \"<text>\"] [--force \"<reason>\"]"
@@ -376,6 +423,52 @@ case "$cmd" in
       | select(.value.milestone == $m and .value.status == "ready")
       | select(all(.value.depends_on[]?; (($t[.].status // "") | IN("done", "verified"))))
       | "\(.key)\t\(.value.role)\t\(.value.title)"' "$STATE"
+    ;;
+  plan-check)
+    need_state; [ $# -eq 1 ] || die "usage: plan-check <ms-n>"
+    res=$(jq -r --arg m "$1" '
+      def root: split("*")[0] | sub("/$"; "");
+      def overlap($a; $b): ($a | root) as $x | ($b | root) as $y
+        | ($x == $y) or ($x == "") or ($y == "") or ($x | startswith($y + "/")) or ($y | startswith($x + "/"));
+      .tickets as $t
+      | [$t | to_entries[] | select(.value.milestone == $m and .value.status != "cancelled")] as $ms
+      | ($ms | map(select((.value.type // "feature") != "chore"))) as $feat
+      | ( $feat[] | . as $a | ($a.value.depends_on // [])[] as $d
+          | select(($t[$d].milestone // "") == $m and (($t[$d].type // "feature") != "chore"))
+          | "FAIL\t\($a.key) depends on \($d) in the same milestone: feature tickets must be independent (depend only on foundation tickets or an earlier milestone)" ),
+        ( range(0; $ms | length) as $i | range($i + 1; $ms | length) as $j | $ms[$i] as $a | $ms[$j] as $b
+          | select((($a.value.depends_on // []) | index($b.key)) == null and (($b.value.depends_on // []) | index($a.key)) == null)
+          | [ ($a.value.paths // [])[] as $pa | ($b.value.paths // [])[] as $pb | select(overlap($pa; $pb)) | "\($pa) and \($pb)" ] as $o
+          | select(($o | length) > 0)
+          | "FAIL\t\($a.key) and \($b.key) can run at the same time but touch the same files (\($o[0])): split the files, or put the shared file in a foundation ticket" ),
+        ( $ms[] | select(((.value.paths // []) | length) == 0) | "WARN\t\(.key) has no paths, so overlaps cannot be checked (ticket add --paths)" ),
+        ( ($feat | map(select(all((.value.depends_on // [])[]; ($t[.].milestone != $m) or (($t[.].type // "feature") == "chore")))) | length) as $par
+          | "plan: \($ms | length) tickets in \($m), \($feat | length) feature tickets, \($par) can start together once the foundation is done" )' "$STATE")
+    printf '%s\n' "$res"
+    printf '%s\n' "$res" | grep -q '^FAIL' && exit 1
+    exit 0
+    ;;
+  board)
+    need_state
+    jq -r '(.agents // {}) as $ag
+      | [.tickets | to_entries[] | select(.value.status | IN("in_progress", "in_review", "changes_requested", "reopened", "blocked", "approved"))] as $a
+      | if ($a | length) == 0 then "board: nothing in progress"
+        else ("TICKET\tROLE\tSTATUS\tATTEMPTS\tSINCE (UTC)\tAGENT\tTITLE",
+              ($a[] | "\(.key)\t\(.value.role)\t\(.value.status)\t\(.value.attempts // 0)\t\((.value.history // [])[-1].ts // "-")\t\($ag["ticket:" + .key] // "-")\t\(.value.title)")) end' "$STATE"
+    ;;
+  stats)
+    need_state
+    jq -r --arg m "${1:-}" '
+      def returns: [(.value.history // [])[] | select(.to == "changes_requested" or .to == "reopened")] | length;
+      [.tickets | to_entries[] | select($m == "" or .value.milestone == $m)] as $ts
+      | "Tickets: \($ts | length)   done: \([$ts[] | select(.value.status | IN("done", "verified"))] | length)   bugs: \([$ts[] | select((.value.type // "") == "bug")] | length)",
+        ( $ts | group_by(.value.role)[] | . as $g
+          | "\($g[0].value.role): \($g | length) tickets, \([$g[].value.attempts // 0] | add) attempts, \([$g[] | returns] | add) sent back by review or reopened, \([$g[] | select(((.value.bugs // []) | length) > 0)] | length) with bugs found later" ),
+        ( [$ts[] | {k: .key, n: returns, a: (.value.attempts // 0)} | select((.n + .a) > 1)] | sort_by(-(.n + .a)) | .[0:5]
+          | if length > 0 then "Most rework: " + (map("\(.k) (\(.a) attempts, \(.n) returns)") | join(", ")) else "Most rework: none" end ),
+        ( (.usage // []) as $u | if ($u | length) > 0
+          then "Tokens by agent (whole run): " + ([$u | group_by(.agent)[] | {a: .[0].agent, t: ([.[].tokens] | add), n: length}] | sort_by(-.t) | .[0:8] | map("\(.a) \(.t) in \(.n) runs") | join(" · "))
+          else empty end )' "$STATE"
     ;;
   bugs)
     need_state; scope="${1:-open}"; ms="${2:-}"

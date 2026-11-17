@@ -3,7 +3,7 @@
 Mockups are **static, self-contained HTML** in `docs/delivery/mockups/<screen-id>-<state>.html` (no external network requests), rendered to PNG next to each file. After G2 they are the visual contract.
 
 ## Naming
-`<screen-id>-<state>.html` → `S-03-orders-list-default.html`, `S-03-orders-list-empty.html`, `S-03-orders-list-error.html`. Every screen in the `UI-UX.md` inventory has at least default, empty/loading and error variants where they apply.
+`<screen-id>-<state>.html` → `S-03-orders-list-default.html`, `S-03-orders-list-empty.html`, `S-03-orders-list-error.html`. Every screen in the `DESIGN.md › UX` inventory has at least default, empty/loading and error variants where they apply.
 
 ## Skeleton
 ```html
@@ -31,7 +31,7 @@ Mockups are **static, self-contained HTML** in `docs/delivery/mockups/<screen-id
 </body>
 </html>
 ```
-The example values are placeholders. The variables always come from `tokens.json` through `check-tokens.sh --css`; only components specified in DESIGN-SYSTEM.md appear in a mockup.
+The example values are placeholders. The variables always come from `tokens.json` through `check-tokens.sh --css`; only components specified in DESIGN.md › Components appear in a mockup.
 
 ## Render to PNG
 ```bash
@@ -41,7 +41,7 @@ bash $R docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockup
 ```
 The renderer uses Playwright when its browser is installed, otherwise an installed Chrome/Chromium. Exit 3 = no renderer: keep the HTML and report "not rendered". Never fabricate a PNG.
 
-## UI-UX.md screen inventory row
+## DESIGN.md › UX screen inventory row
 | Screen id | Name | Persona | Journey | States (mockup files) | AC covered | Contract operations | Components |
 |---|---|---|---|---|---|---|---|
 | S-03 | Orders list | Customer | J-2 | default, empty, error, loading | AC-ORD-1, AC-ORD-5 | listOrders | Table, Badge, Pagination, Empty state |

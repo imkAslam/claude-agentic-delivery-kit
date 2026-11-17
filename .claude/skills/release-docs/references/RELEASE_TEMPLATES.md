@@ -1,6 +1,6 @@
 # Release templates
 
-## RELEASE-REVIEW.md
+## RELEASE.md › Review
 ```markdown
 > Status: in-review · Owner: devops-engineer · Release: <name> · Updated: <ISO>
 
@@ -22,13 +22,13 @@ Features and fixes (tickets), with links to the milestone build reviews.
 | Migration | Type (expand/contract) | Backward compatible | Est. duration | Backup before |
 
 ## Open issues and decisions
-From OPEN-ISSUES.md: accepted / deferred, with the owners.
+From ACCEPTANCE.md › Open issues: accepted / deferred, with the owners.
 
 ## Security
 Dependency audit result, secret-scan result, accepted risks (from the threat model).
 ```
 
-## DEPLOYMENT-PLAN.md
+## RELEASE.md › Deployment plan
 ```markdown
 # Deployment plan: <release>
 1. **Pre-checks:** staging green on the same artifact; backup completed (<id>); on-call available; no conflicting maintenance
@@ -37,10 +37,10 @@ Dependency audit result, secret-scan result, accepted risks (from the threat mod
 4. **Traffic:** <rolling | blue-green | instant> per the target
 5. **Smoke tests:** `<prod_url><health_path>` = 200; journeys: <TC ids, run against prod-safe data>
 6. **Observation window:** <30–60> min; watch the error rate (< <x>%), p95 latency (< <y> ms) and logs
-7. **Go / no-go:** any smoke failure or threshold breach → ROLLBACK-RUNBOOK
+7. **Go / no-go:** any smoke failure or threshold breach → RELEASE.md › Rollback
 ```
 
-## ROLLBACK-RUNBOOK.md
+## RELEASE.md › Rollback
 ```markdown
 # Rollback runbook: <release>
 - **Triggers:** failed smoke test · error rate > <x>% for 5 min · p95 > <y> ms for 10 min · data integrity alert
@@ -55,7 +55,7 @@ Rehearsed on staging at <ISO>: result <pass/fail>, duration <min>.
 If not resolved within <min>: <who>, <how>.
 ```
 
-## OPERATIONS-HANDOFF.md
+## RELEASE.md › Operations handoff
 ```markdown
 # Operations handoff: <system>
 - **Service overview:** what it does, its users, the critical journeys
@@ -65,11 +65,11 @@ If not resolved within <min>: <who>, <how>.
 - **Runbooks:** deploy, rollback, restore from backup, rotate a secret, scale
 - **Backups:** schedule, retention, last restore drill
 - **On-call and contacts:** roles, escalation path
-- **Known issues and limitations:** from OPEN-ISSUES (accepted/deferred)
+- **Known issues and limitations:** from ACCEPTANCE.md › Open issues (accepted/deferred)
 - **Credentials:** where they are managed (names and stores only)
 ```
 
-## DEPLOYMENT-RESULT.md
+## RELEASE.md › Result
 ```markdown
 # Deployment result: <release>
 | Item | Value |

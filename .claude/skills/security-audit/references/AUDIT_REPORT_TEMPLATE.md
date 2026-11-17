@@ -1,4 +1,4 @@
-# SECURITY-AUDIT-REPORT.md template
+# ACCEPTANCE.md › Security audit template
 
 ```markdown
 > Status: in-review · Owner: security-auditor · Candidate: <commit sha> · Environment(s): <env> · Updated: <ISO>

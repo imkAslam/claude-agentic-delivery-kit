@@ -79,7 +79,7 @@ In `PRD.md`, the architect writes between these markers. The product-manager nev
 ## 10. Solution architecture (layer by layer)
 <!-- architect:begin -->
 **Main system diagram (D1)** (Mermaid, whole app; see DIAGRAMS.md), followed by **Why this architecture** (5 plain-language bullets: the drivers, the options considered, the decision, the trade-offs accepted, the revisit triggers).
-**Style:** <style> (ADR-00x) · **Why:** <the 2–3 drivers> · **Evidence:** ARCHITECTURE-RESEARCH.md
+**Style:** <style> (ADR-00x) · **Why:** <the 2–3 drivers> · **Evidence:** ARCHITECTURE.md › Research
 **Tech stack (to confirm at G1):** the table from STACK_SELECTION §6 (recommended · client preference · why · trade-off)
 | Layer | What it does here | Technology | Owner role | Scales by |
 |---|---|---|---|---|

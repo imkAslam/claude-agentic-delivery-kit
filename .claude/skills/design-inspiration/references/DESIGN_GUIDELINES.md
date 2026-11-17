@@ -1,4 +1,4 @@
-# Design guidelines (kit defaults; the project's BRAND-BRIEF overrides them)
+# Design guidelines (kit defaults; the project's DESIGN.md › Brand overrides them)
 
 ## Principles
 1. **Clarity over decoration.** Every element earns its place, and the primary action is obvious.

@@ -8,7 +8,7 @@ With: `secure-coding.md` (validate at the boundary), `api-design.md` (the error 
 3. **The same rules on both sides:** required, types, lengths, ranges, formats, enums and cross-field rules match the contract and the business rules (BR-…). A rule that exists only on the client is a bug.
 4. **Parse, don't validate:** the schema turns raw input into typed values (trimmed strings, numbers, dates, enums), and only the parsed value goes on to the API call or the use case.
 5. **One form library and one schema library per project**, chosen by the architect, recorded in an ADR and in PROJECT.md (§2). No mixing within one app.
-6. **Messages come from the copy deck** (UI-UX.md microcopy, in the brand voice), are specific and actionable ("Enter a postcode like SW1A 1AA", not "Invalid"), and are translatable (i18n keys).
+6. **Messages come from the copy deck** (DESIGN.md › UX microcopy, in the brand voice), are specific and actionable ("Enter a postcode like SW1A 1AA", not "Invalid"), and are translatable (i18n keys).
 
 ## 2. Library choice per stack (the architect picks one row)
 | Stack | Form state | Schema / validation | Notes |

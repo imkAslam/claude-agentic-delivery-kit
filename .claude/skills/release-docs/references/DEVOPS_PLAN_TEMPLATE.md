@@ -1,4 +1,4 @@
-# DEVOPS-PLAN.md template
+# ARCHITECTURE.md › Operations template
 
 ```markdown
 > Status: in-review · Owner: devops-engineer · Sources: ARCHITECTURE.md, project.json, ship/<target> · Updated: <ISO>

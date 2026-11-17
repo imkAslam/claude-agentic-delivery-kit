@@ -1,16 +1,16 @@
-# DESIGN-SYSTEM.md template (G2)
+# DESIGN.md › Components template (G2)
 
 The design system turns the brand into **reusable, specified components**. Engineers build from it; reviewers check against it.
 
 ```markdown
-> Status: in-review · Owner: uiux-agent · Tokens: docs/delivery/tokens.json (+ tokens.dark.json) · Brand: BRAND-BRIEF.md · Updated: <ISO>
+> Status: in-review · Owner: uiux-agent · Tokens: docs/delivery/tokens.json (+ tokens.dark.json) · Brand: DESIGN.md › Brand · Updated: <ISO>
 
 # Design system
 
 ## 1. Foundations
 - Tokens: the tiers and naming (DESIGN_TOKENS.md), the themes in scope, and the `check-tokens.sh` result
 - Layout: the grid (columns, gutters, margins per breakpoint), the max content width, the spacing rhythm
-- Typography scale and usage; color usage (BRAND-BRIEF §3); elevation levels and when to use each
+- Typography scale and usage; color usage (DESIGN.md › Brand §3); elevation levels and when to use each
 - Iconography (library, sizes) and motion (durations, easing, reduced motion)
 
 ## 2. Component inventory

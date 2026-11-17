@@ -1,7 +1,7 @@
 # BOOTSTRAP.md template (one-time human steps)
 
 ```markdown
-> Status: in-review · Owner: devops-engineer · Sources: DEVOPS-PLAN.md, ship/<target>, ci/<kind> · Updated: <ISO>
+> Status: in-review · Owner: devops-engineer · Sources: ARCHITECTURE.md › Operations, ship/<target>, ci/<kind> · Updated: <ISO>
 
 # Bootstrap checklist
 

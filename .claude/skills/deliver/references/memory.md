@@ -6,7 +6,7 @@
 | Layer | Where | Holds | Survives compaction / restart |
 |---|---|---|---|
 | **Run state** | `.claude/delivery/state.json` (only via `delivery-state.sh`) | Lane, step, milestone, gates + hashes, tickets + attempts, rounds, CRs, messages, failures, usage, agent ids, notes | Yes (local, git-ignored) |
-| **Project knowledge** | `docs/` (PRD, architecture, data model, contracts, tickets, ADRs, FEATURES, DATABASE, CODEMAP, LESSONS, GATE-LOG, MESSAGES) | Every decision, requirement and design, and why | Yes (committed) |
+| **Project knowledge** | `docs/` (PRD, architecture, data model, contracts, tickets, ADRs, FEATURES, DATABASE, CODEMAP, LESSONS, GATE-LOG; the lean set in documents.md) | Every decision, requirement and design, and why | Yes (committed) |
 | **Working context** | The orchestrator's conversation; each subagent's own context window | The current step only | No, by design |
 
 The kit does **not** rely on Claude Code's personal auto memory for project facts. That memory belongs to one user on one machine; project knowledge belongs in `docs/` where every agent and teammate can read it.
@@ -19,8 +19,8 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 - **Worktrees isolate build work:** one worktree per ticket, so parallel agents never share files or context.
 
 ## 3. Append-only logs: never read them whole
-`docs/delivery/MESSAGES.md`, `GATE-LOG.md`, `LESSONS.md`, `failures/` and `git log` only grow. Read them by query:
-- open messages: `delivery-state.sh msg open`; one thread: `grep -n "M-012" docs/delivery/MESSAGES.md`
+`GATE-LOG.md`, `LESSONS.md`, `failures/` and `git log` only grow. Read them by query:
+- open messages: `delivery-state.sh msg open`
 - recent gate decisions: `tail -n 30 docs/delivery/GATE-LOG.md`
 - lessons for one role: `grep -n "\[backend\]\|\[all\]" docs/delivery/LESSONS.md`
 - history: `git log --oneline -20`, `git log --oneline -- <path>`
@@ -52,3 +52,17 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 - Before milestone 1 there is no code: engineers use the planned folder structure in PRD §11.
 - Build briefs list `docs/CODEMAP.md` in INPUTS. Engineers read it first, then open only the files it points to; they search (`grep`) instead of reading whole directories.
 - A stale map is a finding for the docs-writer, not a reason to explore the whole repository.
+
+## 8. Improvement report: the system learns, the human decides
+After every milestone's integration, before the milestone review, the orchestrator writes the **Improvement report** section of `milestones/<ms>/REVIEW.md` (at most 25 lines):
+1. **Numbers:** `delivery-state.sh stats <ms>` (per role: tickets, attempts, results sent back by review or reopened, bugs found later; the tickets with the most rework; tokens by agent).
+2. **What went wrong and what it cost:** the repeated review findings, the returns for an incomplete scope check, the hygiene and performance findings, the human's corrections, the slowest and most expensive tickets.
+3. **Why:** the likely cause of each, in one line (an unclear brief, a missing rule, a wrong assumption, a tool that was not pinned, a ticket that was too big).
+4. **Numbered suggestions,** one line each with the expected benefit and what it changes:
+   `S1 [lesson] …` a line for LESSONS.md · `S2 [agent] …` a change to an agent's instructions · `S3 [skill] …` a change to a skill or template · `S4 [plan] …` a planning change · `S5 [tool] …` a command or check to pin · add `[kit]` when it should go back to the delivery kit itself.
+
+**Report only.** Nothing in the report is applied by itself. The orchestrator shows the suggestions at the milestone review; the human names the ones to apply ("apply S1 and S3"). Only those are applied, as a normal change to the project's `.claude/` files or documents, and the choice is one row in `GATE-LOG.md`. Suggestions not chosen are dropped, not re-proposed every milestone unless the problem returns.
+
+**Applied changes are checked next time.** An applied suggestion is recorded in `GATE-LOG.md`. If its problem returns in the next milestone's report, it is reopened as a new suggestion for the human to decide; it is not reapplied silently.
+
+The lessons log (§7) keeps working as before: a repeated mistake adds one line that the next briefs for that role include.

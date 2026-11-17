@@ -15,6 +15,7 @@ Full standards: the `build-integration` skill (`.claude/skills/build-integration
 - **Ports and adapters:** the application calls an interface it owns; the adapter translates to and from the provider. Provider SDK types never cross into the domain or the API contracts.
 - **Every outbound call has a timeout** (connect + total). Retries only for idempotent requests, or with an idempotency key, using exponential backoff with jitter, at most 3 attempts. Circuit breaker for each provider, plus a user-facing fallback.
 - **Respect provider limits:** client-side rate limiting, honor `Retry-After`, batch where the API supports it.
+- **Webhooks have their own rule and skill** (`.claude/rules/webhooks.md`, the `build-webhooks` skill). In short:
 - **Inbound webhooks:** verify the signature over the **raw** body with a constant-time comparison; reject stale timestamps; deduplicate by provider event id; respond 2xx fast; process asynchronously; never trust the payload's claims without a fetch-back when the money or state matters.
 - **Outbound webhooks:** sign them (HMAC with a per-subscriber secret), include an event id and a timestamp, retry with backoff, dead-letter after the limit, keep a delivery log; validate subscriber URLs against SSRF rules.
 - **Data:** validate and map every response at the boundary; send only the fields the provider needs; classify the data sent (DATA-MODEL) and respect residency constraints.

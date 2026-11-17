@@ -3,7 +3,8 @@
 #  - after G2 is approved, contract paths are read-only (solution-architect may edit them only under an open change request)
 #  - a role subagent (mapped through project.json roles.<role>.agent) writes only inside its owned paths,
 #    the shared files it owns, and docs/delivery/** or docs/adr/**; never the kit (.claude/, CLAUDE.md)
-# The main session and agents without a role aren't path-restricted here (gates and contracts still apply).
+#  - the orchestrator (the main session) never writes inside any role's owned paths while a run exists
+# Agents without a role (architect, designers, integrator…) aren't path-restricted here (gates and contracts still apply).
 DL_INPUT="$(cat)"
 . "$(dirname "$0")/lib.sh"
 dl_has_jq || exit 0
@@ -24,6 +25,16 @@ if [ "$g2" = "approved" ] || [ "$g2" = "invalidated" ]; then
         "Report 'RESULT: CONTRACT_CHANGE_NEEDED' with the exact change. The orchestrator opens a change request and routes it to the api-designer."
     fi
   fi
+fi
+
+# The orchestrator (the main session) manages the work; it never writes product code.
+if [ -z "$agent" ] || [ "$agent" = "orchestrator" ]; then
+  if [ -f "$DL_STATE" ]; then
+    owner=$(dl_manifest '.roles | to_entries[] | select(.value.enabled != false) | "\(.key)\t\(.value.paths[]?)"' | while IFS="	" read -r r g; do dl_match "$rel" "$g" && { echo "$r"; break; }; done)
+    [ -z "$owner" ] || dl_block "Blocked: ${rel} belongs to the ${owner} role. The orchestrator manages the work and never writes product code." \
+      "Give it to the ${owner} role's engineer: a ticket, or a correction on its open ticket."
+  fi
+  exit 0
 fi
 
 role=$(dl_role_for_agent "$agent")

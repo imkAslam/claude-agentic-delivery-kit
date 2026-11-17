@@ -28,7 +28,7 @@ With: OOP_AND_PATTERNS.md.
 - HTTP clients (RestClient/WebClient) with connect and read timeouts; Resilience4j for retries and circuit breakers; Micrometer metrics and tracing; structured JSON logs with MDC request id.
 
 ## Testing
-- JUnit 5; slice tests (`@WebMvcTest`, `@DataJpaTest`) for layers; Testcontainers for the database and brokers; MockK (Kotlin) or Mockito sparingly, preferring fakes.
+- JUnit 5; slice tests (`@WebMvcTest`, `@DataJpaTest`) for layers; the project's one database container with a separate test database, and its broker (never Testcontainers); MockK (Kotlin) or Mockito sparingly, preferring fakes.
 
 ## Review checklist
 - [ ] Constructor injection; no entities in API responses; DTOs validated.

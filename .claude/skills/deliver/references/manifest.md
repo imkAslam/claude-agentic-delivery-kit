@@ -43,10 +43,12 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
   "pre_build_paths": ["<extra globs allowed before g2, e.g. mock-server config>"],   // optional; guard-coding.sh
   "commands": {                       // repo-wide; used by the integrator and by the commit gate on main-session commits
     "install": "<cmd>", "dev": "<cmd>", "lint": "<cmd>", "typecheck": "<cmd>",
-    "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>",
+    "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>",   // dev, test and build are REQUIRED once the foundation is done: app.sh start|test|build call them
+    "seed": "<optional: sample data>", "services_up": "<optional; default: docker compose up -d --wait>", "services_down": "<optional>",
     "perf": "<optional: Lighthouse / load-test cmd used by the performance-specialist>",
     "unused": "<optional: unused files/exports/dependencies check, e.g. knip, vulture; used by check-hygiene.sh>"
   },
+  "docs": { "layout": "lean" },         // "lean" (default; deliver/references/documents.md) | "classic" (a run that started before the lean set keeps its documents)
   "hygiene": { "allow": [ { "path": "<glob>", "reason": "<why this file or folder is a deliberate exception>" } ] },   // optional; read by integrate-milestone/scripts/check-hygiene.sh. An entry without a reason fails the check
   "dev_url": "http://localhost:<port>",
   "services": [                        // backing services for dev/test (see setup-docker → LOCAL_SERVICES.md)

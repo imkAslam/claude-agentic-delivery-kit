@@ -7,11 +7,11 @@
 | Existing logo, colors, fonts, guidelines | `docs/intake/**`, `design-references/` | Case C (no brand) |
 | Audience and context of use | BA personas, PRD §2 | The primary persona, on the device the PRD names |
 | What the client likes / dislikes | Meeting notes, reference images | Neutral, professional, calm |
-| Comparable products | RESEARCH.md | The 5 products the researcher compared |
+| Comparable products | PRD.md › Research notes | The 5 products the researcher compared |
 | Market and locales | Intake, PRD | One locale, the client's language |
 | Constraints | Intake | WCAG 2.2 AA, open-license fonts, light theme only |
 
-## 2. Brand foundation (write it in BRAND-DIRECTIONS §1, then BRAND-BRIEF §1)
+## 2. Brand foundation (write it in DESIGN.md › Directions §1, then DESIGN.md › Brand §1)
 - **Purpose:** one sentence, the change the product makes for its users.
 - **Audience:** the primary and secondary personas, and what they need to feel (confident, safe, fast, delighted…).
 - **Personality:** 3–5 traits, each with **is / is not** (e.g. *Clear: is direct and plain, is not curt or technical*).
@@ -30,7 +30,7 @@
 | Mass-market | Premium |
 The safe direction stays within ±1 of the client's references; the bold one moves at least 2 steps on two sliders.
 
-## 4. Competitor visual landscape (from RESEARCH.md; patterns, not copies)
+## 4. Competitor visual landscape (from PRD.md › Research notes; patterns, not copies)
 | Product | Dominant colors | Type style | Shape / density | Imagery | Mood words |
 |---|---|---|---|---|---|
 Close with: the **table stakes** (what users of this category expect), the **clichés** to avoid, and the **gap** this brand can own.

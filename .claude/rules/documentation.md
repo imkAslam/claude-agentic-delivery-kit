@@ -21,9 +21,9 @@ paths:
 
 # Documentation in code
 
-- **Comment the why, not the what.** Explain non-obvious intent, constraints, workarounds and gotchas; reference the ADR, business rule (BR-…) or ticket that explains it. Never restate the code.
-- Public functions, exported types and API handlers carry doc comments (parameters, return value, errors thrown, an example when the usage isn't obvious), in the stack's standard format (TSDoc, docstrings, GoDoc, KDoc…).
+- **One comment at the top, not many inside.** Each function, method and class starts with one short doc comment: what it does, its parameters and return value, the errors it raises, and the reason when it is not obvious (with the ADR, business rule `BR-…` or ticket). **No line-by-line comments in the body.** A single short note is allowed only on a line whose reason cannot be guessed (a workaround, an ordering constraint). Never restate the code; clear names replace most comments.
+- Use the stack's standard format for that top comment (TSDoc, docstrings, GoDoc, KDoc…). Private one-line helpers with clear names need none.
 - Document known gotchas where they bite ("must run before hydration: see ADR-003").
 - No commented-out code (git keeps history). No `TODO` without a ticket id (`TODO(T-123): …`).
-- A significant technical decision made while coding (a new dependency, a pattern, a deviation) needs an ADR (`write-docs` → ADR_GUIDE.md) before the ticket is approved; reviewers check for it.
+- A **major** decision made while coding (a change to the stack, the architecture style, authentication, or anything expensive to reverse) needs an ADR (`write-docs` → ADR_GUIDE.md) before the ticket is approved. Every other technical choice is one line in `ARCHITECTURE.md`; no ADR.
 - Migrations start with a header comment: what changes, why (ticket), the phase (expand / migrate / contract) and how to roll back.

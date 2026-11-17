@@ -41,6 +41,7 @@ Defense in depth · least privilege · deny by default · never trust input (inc
 - Use the vetted auth library or provider. No custom password hashing (memory-hard algorithms only, via the library).
 - Session cookies are `HttpOnly; Secure; SameSite`; rotate on login and privilege change. Tokens: validate the signature algorithm, issuer, audience and expiry; keep them short-lived; refresh by rotation.
 - Return the same response for an unknown user and a wrong password; rate-limit auth, reset and OTP endpoints.
+- On logout, and when an already-rotated refresh token is presented again, revoke the whole token family. Rate-limit per user and per IP as well as per endpoint.
 
 ## Cryptography and secrets (A02)
 - TLS everywhere; no custom crypto; use the platform's or a library's authenticated encryption.

@@ -1,4 +1,4 @@
-# BRAND-BRIEF.md template (the brand guidelines, G2)
+# DESIGN.md › Brand template (the brand guidelines, G2)
 
 ```markdown
 > Status: in-review · Owner: uiux-agent · Direction: <A|B|C> chosen at G1 (GATE-LOG) · Tokens: docs/delivery/tokens.json · Updated: <ISO>

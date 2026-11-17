@@ -3,8 +3,8 @@
 Use only tools that `SYSTEM-PROFILE.md` shows as installed. Record each tool's version, command and exit code as evidence. Missing tools → "skipped (not installed)" in the report.
 
 ## Phase 0: Scope and authorization
-1. List the assets in scope: apps, APIs, mobile builds, infrastructure (from ARCHITECTURE §3, §5 and DEVOPS-PLAN §1).
-2. Identify the environments and their **ownership** (DEVOPS-PLAN). Only owned staging or test environments qualify for dynamic testing.
+1. List the assets in scope: apps, APIs, mobile builds, infrastructure (from ARCHITECTURE §3, §5 and ARCHITECTURE.md › Operations §1).
+2. Identify the environments and their **ownership** (ARCHITECTURE.md › Operations). Only owned staging or test environments qualify for dynamic testing.
 3. Record the authorization: the brief must state "dynamic testing authorized on <env> by <approver>". Without it, phases 5 and 6 are static only.
 4. Note the compliance requirements (PRD NFRs, THREAT-MODEL §7) and the ASVS level (L1 by default; L2 for personal or financial data; L3 for high-assurance systems).
 
@@ -43,4 +43,4 @@ Go through the OWASP Top 10:2021 and API Top 10:2023 checklists (OWASP_CHECKLIST
 TLS configuration and HSTS · security headers · least-privilege IAM, CI and database roles · secrets in the secret store and rotated · logging of security events plus alerting · backups encrypted, with a tested restore · container and runtime settings (non-root, read-only filesystem where possible) · cloud posture (public access blocked, encryption on).
 
 ## Phase 7: Reporting
-Write `SECURITY-AUDIT-REPORT.md` (AUDIT_REPORT_TEMPLATE.md): CVSS v3.1 per finding, business impact, safe reproduction, remediation, verification test, residual risk, and the compliance mapping. Append the confirmed findings to `OPEN-ISSUES.md`. Return the findings to the orchestrator for triage.
+Write `ACCEPTANCE.md › Security audit` (AUDIT_REPORT_TEMPLATE.md): CVSS v3.1 per finding, business impact, safe reproduction, remediation, verification test, residual risk, and the compliance mapping. Append the confirmed findings to `ACCEPTANCE.md › Open issues`. Return the findings to the orchestrator for triage.

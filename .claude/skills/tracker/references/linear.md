@@ -19,4 +19,4 @@ Requires a connected Linear MCP server. Find its tools by searching the availabl
 
 ## Notes
 - Create the tickets in dependency order, so the blocking relations can reference existing issues.
-- Still mirror every ticket to `docs/delivery/TICKETS.md` (id, title, role, milestone, status, tracker_ref). That file goes into the G2 package.
+- Still mirror every ticket to `docs/delivery/PLAN.md › Tickets` (id, title, role, milestone, status, tracker_ref). That file goes into the G2 package.

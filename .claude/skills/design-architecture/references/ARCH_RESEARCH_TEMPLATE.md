@@ -1,7 +1,7 @@
-# ARCHITECTURE-RESEARCH.md template
+# ARCHITECTURE.md › Research template
 
 ```markdown
-> Status: in-review · Owner: solution-architect · Sources: PRD.md, BA-ANALYSIS.md, web (cited below) · Updated: <ISO>
+> Status: in-review · Owner: solution-architect · Sources: PRD.md, PRD.md › Analysis, web (cited below) · Updated: <ISO>
 
 # Architecture research
 

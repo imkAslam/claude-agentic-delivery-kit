@@ -1,6 +1,6 @@
 # Design tokens (W3C DTCG format)
 
-The tokens are the **single source of truth for every visual value**. They live in `docs/delivery/tokens.json` (plus `tokens.<theme>.json` overrides, e.g. `tokens.dark.json`), written by the uiux-agent from BRAND-BRIEF, approved at G2, and consumed by the mockups, the web theme and the mobile theme. Code never hardcodes a color, size or duration that a token covers.
+The tokens are the **single source of truth for every visual value**. They live in `docs/delivery/tokens.json` (plus `tokens.<theme>.json` overrides, e.g. `tokens.dark.json`), written by the uiux-agent from DESIGN.md › Brand, approved at G2, and consumed by the mockups, the web theme and the mobile theme. Code never hardcodes a color, size or duration that a token covers.
 
 ## 1. Format
 [Design Tokens Community Group format](https://design-tokens.github.io/community-group/format/): every token is an object with `$value` and a `$type` (on the token or inherited from its group). Aliases reference another token: `"{color.neutral.900}"`. Types used: `color`, `dimension`, `fontFamily`, `fontWeight`, `number`, `duration`, `cubicBezier`, `shadow`.
@@ -58,7 +58,7 @@ The CSS output: primitives as literal values, aliases as `var(--…)` (so compon
 | `--destructive` (+ `-foreground`) | `color.danger.default` / `color.danger.on` |
 | `--border`, `--input` / `--ring` | `color.border.default`, `color.border.strong` / `color.focus.ring` |
 | `--radius` | `radius.md` |
-| Chart variables | The chart palette from BRAND-BRIEF §3 |
+| Chart variables | The chart palette from DESIGN.md › Brand §3 |
 Use the color format the pinned library version expects, generated from the token hex values. Never keep the library's default palette, and never edit colors inside a component file.
 
 The generated theme is checked in under the role's owned paths; a test (or lint rule) fails on raw color literals outside the theme files.
@@ -67,7 +67,7 @@ The generated theme is checked in under the role's owned paths; a test (or lint 
 ```json
 {
   "$schema": "https://design-tokens.github.io/community-group/format/",
-  "$description": "Product design tokens (DTCG). Primitives -> semantic -> component. Values from BRAND-BRIEF.md.",
+  "$description": "Product design tokens (DTCG). Primitives -> semantic -> component. Values from DESIGN.md › Brand.",
   "color": {
     "$type": "color",
     "neutral": {

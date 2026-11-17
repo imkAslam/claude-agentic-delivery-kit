@@ -23,7 +23,7 @@ The changed paths are in `roles.mobile.paths`. No contract, shared-file, signing
 Re-run the role's commands yourself.
 
 ### 3. Behavior and design
-`AC-` coverage; the mobile mockups and DESIGN-SYSTEM.md specs matched at their size; every state, including offline; theme values only (no raw colors); dark mode if in scope.
+`AC-` coverage; the mobile mockups and DESIGN.md › Components specs matched at their size; every state, including offline; theme values only (no raw colors); dark mode if in scope.
 
 ### 4. Platform
 Lifecycle, permissions, deep links, screen readers, dynamic type, touch targets.

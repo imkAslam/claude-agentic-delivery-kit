@@ -24,14 +24,20 @@ With: TYPESCRIPT.md, OOP_AND_PATTERNS.md. NestJS adds NESTJS.md. Templates: `cre
 - One connection pool per process, sized from config; transactions in the use case, not in handlers.
 - Background work through a durable queue (BullMQ, SQS, …) with idempotent handlers, retries with dead-lettering, and visibility of failures.
 
+## Data access (ORM: Drizzle or Prisma, the architect's choice)
+- Create one database client per process from the validated config, in the composition root. Domain code never imports the client.
+- Repositories implement ports that the use case defines. They map rows to domain objects and back. Select only the columns a list needs, and eager-load per query.
+- The schema is code (Drizzle schema files or `schema.prisma`). Changes go through the migration tool (commands in `design-database/references/MIGRATIONS.md`). Never push schema changes straight into a shared environment.
+- Seed scripts are idempotent (upsert, or `onConflictDoNothing`), create synthetic data only, read any seed credentials from environment variable names, and refuse to run in production.
+
 ## Logging
-- pino (or the framework's structured logger), JSON in production, redaction for secrets and PII paths; no `console.log`.
+- pino (or the framework's structured logger), JSON in production, redaction for secrets and PII paths; no `console.log`. Health, error tracking and alerts: [OBSERVABILITY.md](OBSERVABILITY.md).
 
 ## Dependencies
 - Few, maintained packages; `npm audit`/OSV in CI; no packages for one-liners.
 
 ## Testing
-- Unit tests for use cases with faked ports; HTTP tests with the framework's injector or supertest; integration tests against containers (Testcontainers) for the DB and queues.
+- Unit tests for use cases with faked ports; HTTP tests with the framework's injector or supertest; integration tests against the project's one database container (a separate test database inside it; never Testcontainers) and its queue.
 
 ## Review checklist
 - [ ] Nothing blocks the event loop; heavy work offloaded.

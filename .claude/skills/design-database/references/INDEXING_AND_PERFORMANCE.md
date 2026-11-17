@@ -28,7 +28,7 @@ For each journey and contract operation, record: the query shape, filters, sort,
 
 ## 4. Verify with plans
 - Run `EXPLAIN (ANALYZE, BUFFERS)` (or the engine's equivalent) on each new hot-path query against realistic seeded volumes. Look for sequential scans on large tables, row-estimate mismatches, sorts spilling to disk, and nested loops over large sets.
-- Keep the plan summary for the top queries in VERIFICATION-RESULTS or the ticket evidence.
+- Keep the plan summary for the top queries in REVIEW.md › Checks or the ticket evidence.
 
 ## 5. Scaling the data tier (in this order, by trigger)
 | Stage | Trigger (metric) | Action |

@@ -13,7 +13,7 @@ Most powerful, with the largest surface. Default shape: a container on **ECS Far
    # app: update the service / task definition to the new image digest; wait for services-stable
    curl -fsS "$URL$HEALTH_PATH"
    ```
-   Production applies only the plan produced and reviewed for this release (attach it to `RELEASE-REVIEW.md`).
+   Production applies only the plan produced and reviewed for this release (attach it to `RELEASE.md › Review`).
 3. **Secrets:** `AWS_ROLE_ARN` (OIDC deploy role per environment, least privilege), `AWS_REGION`. App secrets live in Secrets Manager and are referenced by ARN in the task definition.
 4. **Health:** ALB target-group health check on `deploy.health_path`, plus CloudWatch alarms on 5xx rate and latency.
 5. **Rollback:** ECS deployment circuit breaker with automatic rollback, or redeploy the previous task definition revision. For data, RDS point-in-time restore, or a snapshot taken before the migration.

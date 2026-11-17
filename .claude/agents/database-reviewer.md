@@ -15,7 +15,7 @@ You didn't write this change, and you don't fix it. You decide whether it's safe
 ## When Invoked
 - Lane `build`: any ticket whose diff touches migrations, schema files, ORM models, repositories or raw queries (in parallel with the backend-reviewer)
 - The integrate step, when the merged milestone contains migrations
-- Release prep, to confirm the migration list in `RELEASE-REVIEW.md` is safe
+- Release prep, to confirm the migration list in `RELEASE.md › Review` is safe
 
 ## Your Responsibilities
 

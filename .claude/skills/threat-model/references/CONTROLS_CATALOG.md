@@ -31,14 +31,14 @@
 | C-SEC-1 | Secrets only in a secret store or CI secrets, referenced by name; never in the repo or logs | always | secret scan (hook + CI) |
 | C-SEC-2 | TLS everywhere; HSTS on web | always | config review |
 | C-SEC-3 | Encryption at rest for databases, backups and object storage | personal or payment data | platform config |
-| C-SEC-4 | Rotation plan for keys and credentials; separate credentials per environment | always | DEVOPS-PLAN review |
+| C-SEC-4 | Rotation plan for keys and credentials; separate credentials per environment | always | ARCHITECTURE.md › Operations review |
 | **Abuse and availability** ||||
 | C-RATE-1 | Rate limits on auth, reset, OTP, search and expensive operations (per IP + account) | public endpoints | test |
 | C-RATE-2 | Pagination caps, request size limits, timeouts | APIs | contract + config |
 | **Logging and monitoring** ||||
 | C-LOG-1 | Structured logs without secrets or PII; a request id for correlation | always | review |
 | C-LOG-2 | Audit trail for security events (login, permission change, export, delete) | sensitive data or admin | test |
-| C-LOG-3 | Alerts on auth anomalies and error spikes | production | DEVOPS-PLAN |
+| C-LOG-3 | Alerts on auth anomalies and error spikes | production | ARCHITECTURE.md › Operations |
 | **Supply chain** ||||
 | C-SUP-1 | Lockfiles committed; dependency audit in CI; no critical/high vulnerabilities without an accepted exception | always | CI job |
 | C-SUP-2 | Pinned CI actions/images (by digest/SHA); least-privilege CI tokens (OIDC) | CI/CD | devops review |
@@ -49,4 +49,4 @@
 | **DevSecOps** ||||
 | C-DSO-1 | CI security stages: secrets, SAST, SCA + SBOM, container and IaC scans, DAST baseline on staging (security-audit → DEVSECOPS_PIPELINE.md) | always | CI evidence |
 | C-DSO-2 | Release provenance/signing; production promotes only artifacts with green security stages | production releases | release review |
-| C-DSO-3 | Incident response playbook with breach notification steps | production | OPERATIONS-HANDOFF |
+| C-DSO-3 | Incident response playbook with breach notification steps | production | RELEASE.md › Operations handoff |

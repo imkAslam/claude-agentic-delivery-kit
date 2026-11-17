@@ -115,7 +115,9 @@ check "frontend blocked in backend path"   2 guard-boundary.sh "$(write_json "$R
 check "frontend may write evidence docs"   0 guard-boundary.sh "$(write_json "$REPO/docs/delivery/evidence/T-1/a.md" "x" frontend-engineer)"
 check "frontend blocked from kit"          2 guard-boundary.sh "$(write_json "$REPO/.claude/rules/x.md" "x" frontend-engineer)"
 check "backend owns migrations"            0 guard-boundary.sh "$(write_json "$REPO/api/migrations/001.sql" "x" backend-engineer)"
-check "main session unrestricted"          0 guard-boundary.sh "$(write_json "$REPO/api/new.ts" "x")"
+check "orchestrator (main session) cannot write product code" 2 guard-boundary.sh "$(write_json "$REPO/api/new.ts" "x")"
+check "orchestrator agent cannot write product code"          2 guard-boundary.sh "$(write_json "$REPO/web/c.ts" "x" orchestrator)"
+check "orchestrator can write delivery documents"             0 guard-boundary.sh "$(write_json "$REPO/docs/delivery/PLAN.md" "x")"
 check "architect edits contract before G2" 0 guard-boundary.sh "$(write_json "$REPO/contracts/api.yaml" "x" solution-architect)"
 check "backend never owns contracts"       2 guard-boundary.sh "$(write_json "$REPO/contracts/api.yaml" "x" backend-engineer)"
 bash "$S" approve g2 approve "Architect" "ok" contracts docs/delivery/PRD.md >/dev/null
@@ -187,7 +189,7 @@ m=$(bash "$S" msg add solution-architect product-manager question "AC-ORD-4" "Fi
 bash "$S" msg open product-manager | grep -q 'BLOCKING' && { pass=$((pass+1)); echo "  ok   open blocking message listed"; } || { fail=$((fail+1)); echo "  FAIL open blocking message listed"; }
 bash "$S" msg answer M-1 product-manager "First-come only" >/dev/null
 [ -z "$(bash "$S" msg open)" ] && { pass=$((pass+1)); echo "  ok   answered message closes"; } || { fail=$((fail+1)); echo "  FAIL answered message closes"; }
-grep -q 'First-come only' docs/delivery/MESSAGES.md && { pass=$((pass+1)); echo "  ok   message log written"; } || { fail=$((fail+1)); echo "  FAIL message log written"; }
+[ ! -f docs/delivery/MESSAGES.md ] && { pass=$((pass+1)); echo "  ok   no message log file (messages stay in the run state)"; } || { fail=$((fail+1)); echo "  FAIL no message log file (messages stay in the run state)"; }
 bash "$S" msg add a b gossip "x" "y" >/dev/null 2>&1; c=$?
 [ $c -ne 0 ] && { pass=$((pass+1)); echo "  ok   rejects unknown message type"; } || { fail=$((fail+1)); echo "  FAIL rejects unknown message type"; }
 bash "$S" agent set ticket:T-002 agent-abc >/dev/null
@@ -230,6 +232,46 @@ tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
 
+echo "adopt mode"
+AR="$TMP/adopt"; mkdir -p "$AR/.claude" "$AR/src" "$AR/legacy" "$AR/docs/delivery"
+for part in agents hooks rules skills settings.json; do [ -e "$KIT/$part" ] && cp -R "$KIT/$part" "$AR/.claude/"; done
+( cd "$AR" && git init -q && git config user.email t@t && git config user.name t
+  printf 'export const a = 1;\n' > src/a.ts; printf 'export const old = 1; // TODO clean up\n' > legacy/old.ts
+  git add -A && git commit -qm "existing product" )
+AS="$AR/.claude/skills/deliver/scripts/delivery-state.sh"
+ast() { out=$(cd "$AR" && CLAUDE_PROJECT_DIR="$AR" bash "$AS" "$@" 2>&1); c=$?; }
+ahook() { # ahook <name> <expected-exit> <hook> <json>
+  local o code; o=$(cd "$AR" && printf '%s' "$4" | CLAUDE_PROJECT_DIR="$AR" bash "$AR/.claude/hooks/$3" 2>&1); code=$?
+  if [ "$code" -eq "$2" ]; then pass=$((pass+1)); printf '  ok   %s\n' "$1"; else fail=$((fail+1)); printf '  FAIL %s (expected %s, got %s)\n%s\n' "$1" "$2" "$code" "$(printf '%s' "$o" | sed 's/^/       /')"; fi
+}
+awrite() { jq -nc --arg f "$AR/$1" --arg a "${2:-}" --arg d "$AR" '{tool_name:"Write",tool_input:{file_path:$f,content:"x"},cwd:$d} + (if $a=="" then {} else {agent_type:$a} end)'; }
+out=$(bash "$S" init --mode adopt 2>&1); c=$?; expect 1 "an existing run cannot be converted to adopt mode"
+out=$(bash "$S" approve-baseline "Client" "x" docs/delivery/PRD.md 2>&1); c=$?; expect 1 "approve-baseline is refused outside an adopt run"
+ast init --mode adopt; expect 0 "adopt init creates the run"
+ast summary; printf '%s\n' "$out" | grep -q 'Mode: adopt' && printf '%s\n' "$out" | grep -q 'Lane: adopt   Step: detect' && { pass=$((pass+1)); echo "  ok   summary shows the adopt mode and lane"; } || { fail=$((fail+1)); echo "  FAIL summary shows the adopt mode and lane"; }
+ahook "code is blocked before the baseline"        2 guard-coding.sh "$(awrite src/b.ts)"
+ahook "as-built documents can be written"          0 guard-coding.sh "$(awrite docs/delivery/PRD.md)"
+ast approve-baseline "Client" "ok" docs/delivery/PRD.md; expect 1 "baseline refused without project.json"
+printf '{"version":1,"roles":{"frontend":{"enabled":true,"agent":"frontend-engineer","paths":["src/**"],"commands":{}}},"contracts":{"paths":["contracts/**"]},"commands":{}}\n' > "$AR/.claude/project.json"
+for f in PRD ARCHITECTURE BASELINE; do printf '# %s (as built)\n' "$f" > "$AR/docs/delivery/$f.md"; done
+ast approve-baseline "Client" "ok" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md; expect 1 "baseline refused when BASELINE.md is not in the package"
+ast approve-baseline "Client" "ok" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; expect 1 "baseline refused while the package is uncommitted"
+( cd "$AR" && git add -A && git commit -qm "docs: as-built baseline" )
+ast approve-baseline "Client" "as built accepted" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; expect 0 "baseline approved in one step"
+ast verify g1; expect 0 "g1 is recorded by the baseline"
+ast verify g2; expect 0 "g2 is recorded by the baseline"
+( cd "$AR" && git rev-parse -q --verify refs/tags/delivery-baseline >/dev/null ) && { pass=$((pass+1)); echo "  ok   the baseline commit is tagged"; } || { fail=$((fail+1)); echo "  FAIL the baseline commit is tagged"; }
+ast summary; printf '%s\n' "$out" | grep -q 'Lane: build   Step: increment-wait' && { pass=$((pass+1)); echo "  ok   the run waits for the first increment"; } || { fail=$((fail+1)); echo "  FAIL the run waits for the first increment"; }
+ast approve-baseline "Client" "again" docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md docs/delivery/BASELINE.md; expect 1 "a baseline is approved only once"
+ahook "code is allowed after the baseline"         0 guard-coding.sh "$(awrite src/b.ts)"
+ahook "approved as-built documents are protected"  2 guard-gates.sh "$(awrite docs/delivery/PRD.md)"
+ahook "a role edits inside its adopted paths"      0 guard-boundary.sh "$(awrite src/b.ts frontend-engineer)"
+ahook "unmapped folders are blocked for roles"     2 guard-boundary.sh "$(awrite legacy/old.ts frontend-engineer)"
+printf 'export const b = 2; // TODO later\n' > "$AR/src/b.ts"; ( cd "$AR" && git add -A && git commit -qm "feat: b" )
+out=$(bash "$AR/.claude/skills/integrate-milestone/scripts/check-hygiene.sh" --root "$AR" --base delivery-baseline --no-unused 2>&1); c=$?
+expect 1 "hygiene since the baseline flags new leftovers"
+printf '%s\n' "$out" | grep -q 'src/b.ts' && ! printf '%s\n' "$out" | grep -q 'legacy/old.ts' && { pass=$((pass+1)); echo "  ok   existing debt is not reported against new work"; } || { fail=$((fail+1)); echo "  FAIL existing debt is not reported against new work"; printf '%s\n' "$out" | sed 's/^/       /'; }
+
 echo "check-hygiene"
 CH="$REPO/.claude/skills/integrate-milestone/scripts/check-hygiene.sh"; HR="$TMP/hyg"; mkdir -p "$HR/web/src" "$HR/docs" "$HR/scripts" "$HR/.claude"
 ( cd "$HR" && git init -q && git config user.email t@t && git config user.name t
@@ -265,6 +307,56 @@ hy --no-unused --base HEAD~1; expect 1 "--base checks only the ticket diff"
 printf 'export const b = 2;\n' > "$HR/web/src/b.ts"; printf '\n`web/src/gone.ts` was removed\n' >> "$HR/docs/CODEMAP.md"; plant deadlink
 hy --no-unused; expect 1 "a code map path to a missing file fails"; has '^FAIL.deadlink.docs/CODEMAP.md' "the dead path is located"
 printf '%s\n' "$out" | grep -q 'application/json' && { fail=$((fail+1)); echo "  FAIL non-path code spans are ignored"; } || { pass=$((pass+1)); echo "  ok   non-path code spans are ignored"; }
+
+echo "lean kit"
+printf 'services:\n  db:\n    image: postgres:16-alpine\n  web:\n    build: .\n' > "$HR/compose.yml"; plant compose
+hy --no-unused; printf '%s\n' "$out" | grep -q 'services' && { fail=$((fail+1)); echo "  FAIL one database container is accepted"; } || { pass=$((pass+1)); echo "  ok   one database container is accepted"; }
+printf 'services:\n  db:\n    image: postgres:16-alpine\n  test-db:\n    image: "postgres:16-alpine"\n' > "$HR/compose.yml"; plant twodb
+hy --no-unused; has '^FAIL.services.compose.yml.2 postgres containers' "two database containers in one compose file fail"
+printf 'services:\n  db:\n    image: postgres:16-alpine\n' > "$HR/compose.yml"; printf 'services:\n  pg:\n    image: postgres:16-alpine\n' > "$HR/compose.test.yml"; plant testcompose
+hy --no-unused; has '^FAIL.services.compose.test.yml.a separate postgres container for tests' "a database container just for tests fails"
+( cd "$HR" && git rm -q compose.test.yml && git commit -qm "one db" )
+printf '{"devDependencies":{"testcontainers":"^10"}}\n' > "$HR/package.json"; plant tc
+hy --no-unused; has '^FAIL.services.package.json.Testcontainers' "a Testcontainers dependency fails"
+printf '{"devDependencies":{}}\n' > "$HR/package.json"; plant notc
+mkdir -p "$HR/docs/delivery/milestones/ms-1/screens"; printf '# PRD\n' > "$HR/docs/delivery/PRD.md"; printf '# Review\n' > "$HR/docs/delivery/milestones/ms-1/REVIEW.md"; printf 'x' > "$HR/docs/delivery/milestones/ms-1/screens/S-01.png"; plant leandocs
+hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.' && { fail=$((fail+1)); echo "  FAIL the lean document set passes"; printf '%s\n' "$out" | sed 's/^/       /'; } || { pass=$((pass+1)); echo "  ok   the lean document set passes"; }
+printf '# BA\n' > "$HR/docs/delivery/BA-ANALYSIS.md"; mkdir -p "$HR/docs/delivery/evidence/T-001"; printf 'log\n' > "$HR/docs/delivery/evidence/T-001/test.txt"; plant extradocs
+hy --no-unused; has '^FAIL.docs.docs/delivery/BA-ANALYSIS.md' "a document outside the lean set fails"; has '^FAIL.docs.docs/delivery/evidence/T-001/test.txt' "stored evidence files fail"
+printf '{"docs":{"layout":"classic"}}\n' > "$HR/.claude/project.json"
+hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.' && { fail=$((fail+1)); echo "  FAIL the classic layout skips the documents check"; } || { pass=$((pass+1)); echo "  ok   the classic layout skips the documents check"; }
+rm -f "$HR/.claude/project.json"; ( cd "$HR" && git rm -rq docs/delivery/BA-ANALYSIS.md docs/delivery/evidence && git commit -qm "lean again" )
+awk 'BEGIN { for (i = 0; i < 701; i++) print "line " i }' > "$HR/docs/delivery/PRD.md"; plant longprd
+hy --no-unused; has '^FAIL.docs.docs/delivery/PRD.md.701 lines, over the limit of 700' "a document over its length limit fails"
+PS="$TMP/plan"; mkdir -p "$PS/.claude"; cp -R "$KIT/skills" "$KIT/hooks" "$PS/.claude/"; ( cd "$PS" && git init -q )
+pst() { out=$(cd "$PS" && CLAUDE_PROJECT_DIR="$PS" bash "$PS/.claude/skills/deliver/scripts/delivery-state.sh" "$@" 2>&1); c=$?; }
+pst init
+pst ticket add T-001 backend ms-1 "Scaffold API" --type chore --paths "api/package.json,api/src/main.ts"
+pst ticket add T-002 backend ms-1 "Auth API" T-001 --paths "api/src/modules/auth/**"
+pst ticket add T-003 frontend ms-1 "Auth screens" --paths "web/src/app/(auth)/**"
+pst plan-check ms-1; expect 0 "independent tickets pass the plan check"
+printf '%s\n' "$out" | grep -q '2 feature tickets, 2 can start together' && { pass=$((pass+1)); echo "  ok   the plan check reports how many tickets can start together"; } || { fail=$((fail+1)); echo "  FAIL the plan check reports how many tickets can start together"; printf '%s\n' "$out" | sed 's/^/       /'; }
+pst ticket add T-004 frontend ms-1 "Profile screens" T-002 --paths "web/src/app/(app)/profile/**"
+pst plan-check ms-1; expect 1 "a feature ticket depending on another in the same milestone fails"
+pst ticket status T-004 cancelled --force "replanned"
+pst ticket add T-005 backend ms-1 "Auth tweaks" T-001 --paths "api/src/modules/auth/session.ts"
+pst plan-check ms-1; expect 1 "parallel tickets touching the same files fail"
+pst ticket status T-002 in_progress; pst agent set ticket:T-002 agent-abc
+pst board; printf '%s\n' "$out" | grep -q 'T-002.backend.in_progress.*agent-abc' && { pass=$((pass+1)); echo "  ok   the board shows who has which ticket"; } || { fail=$((fail+1)); echo "  FAIL the board shows who has which ticket"; printf '%s\n' "$out" | sed 's/^/       /'; }
+pst stats ms-1; printf '%s\n' "$out" | grep -q '^backend: ' && { pass=$((pass+1)); echo "  ok   stats report rework per role"; } || { fail=$((fail+1)); echo "  FAIL stats report rework per role"; }
+
+echo "app commands"
+AP="$REPO/.claude/skills/deliver/scripts/app.sh"; AD="$TMP/app"; mkdir -p "$AD/.claude" "$AD/fakebin"; ( cd "$AD" && git init -q )
+ap() { out=$(PATH="$AD/fakebin:$PATH" bash "$AP" "$@" --root "$AD" 2>&1); c=$?; }
+ap start; expect 0 "no app yet is a plain message, not an error"; has 'There is no app yet' "it says there is no app yet"
+printf '{"commands":{"test":"echo 12 passed; echo DB=$DATABASE_URL","build":"echo built"},"stack":{"database":"postgresql"}}\n' > "$AD/.claude/project.json"
+ap start; expect 0 "a missing start command is explained"; has 'no start command yet' "it names the missing command"
+ap build; expect 0 "build runs the project's build command"
+ap test; expect 0 "test runs the project's tests"; has 'All tests passed' "passing tests are reported in plain words"
+printf 'services:\n  db:\n    image: postgres:16-alpine\n' > "$AD/compose.yml"; printf '#!/bin/sh\nexit 1\n' > "$AD/fakebin/docker"; chmod +x "$AD/fakebin/docker"
+ap test; expect 0 "without Docker the tests run on SQLite"; has 'DB=file:./.data/test.sqlite' "the SQLite test database is selected by DATABASE_URL"
+printf '{"commands":{"test":"echo 1 failed: orders total; exit 1"},"stack":{"database":"postgresql"}}\n' > "$AD/.claude/project.json"
+ap test; expect 1 "failing tests fail the command"; has 'Some tests failed' "failing tests are reported in plain words"
 
 echo "sync-diagrams"
 SD="$REPO/.claude/skills/design-architecture/scripts/sync-diagrams.sh"; CD="$REPO/.claude/skills/design-architecture/scripts/check-diagrams.sh"

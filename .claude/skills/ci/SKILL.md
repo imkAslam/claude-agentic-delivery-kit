@@ -12,6 +12,7 @@ Backend: `.claude/project.json → ci.kind`.
 |---|---|
 | `github` | [github.md](references/github.md) |
 | `gitlab` | [gitlab.md](references/gitlab.md) |
+| PR/MR body and title (any kind) | [PR_TEMPLATE.md](references/PR_TEMPLATE.md), used by `open-pr` |
 
 ## Pipeline contract (every backend)
 1. **On every push / PR / MR:** `install → lint → typecheck → test → build`. The commands come from `project.json → commands`. Cache dependencies.

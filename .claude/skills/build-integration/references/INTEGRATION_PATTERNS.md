@@ -23,7 +23,7 @@ Write the business change **and** an `outbox_events` row in one DB transaction; 
 ## 4. Inbound data: webhooks, polling, CDC
 | Mechanism | Use | Must also have |
 |---|---|---|
-| Webhooks | The provider pushes events | Signature verification, dedup, async processing (WEBHOOKS.md) |
+| Webhooks | The provider pushes events | Signature verification, dedup, async processing (`build-webhooks` skill → WEBHOOK_STANDARDS.md) |
 | Polling | No webhooks; small volumes | A cursor/`updated_since` checkpoint, backoff, rate-limit respect |
 | Change data capture / event streams | Internal systems, high volume | Ordering per key, idempotent consumers |
 | Batch file import (CSV/SFTP) | Partners, back office | Schema validation, row-level error report, idempotent re-import |
@@ -41,4 +41,4 @@ Validate provider responses against the schema we expect (zod/pydantic-style) at
 OIDC/OAuth providers: authorization-code + PKCE flow through the vetted library; validate the `state` and `nonce`; map provider identities to local users by a stable subject id (not by email alone); handle account linking explicitly.
 
 ## 8. Configuration
-Every integration is configured by environment-variable **names** (base URL, keys, webhook secret, timeouts) listed in `.env.example`, `project.json → deploy.required_secrets` and INTEGRATIONS.md. Use separate test and live credentials per environment.
+Every integration is configured by environment-variable **names** (base URL, keys, webhook secret, timeouts) listed in `.env.example`, `project.json → deploy.required_secrets` and ARCHITECTURE.md › Integrations. Use separate test and live credentials per environment.
