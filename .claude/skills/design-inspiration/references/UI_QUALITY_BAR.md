@@ -33,3 +33,16 @@ Every project has a **dev-only gallery page** (for example `/dev/components`, ex
 
 ## 5. What makes UI look unprofessional (fix these first)
 Inconsistent spacing · more than one primary button in a view · centered long text · borders and shadows on everything · too many colors or font sizes · unstyled default browser controls · missing empty and loading states · truncated text without a tooltip · modals for everything · walls of fields with no grouping · technical error text shown to users.
+
+## 5a. The default AI look (fix on sight)
+Adapted from the MIT-licensed `frontend-ui-engineering` skill (addyosmani/agent-skills), rewritten for this kit.
+
+| Default | Why it fails | Fix |
+|---|---|---|
+| Purple or indigo everything | The safest palette, so every app looks the same | The project's palette from the brand |
+| Heavy gradients | Noise that competes with the content | Flat, or the brand's own gradient only |
+| Rounded everything | Ignores the radius scale | The radius tokens |
+| Generic hero and stock card grids | A template with no link to the content or its priority | A content-first layout |
+| Placeholder copy | Hides wrapping and overflow problems | Realistic copy from the copy deck |
+| Oversized padding everywhere | Flattens the hierarchy | The spacing scale (check 1) |
+| Shadow-heavy cards | Slows low-end devices and competes with content | Shadows only where the design system specifies them |

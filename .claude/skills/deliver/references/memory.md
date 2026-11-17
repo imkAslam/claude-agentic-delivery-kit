@@ -63,4 +63,6 @@ After every milestone's integration, before the milestone review, the orchestrat
 
 **Report only.** Nothing in the report is applied by itself. The orchestrator shows the suggestions at the milestone review; the human names the ones to apply ("apply S1 and S3"). Only those are applied, as a normal change to the project's `.claude/` files or documents, and the choice is one row in `GATE-LOG.md`. Suggestions not chosen are dropped, not re-proposed every milestone unless the problem returns.
 
+**Applied changes are checked next time.** An applied suggestion is recorded in `GATE-LOG.md`. If its problem returns in the next milestone's report, it is reopened as a new suggestion for the human to decide; it is not reapplied silently.
+
 The lessons log (§7) keeps working as before: a repeated mistake adds one line that the next briefs for that role include.

@@ -34,6 +34,7 @@ Run them in batches (by primary-key range, 1–10k rows per batch), idempotently
 - Each migration states its rollback: a `down` migration where the tool supports it, or the documented manual steps in `RELEASE.md › Rollback`.
 - Destructive steps (drops) happen only in the contract phase, after a backup, once the previous app version no longer needs the object.
 - Data rollback = restore from a backup or PITR. Its time and data-loss window are documented in ARCHITECTURE.md › Operations.
+- Rehearse each rollback on a copy of production-shaped data before release; record the result in `RELEASE.md › Rollback`.
 
 ## Seeds and fixtures
 - **Dev seeds:** synthetic, deterministic and idempotent; they create demo accounts that work locally only.

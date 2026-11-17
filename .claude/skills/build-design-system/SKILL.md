@@ -39,6 +39,8 @@ Follow the design-inspiration MOCKUP_TEMPLATE. Generate each mockup's `:root` fr
 bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.png 1440x900
 bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.mobile.png 390x844
 ```
+
+For a landing page or any other public page, also follow [references/SEO.md](references/SEO.md) for metadata, canonical URLs, sitemap and robots.
 Exit 3 means no renderer was available: keep the HTML and report "not rendered". Finish DESIGN.md › UX §7–§10 (behavior, responsive, accessibility, copy deck). Keep the 60-30-10 color split on every screen (define-brand → COLOR_METHOD §4). If the PRD has `F-LANDING`, design the landing page with [LANDING_PAGE.md](references/LANDING_PAGE.md) (every section, both sizes, copy marked `CLIENT COPY (draft)`).
 
 ### Step 5: Design review loop

@@ -32,6 +32,8 @@ user-invocable: false
 - [ ] Visual values come only from the generated token theme: no raw colors, sizes, radii, shadows or durations in components.
 - [ ] Loading, empty, error, success and no-permission states all exist.
 - [ ] Accessibility: labels, focus order and visibility, keyboard operation, contrast, ARIA only where needed.
+- [ ] Dialogs: focus moves in on open and returns to the trigger on close.
+- [ ] Not the default AI look (design-inspiration UI_QUALITY_BAR §5a): palette, radii, shadows and layout come from the design system.
 - [ ] API calls use the generated client, handle every contract error, and don't trust client-side checks for security.
 - [ ] Forms (FORMS_AND_VALIDATION.md): the project's form and schema library, the shared/contract schema, validation on blur and submit, first-invalid focus, accessible errors, server field errors mapped, no double submit, schema tests with boundary values.
 - [ ] No needless re-renders, waterfalls or unbounded lists. Assets are sized.

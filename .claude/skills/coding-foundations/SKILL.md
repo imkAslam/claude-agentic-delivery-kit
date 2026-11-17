@@ -24,8 +24,10 @@ The solution-architect lists them per role in `.claude/project.json → roles.<r
 | [PERFORMANCE.md](references/PERFORMANCE.md) | **Every role that writes code, and the performance-specialist.** Budgets, measure-first method, frontend, backend and heavy-data practices, bottleneck table, checklists |
 | [REALTIME.md](references/REALTIME.md) | Only when the architecture has a realtime channel: SSE vs WebSockets vs WebRTC, event contracts, auth, reconnect and resync, scaling out |
 | [WORKERS.md](references/WORKERS.md) | CPU-heavy or long-running work: web workers, worker-thread pools, when a durable job queue is the right tool |
+| [MOTION_AND_3D.md](references/MOTION_AND_3D.md) | Only when a ticket asks for 3D or heavy motion: stack choice, asset budgets, reduced motion, WebGL fallback |
 | [REACT_NATIVE.md](references/REACT_NATIVE.md) | React Native and Expo apps (read with REACT) |
-| [PYTHON.md](references/PYTHON.md) | Python services: FastAPI, Django/DRF, SQLAlchemy, workers |
+| [PYTHON.md](references/PYTHON.md) | Python services: language rules, Django/DRF, SQLAlchemy, workers |
+| [FASTAPI.md](references/FASTAPI.md) | FastAPI services (read with PYTHON): routers, dependencies, Pydantic response models, lifespan, async database, endpoint tests |
 | [GO.md](references/GO.md) | Go services |
 | [JAVA_KOTLIN_SPRING.md](references/JAVA_KOTLIN_SPRING.md) | Java or Kotlin with Spring Boot |
 | [DOTNET.md](references/DOTNET.md) | C# / ASP.NET Core |

@@ -36,7 +36,7 @@ Never claim an improvement without both numbers. Never trade correctness, securi
 - Debounce search and filter inputs (250–300 ms); throttle scroll and resize handlers; cancel stale requests.
 - Keep state close to where it is used so one change doesn't re-render the page. Memoize only where a measurement or a referential-equality need shows it helps (or the compiler handles it).
 - Reserve space for images, ads and async content so nothing shifts.
-- Work longer than about 50 ms leaves the main thread ([WORKERS.md](WORKERS.md)); animate with transform and opacity, and respect reduced motion.
+- Work longer than about 50 ms leaves the main thread ([WORKERS.md](WORKERS.md)); animate with transform and opacity, and respect reduced motion. For 3D and heavy motion, the budgets and fallbacks are in [MOTION_AND_3D.md](MOTION_AND_3D.md).
 
 ## 4. Backend
 - **Queries:** select only needed columns; no N+1 (join, batch or a data loader); every frequent filter and sort has an index that a query plan confirms (design-database → INDEXING_AND_PERFORMANCE.md); cursor pagination on large sets; a hard page-size limit.
