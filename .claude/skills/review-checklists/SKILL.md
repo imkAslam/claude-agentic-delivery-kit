@@ -26,6 +26,7 @@ user-invocable: false
 - [ ] The **Review checklist** of OOP_AND_PATTERNS.md and of each stack guide in the brief's `GUIDES:` line (`coding-foundations`). A violated *must* is P2 (P1 when it affects correctness, security or data); a *prefer* is P3.
 - [ ] Follows `engineering-principles.md` and `coding-standards.md`: domain naming, size and complexity limits, typed and validated boundaries, no swallowed errors, timeouts on remote calls, structured logs without PII, no magic values, no new lint suppressions without a reason and a ticket.
 - [ ] The commit message follows the git rules and references the ticket.
+- [ ] Review comments explain why, cite the file and line, give the fix, and name what was done well.
 
 ## Frontend
 - [ ] It matches the approved mockups and the DESIGN.md › Components component specs (compare the screenshots with `mockups/`).

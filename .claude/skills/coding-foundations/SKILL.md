@@ -25,6 +25,7 @@ The solution-architect lists them per role in `.claude/project.json → roles.<r
 | [REALTIME.md](references/REALTIME.md) | Only when the architecture has a realtime channel: SSE vs WebSockets vs WebRTC, event contracts, auth, reconnect and resync, scaling out |
 | [WORKERS.md](references/WORKERS.md) | CPU-heavy or long-running work: web workers, worker-thread pools, when a durable job queue is the right tool |
 | [MOTION_AND_3D.md](references/MOTION_AND_3D.md) | Only when a ticket asks for 3D or heavy motion: stack choice, asset budgets, reduced motion, WebGL fallback |
+| [OBSERVABILITY.md](references/OBSERVABILITY.md) | **Every service and web app:** structured logs and redaction, health endpoints, error tracking, error boundaries, source maps, alerts |
 | [REACT_NATIVE.md](references/REACT_NATIVE.md) | React Native and Expo apps (read with REACT) |
 | [PYTHON.md](references/PYTHON.md) | Python services: language rules, Django/DRF, SQLAlchemy, workers |
 | [FASTAPI.md](references/FASTAPI.md) | FastAPI services (read with PYTHON): routers, dependencies, Pydantic response models, lifespan, async database, endpoint tests |

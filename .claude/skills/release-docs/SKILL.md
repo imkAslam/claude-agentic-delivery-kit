@@ -32,6 +32,8 @@ Fill the four documents in [RELEASE_TEMPLATES.md](references/RELEASE_TEMPLATES.m
 3. `RELEASE.md › Rollback`: app and data rollback, with triggers, steps, owner, and the date it was rehearsed on staging
 4. `RELEASE.md › Operations handoff`: runbooks, dashboards, alerts, on-call, backups, known issues
 
+Also write the release notes and the version number ([RELEASE_NOTES.md](references/RELEASE_NOTES.md)).
+
 Then the orchestrator records the release identity (`delivery-state.sh release …`) and presents **g3**.
 
 ### Step 4: Deploy, smoke, result (after G3)
@@ -53,5 +55,6 @@ Check each item in the "Release review checklist" in RELEASE_TEMPLATES.md. Retur
 └── references/
     ├── DEVOPS_PLAN_TEMPLATE.md
     ├── BOOTSTRAP_TEMPLATE.md
-    └── RELEASE_TEMPLATES.md     # the 5 release documents + the release review checklist
+    ├── RELEASE_TEMPLATES.md     # the 5 release documents + the release review checklist
+    └── RELEASE_NOTES.md         # semantic versioning, release notes template
 ```

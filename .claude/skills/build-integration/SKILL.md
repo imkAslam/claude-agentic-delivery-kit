@@ -58,5 +58,7 @@ Run the role's checks; exercise the integration end to end against the local moc
     ├── INTEGRATION_PATTERNS.md   # ports/adapters, ACL, sync vs async, outbox, polling, CDC, reconciliation, idempotency
     ├── RESILIENCE.md             # timeouts, retries, breakers, rate limits, bulkheads, DLQ, fallbacks
     ├── PROVIDER_CATALOG.md       # provider categories, test modes, local substitutes, gotchas
-    └── INTEGRATIONS_TEMPLATE.md  # ARCHITECTURE.md › Integrations structure
+    ├── INTEGRATIONS_TEMPLATE.md  # ARCHITECTURE.md › Integrations structure
+    ├── EMAIL_TEMPLATES.md        # transactional email: outbox, templates, previews, tokens
+    └── AI_INTEGRATION.md         # LLM and AI APIs: ports, timeouts, safety, retrieval, fixtures
 ```
