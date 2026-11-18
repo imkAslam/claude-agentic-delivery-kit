@@ -72,7 +72,7 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
 
 ## Rules
 - `paths` globs are relative to the repo root and use `*`, `**` and `?` only (no `{a,b}` braces). Hooks and the ownership check match against them.
-- Owned paths of enabled roles **must not overlap**, except through `shared_files`, which names one owner per glob.
+- Owned paths of enabled roles **must not overlap**, except through `shared_files`, which names one owner per glob. When one role's folder sits inside another's (the integration role's `apps/api/src/integrations/**` inside the backend app), list the outer role's folders one by one instead of `<backend-root>/**` (`design-architecture/references/FOLDER_STRUCTURES.md` rule 8).
 - After G2, `contracts.paths` are read-only for every role, and for the solution-architect too unless a change request on `g2` is open.
 - `deploy.required_secrets` are checked by **name** only (`gh secret list` / `glab variable list`).
 - Whenever this file changes, the solution-architect also refreshes `.claude/PROJECT.md` (the short summary that `CLAUDE.md` imports).

@@ -22,6 +22,8 @@ Choose the template that matches the chosen style, adapt the names to the stack'
 │   │       │       ├── application/     # L3 use cases, policies
 │   │       │       ├── domain/          # L4 entities, value objects, events (no framework imports)
 │   │       │       └── infrastructure/  # L5 repositories, adapters
+│   │       ├── integrations/   # L5 provider adapters behind ports, their webhook routes, fixtures and mocks → integration when enabled (rule 8), else backend
+│   │       │   └── <provider>/
 │   │       ├── shared/         # cross-module kernel (ids, errors, time), kept small
 │   │       ├── platform/       # X1/X2 auth, logging, config, health
 │   │       └── workers/        # L7 queue consumers, schedulers
@@ -29,10 +31,10 @@ Choose the template that matches the chosen style, adapt the names to the stack'
 │   │   └── tests/{unit,integration}
 │   └── mobile/                 # L0 mobile client             → mobile
 │       └── src/{app|screens,features,components,lib,theme}
-├── packages/
-│   ├── contracts/              # API contracts + generated clients → api-designer (frozen at G2)
-│   ├── integrations/           # L5 provider adapters, webhook handlers, mocks → integration (when enabled)
-│   ├── ui/                     # shared UI primitives (optional) → frontend
+├── packages/                   # reusable, non-deployable libraries used by 2+ apps (rule 7)
+│   ├── contracts/              # API/event contracts + generated clients, types, validators → api-designer (frozen at G2)
+│   ├── ui/                     # design-system components, only when 2+ apps use them → frontend
+│   ├── utils/                  # pure shared helpers (money, dates, ids), only when shared → owner named in project.json
 │   └── config/                 # shared lint/ts/test configs     → integrator (shared_files)
 ├── e2e/                        # cross-app E2E journeys        → qa
 ├── infra/                      # IaC, container files, platform config → devops
@@ -156,4 +158,6 @@ infra/
 3. **One owner per top-level folder.** Owned paths of enabled roles must not overlap (the hooks enforce them).
 4. **Contracts live in one place** and generate the clients for every consumer.
 5. **Tests sit next to their unit,** or in a mirrored `tests/` tree. E2E lives in its own QA-owned folder.
-6. Keep `shared/` small. When it grows, promote the code to a module or package that has an owner.
+6. Keep `shared/` small. When it grows, promote the code to a module, or to a package when rule 7 applies, with an owner.
+7. **`packages/` holds only reusable, non-deployable libraries that two or more apps use.** Deployable apps and services live in `apps/`. Each package has one job and one owner; code starts in the app that owns it and moves to `packages/` only when a second app needs it; apps import packages, never the other way round; no catch-all `common` package. A provider adapter that two deployables need (for example `apps/api` and `apps/worker`) becomes `packages/integration-<provider>/`, with an ADR. Provider emulators for local work (for example Mailpit) are services in `infra/docker` compose, not packages.
+8. **Nested owners are listed folder by folder.** When the integration role is enabled, the backend's `paths` name its folders under `apps/api` (`src/modules/**`, `src/shared/**`, `src/platform/**`, `src/workers/**`, `migrations/**`, `tests/**`, plus its manifest files) and the integration role owns `apps/api/src/integrations/**`, so no two roles' paths overlap (`deliver/references/manifest.md`).
