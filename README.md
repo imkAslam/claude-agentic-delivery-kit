@@ -479,7 +479,7 @@ How it stays within the context window on a long, real project:
 - **Briefs point, never paste:** `PRD §4 F-3`, not the PRD. The orchestrator routes from return blocks and the one-screen `summary`.
 - **Checkpoints:** state changes the moment each event happens. Long steps write a checkpoint note, which `summary` and the SessionStart hook show on resume.
 - **Compaction:** Claude Code compacts automatically. Each gate also suggests a `/compact`, because a gate is the cheapest moment. The SessionStart hook then restores the run, and the orchestrator re-reads only the current workflow step.
-- **Agent continuity:** correction rounds continue the same agent. If its id can't be reached after a restart, a fresh agent gets the original brief, the last return block and the open findings.
+- **Agent continuity:** a correction round continues the same agent while its context is small. Once the context is above `DELIVERY_FRESH_CONTEXT` (100k tokens), or the agent can't be reached after a restart, a fresh agent takes over. It gets the original brief, the last return block, the open findings and the diff, after `branch handover` frees the ticket branch. Handover is refused while the old worktree has uncommitted work.
 - **Append-only logs are queried, never read whole:** MESSAGES, GATE-LOG, LESSONS and failures are read with `grep` or `tail`.
 - **Lessons log:** a mistake found in 2 or more tickets, a P1 finding or a root cause becomes a one-line rule in `docs/delivery/LESSONS.md` (at most 30 active lines). Each brief carries the role's relevant lines.
 - **Code map:** `docs/CODEMAP.md` (about 150 lines) is rebuilt each milestone, so engineers go straight to the right files instead of exploring the repository.
@@ -497,11 +497,14 @@ How it stays within the context window on a long, real project:
   Profiles never change the gates, the hooks or the testing rule.
 - **Context discipline:**
   - short path-based briefs;
-  - continue agents instead of respawning them;
+  - continue small agents and hand big ones over to a fresh agent;
+  - agents batch independent calls, read only the lines they need and keep feedback loops fast (agent-conduct);
   - re-review only the diff;
   - batch small tickets;
   - skip conditional steps with a recorded reason;
-  - scripts before agent reasoning.
+  - scripts before agent reasoning;
+  - a short `CLAUDE.md` and always-on rules (every agent loads them on every call); for a delivery project, turn off the plugins and MCP servers the run doesn't use (`/plugin`, `/mcp`), because each one is loaded into every call of every agent.
+- **Quality floor:** none of these savings removes or shortens a check. Full role checks before every report and in `commit-gate.sh`, an independent review of every ticket, end-to-end tests per milestone, the scans, the audits and all 7 gates stay as they are (`cost.md` §3).
 - **Token ledger:** hooks record the tokens the provider reported, for the orchestrator and every agent, from Claude Code's transcripts (input, cache writes, cache reads, output; each API call once). Nobody types a number, and the Agent result's token count (only the last turn) is not used. `usage summary` breaks usage down by model, agent and lane, and every gate summary shows it. With a budget set (`DELIVERY_TOKEN_BUDGET`, or one you approve with `usage budget`), you get a warning at 80%, and at 100% `guard-budget.sh` stops new agent work until you decide.
 
 ---
@@ -515,6 +518,7 @@ How it stays within the context window on a long, real project:
 | `DELIVERY_PROFILE` | `standard` | `lean` · `standard` · `thorough` |
 | `DELIVERY_MAX_PARALLEL` | `3` | Agents running at once in a fork |
 | `DELIVERY_TOKEN_BUDGET` | `0` | Token budget for the run (0 = none) |
+| `DELIVERY_FRESH_CONTEXT` | `100000` | Above this context size (tokens), a correction round goes to a fresh agent with a handover instead of continuing the old one |
 
 ### Project manifest (`.claude/project.json`, written by the solution-architect)
 The single source of project commands and paths. Agents never guess them. The full schema is in `.claude/skills/deliver/references/manifest.md`.
@@ -562,7 +566,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 | `ticket add/status/show/set`, `ready <ms>`, `bugs [open\|all]` | Tickets (type, size, bug links), validated status changes with history, ready-to-start lists, open bugs |
 | `msg add/answer/close/open` | Agent-to-agent messages |
 | `agent set/get` | Saved agent ids for continuing agents |
-| `usage sync/check/budget/summary` | The token ledger from provider-reported usage (the hooks run `sync`; exit 4 when the budget is reached; a new budget needs `--approved-by`) |
+| `usage sync/check/budget/context/summary` | The token ledger from provider-reported usage (the hooks run `sync`; exit 4 when the budget is reached; a new budget needs `--approved-by`); `context` says continue or fresh for an agent |
 | `note "<text>"`, `fail …` | Checkpoints and skipped steps; failure reports |
 
 ---
@@ -571,7 +575,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 210 checks against throwaway fixtures, covering:
+It runs 218 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;

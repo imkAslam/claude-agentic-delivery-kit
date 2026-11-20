@@ -96,18 +96,22 @@ usage_lock() {
   trap 'rm -rf "$USAGE.lock"' EXIT
 }
 usage_unlock() { rm -rf "$USAGE.lock"; trap - EXIT; }
-# usage_file_totals <transcript>: {model: {input, cache_write, cache_read, output, calls}} since $SINCE.
-# One API response is written as several lines with the same message id and the same usage: count it once.
+# usage_file_totals <transcript>: {models: {model: {input, cache_write, cache_read, output, calls}}, last_context,
+# peak_context} since $SINCE. One API response is written as several lines with the same message id and the same
+# usage: count it once. A call's context is what the model read for it (input + cache writes + cache reads);
+# last_context is what the agent carries into its next call, the number that decides continue-or-fresh (cost.md §3).
 usage_file_totals() {
   jq -nR --arg since "$SINCE" '
     [inputs | (fromjson? // empty)
       | select(.type == "assistant" and (.message.usage | type) == "object" and (.message.model // "") != "<synthetic>")
       | select($since == "" or ((.timestamp // "")[0:19]) >= ($since[0:19]))
       | {id: (.message.id // .requestId // .uuid), m: (.message.model // "unknown"), u: .message.usage}]
-    | unique_by(.id) | group_by(.m)
-    | map({key: .[0].m, value: {input: (map(.u.input_tokens // 0) | add), cache_write: (map(.u.cache_creation_input_tokens // 0) | add),
-           cache_read: (map(.u.cache_read_input_tokens // 0) | add), output: (map(.u.output_tokens // 0) | add), calls: length}})
-    | from_entries' "$1"
+    | (map(.u | (.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))) as $ctx
+    | {last_context: ($ctx[-1] // 0), peak_context: ($ctx | max // 0),
+       models: (unique_by(.id) | group_by(.m)
+         | map({key: .[0].m, value: {input: (map(.u.input_tokens // 0) | add), cache_write: (map(.u.cache_creation_input_tokens // 0) | add),
+                cache_read: (map(.u.cache_read_input_tokens // 0) | add), output: (map(.u.output_tokens // 0) | add), calls: length}})
+         | from_entries)}' "$1"
 }
 # usage_sync_one <transcript> <key> <agent> <session|subagent>: add what this transcript used since its last sync,
 # attributed to the current lane/step. Idempotent: an unchanged file is skipped, a grown one adds only the difference.
@@ -123,7 +127,7 @@ usage_sync_one() {
        --argjson t "$totals" --arg now "$(now)" '
     def d(a; b): if a > b then a - b else 0 end;
     (.sources[$k].models // {}) as $old
-    | [ $t | to_entries[] | .key as $m | .value as $n | ($old[$m] // {}) as $o
+    | [ $t.models | to_entries[] | .key as $m | .value as $n | ($old[$m] // {}) as $o
         | {model: $m, input: d($n.input; $o.input // 0), cache_write: d($n.cache_write; $o.cache_write // 0),
            cache_read: d($n.cache_read; $o.cache_read // 0), output: d($n.output; $o.output // 0), calls: d($n.calls; $o.calls // 0)}
         | select(.input + .cache_write + .cache_read + .output > 0) ] as $new
@@ -133,7 +137,8 @@ usage_sync_one() {
         | if $i == null then .entries += [$e + {source: $k, agent: $a, kind: $kind, step: $step, first: $now, last: $now}]
           else .entries[$i] |= (.input += $e.input | .cache_write += $e.cache_write | .cache_read += $e.cache_read
                                 | .output += $e.output | .calls += $e.calls | .last = $now) end)
-    | .sources[$k] = {agent: $a, kind: $kind, file: $f, size: $size, models: $t, updated: $now}' "$USAGE" > "$tmp"
+    | .sources[$k] = {agent: $a, kind: $kind, file: $f, size: $size, models: $t.models,
+                      last_context: $t.last_context, peak_context: $t.peak_context, updated: $now}' "$USAGE" > "$tmp"
   then mv "$tmp" "$USAGE"; else rm -f "$tmp"; fi
 }
 usage_budget() { # the human-approved budget in the ledger, else DELIVERY_TOKEN_BUDGET; 0 = none
@@ -196,6 +201,8 @@ delivery-state.sh <command> [args]
                                                (a bug found in verify or release: --base release/<version>)
   branch release <vX.Y.Z>                      cut release/<vX.Y.Z> from develop once every milestone is merged into it
   branch cleanup <ms-n>                        after the milestone is merged into develop: remove its clean ticket worktrees and branches
+  branch handover <id>                         before a fresh agent takes over a ticket: free its branch from the previous agent's
+                                               clean worktree (refuses when that worktree has uncommitted work)
   ready <ms-n>                                list ready tickets whose dependencies are done (or verified)
   plan-check <ms-n>                            are the milestone's tickets independent? fails when a feature ticket depends on
                                                another feature ticket in the same milestone, or when two tickets that can run
@@ -211,6 +218,7 @@ delivery-state.sh <command> [args]
                                                hook calls it; with no file or --all [--since ISO]: every session of this project);
                                                exit 4 + BUDGET_REACHED when the budget is hit
   usage check                                  the total against the budget (exit 4 + BUDGET_REACHED at 100%)
+  usage context <agent-id|key>                 the agent's current context: continue it, or start fresh above DELIVERY_FRESH_CONTEXT
   usage budget <tokens> --approved-by "<human>"   set the budget the human approved (overrides DELIVERY_TOKEN_BUDGET)
   usage summary                                input, cache writes, cache reads, output; by model, agent and lane
 EOF
@@ -448,8 +456,25 @@ EOF
             "Recorded from: \([.sources[]? | select(.kind == "session")] | length) main-session transcripts, \([.sources[]? | select(.kind == "subagent")] | length) agent runs",
             "By model: " + ([$e | group_by(.model)[] | "\(.[0].model)=\(sum(tot))"] | join("  ")),
             "By agent (top 8): " + ([$e | group_by(.agent)[] | {a: .[0].agent, t: sum(tot), n: ([.[].source] | unique | length)}] | sort_by(-.t) | .[0:8] | map("\(.a)=\(.t)/\(.n) runs") | join("  ")),
-            "By lane: " + ([$e | group_by(.step | split("/")[0])[] | "\(.[0].step | split("/")[0])=\(sum(tot))"] | join("  "))'
+            "By lane: " + ([$e | group_by(.step | split("/")[0])[] | "\(.[0].step | split("/")[0])=\(sum(tot))"] | join("  ")),
+            ([.sources // {} | to_entries[] | select(.value.kind == "subagent" and (.value.peak_context // 0) > 0)] | sort_by(-.value.peak_context) | .[0:5]
+              | if length > 0 then "Largest agent contexts: " + (map("\(.value.agent) \(.key | split("/agent-")[-1]) peak \(.value.peak_context) now \(.value.last_context) (\([.value.models[]?.calls] | add // 0) calls)") | join("  ")) else empty end)'
         usage_status | grep '^BUDGET_' || true
+        ;;
+      context)
+        # usage context <agent-id | agent key>: continue the agent, or start it fresh with the handover (cost.md §3 rule 5)
+        [ $# -eq 1 ] || die "usage: usage context <agent-id | key from 'agent set', e.g. ticket:T-004>"
+        id="$1"
+        case "$id" in *:*) id=$(jq -r --arg k "$1" '(.agents // {})[$k] // empty' "$STATE"); [ -n "$id" ] || die "no agent id saved for $1 (agent set)";; esac
+        limit="${DELIVERY_FRESH_CONTEXT:-100000}"; case "$limit" in ''|*[!0-9]*) limit=100000 ;; esac
+        line=$(usage_json | jq -r --arg id "$id" '[.sources | to_entries[] | select((.key | endswith("/agent-" + $id)) or .key == $id)] | last
+          | if . == null then empty else "\(.value.last_context // 0)\t\(.value.peak_context // 0)\t\(.value.agent)\t\([.value.models[]?.calls] | add // 0)" end')
+        [ -n "$line" ] || die "no usage recorded for agent $id yet (record-usage.sh records it when the agent stops)"
+        IFS='	' read -r last peak agent calls <<EOF
+$line
+EOF
+        if [ "$last" -gt "$limit" ]; then advice="fresh"; else advice="continue"; fi
+        echo "agent ${id} (${agent}): context ${last} tokens now, peak ${peak}, ${calls} API calls; limit ${limit} -> ${advice}"
         ;;
       add) die "usage add was removed: usage is now recorded automatically from Claude Code's transcripts (the record-usage.sh hook runs 'usage sync'). See cost.md §4." ;;
       *) die "usage: usage sync|check|budget|summary" ;;
@@ -633,7 +658,19 @@ EOF
         done
         git worktree prune
         ;;
-      *) die "usage: branch milestone|ticket|release|cleanup ..." ;;
+      handover)
+        # branch handover <id>: free the ticket branch from the previous agent's worktree so a fresh agent can switch to
+        # it (git refuses a branch checked out in two worktrees). Only a clean worktree is released; with uncommitted
+        # work it refuses (exit 1) and the orchestrator continues the previous agent instead, so no work is lost.
+        [ $# -eq 1 ] || die "usage: branch handover <ticket-id>"
+        b=$(jq -r --arg id "$1" '.tickets[$id].branch // empty' "$STATE"); [ -n "$b" ] || die "no branch recorded for $1"
+        wt=$(git worktree list --porcelain | awk -v b="refs/heads/$b" '/^worktree /{p=substr($0, 10)} $0 == "branch " b {print p}')
+        if [ -z "$wt" ]; then echo "$b is free"; exit 0; fi
+        [ "$(cd "$wt" && pwd -P)" != "$ROOT" ] || die "$b is checked out in the main working tree; switch it away there first"
+        [ -z "$(git -C "$wt" status --porcelain 2>/dev/null)" ] || die "the worktree $wt has uncommitted work on $b: continue the previous agent instead of starting fresh"
+        git -C "$wt" switch -q --detach && echo "$b is free (released from $wt)"
+        ;;
+      *) die "usage: branch milestone|ticket|release|cleanup|handover ..." ;;
     esac
     ;;
   ready)

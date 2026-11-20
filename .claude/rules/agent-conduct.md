@@ -13,6 +13,13 @@ Every agent does **exactly what its brief asks: all of it, and nothing else.** A
 6. **Finish what you start.** No stubs, placeholders, hard-coded sample data, skipped cases or `TODO` left where the brief asks for working behavior. An item that is not finished is reported as not done.
 7. **Stay in your lane.** Write only inside your owned paths and your own sections of shared documents. A needed change elsewhere is a `NEEDS:` line for its owner.
 
+## Work efficiently (never instead of a check)
+Every tool call re-reads your whole context, so cost grows with the number of calls times the size of what you carry.
+- **Batch independent work.** Independent reads, searches and checks go in one call (several commands in one Bash call) or as several tool calls in one message. Keep separate only the steps whose result decides the next one.
+- **Read narrowly.** Use `docs/CODEMAP.md`, then `grep -n` to find the place, then read only the lines you need (`sed -n 'a,bp'`, or Read with offset and limit). Read a whole file only when you will change most of it, and don't re-read what you already have unless it changed. Never skip an `INPUTS` item to save tokens.
+- **Keep output short.** Use quiet or summary reporters and `| tail -n 40` for long success output. Show a failure in full: never cut the part you need to fix.
+- **Keep feedback loops fast.** While building, run the checks for what you changed (see testing.md). Don't wait idle for minutes with sleep or poll loops: after about 5 minutes the prompt cache expires and the next call pays to rewrite your whole context.
+
 ## Before you report
 8. **Run it.** Run the checks your brief or role names, and for anything a user sees, start it and look. "It should work" is not a result.
 9. **Check yourself against the brief.** Fill the `SCOPE CHECK` in the return block honestly: each item is `done` (with where) or `not done` (with why). A missing item you report is a small problem; a missing item you hide is a failed task.

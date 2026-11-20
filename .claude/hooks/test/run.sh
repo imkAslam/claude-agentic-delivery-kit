@@ -164,6 +164,11 @@ DELIVERY_TOKEN_BUDGET=1000 check "the approved budget overrides the env" 0 guard
 bash "$S" usage budget 2000 --approved-by "Client" | grep -q "BUDGET_WARNING: 96%"; uok $? "warns at 80% of the budget"
 bash "$S" usage budget 0 --approved-by "Client" >/dev/null
 check "no budget, no block"                0 guard-budget.sh "$(agent_json qa-agent)"
+bash "$S" usage context a1 | grep -q "context 100 tokens now, peak 452, 2 API calls; limit 100000 -> continue"; uok $? "a small agent is continued"
+DELIVERY_FRESH_CONTEXT=50 bash "$S" usage context a1 | grep -q -- "-> fresh"; uok $? "a big agent is handed over to a fresh agent"
+bash "$S" agent set ticket:T-900 a1 >/dev/null; bash "$S" usage context ticket:T-900 | grep -q "agent a1 (backend-engineer)"; uok $? "usage context accepts the saved agent key"
+bash "$S" usage context nope >/dev/null 2>&1; [ $? -eq 1 ]; uok $? "usage context refuses an agent with no recorded usage"
+bash "$S" usage summary | grep -q "Largest agent contexts: backend-engineer a1 peak 452 now 100 (2 calls)"; uok $? "summary shows the largest agent contexts"
 bash "$S" set-step understand intake >/dev/null
 
 bash "$S" note "checkpoint: build-fork done T-001; next T-002" >/dev/null
@@ -462,6 +467,13 @@ check "blocks bare push while on develop"  2 guard-prod.sh "$(bash_json "git pus
 git checkout -q "$DEFB"
 check "allows pushing a ticket branch"     0 guard-prod.sh "$(bash_json "git push -u origin feature/t-101-auth-api")"
 check "allows pushing a release branch"    0 guard-prod.sh "$(bash_json "git push -u origin release/v1.0.0")"
+HB=hotfix/t-004-login-fails-on-uppercase-email; git worktree add -q "$TMP/wt-old" "$HB" 2>/dev/null
+echo dirty > "$TMP/wt-old/wip.txt"
+br handover T-004; [ $c -eq 1 ] && git -C "$TMP/wt-old" symbolic-ref -q HEAD >/dev/null; yes $? "handover refuses while the old agent's worktree has uncommitted work"
+rm -f "$TMP/wt-old/wip.txt"
+br handover T-004; [ $c -eq 0 ] && ! git -C "$TMP/wt-old" symbolic-ref -q HEAD >/dev/null; yes $? "handover frees the ticket branch from a clean old worktree"
+git worktree add -q "$TMP/wt-new" "$HB" 2>/dev/null; [ "$(git -C "$TMP/wt-new" branch --show-current 2>/dev/null)" = "$HB" ]; yes $? "a fresh agent can then switch to the ticket branch"
+git worktree remove --force "$TMP/wt-new" 2>/dev/null; git worktree remove --force "$TMP/wt-old" 2>/dev/null
 
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]

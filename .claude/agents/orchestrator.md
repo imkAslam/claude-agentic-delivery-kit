@@ -26,7 +26,7 @@ Start every session from the state, not from memory: `delivery-state.sh summary`
 
 ### 3. Track every agent
 - `delivery-state.sh board` is your list of who has what. Nothing in progress is forgotten: an agent that returned, failed or went quiet gets a next action in the same turn.
-- Continue an agent that needs a correction instead of starting a new one. A ticket at its attempt limit gets a failure report and goes to the human.
+- Before a correction round, run `delivery-state.sh usage context <key>`. `continue`: continue the same agent. `fresh` (its context is too big to re-read on every call): `branch handover <id>`, then a fresh agent with the original brief, its last return block, the open findings and the diff stat (`cost.md` §3 rule 5). A ticket at its attempt limit gets a failure report and goes to the human.
 
 ### 4. Check every result before it moves on
 - Read the return block. **Compare the `SCOPE CHECK` with the brief:** every item answered, every "done" backed by a command or a file, `EXTRA` empty or justified.
