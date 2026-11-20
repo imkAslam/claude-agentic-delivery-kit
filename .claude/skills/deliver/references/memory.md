@@ -26,7 +26,7 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 - history: `git log --oneline -20`, `git log --oneline -- <path>`
 
 ## 4. Checkpoints
-- Run state changes **when the event happens** (`set-step`, `ticket status`, `round`, `agent set`, `usage add`), never in a batch at the end of a step.
+- Run state changes **when the event happens** (`set-step`, `ticket status`, `round`, `agent set`); token use is recorded by the `record-usage.sh` hook, not by hand, never in a batch at the end of a step.
 - Before a step that spans many agent calls (a build fork, a long correction loop), write one checkpoint: `delivery-state.sh note "checkpoint: <step> — done: <ids>; next: <ids>"`. `summary` shows the last note, so a resumed session knows where inside the step it was.
 
 ## 5. Compaction and new sessions

@@ -15,7 +15,7 @@ case "$(dl_gate_status g2)" in
   approved|invalidated) echo "Coding: approved at g2." ;;
   *) echo "Coding: NOT approved. Only documents and contracts may be written until the human approves g2 (guard-coding.sh)." ;;
 esac
-echo "Profile: ${DELIVERY_PROFILE:-standard} · max parallel agents: ${DELIVERY_MAX_PARALLEL:-3} · token budget: ${DELIVERY_TOKEN_BUDGET:-0} (0 = none). Record every agent run: delivery-state.sh usage add."
+echo "Profile: ${DELIVERY_PROFILE:-standard} · max parallel agents: ${DELIVERY_MAX_PARALLEL:-3} · token budget: ${DELIVERY_TOKEN_BUDGET:-0} (0 = none; an approved 'usage budget' overrides it). Token use is recorded automatically from the transcripts (record-usage.sh); see: delivery-state.sh usage summary."
 L="$CLAUDE_PROJECT_DIR/docs/delivery/LESSONS.md"
 [ -f "$L" ] && echo "Lessons: $(grep -c '^- \[' "$L" 2>/dev/null || echo 0) lines in docs/delivery/LESSONS.md (pass the role's lines in briefs; never read the file whole)."
 echo "Memory: files, not this conversation (.claude/skills/deliver/references/memory.md). Saved agent ids may be unreachable after a restart: respawn with the brief + last return block."

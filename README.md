@@ -64,7 +64,7 @@ Main features:
 - **Performance built in:** measurable budgets in the PRD, a performance guide for every engineer, and a performance-specialist that measures each milestone and the release candidate.
 - **A clean codebase:** a hygiene check at every integration finds scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code and dead doc links; they are removed before each milestone review.
 - **Free-first development:** every dev and test service runs locally in Docker.
-- **Cost controls:** model tiering, profiles, a parallel-agent cap and a token ledger with an optional budget.
+- **Cost controls:** model tiering, profiles, a parallel-agent cap and a token ledger, recorded automatically from the provider-reported usage, with an optional budget.
 
 ---
 
@@ -383,6 +383,8 @@ A hook that exits with code 2 blocks the tool call.
 | `guard-boundary.sh` | Write/Edit | Writes outside the agent's role paths; writes to frozen contracts after G2 |
 | `commit-gate.sh` | Bash (`git commit`) | Commits whose role checks (lint, typecheck, test from `project.json`) fail |
 | `session-context.sh` | SessionStart (startup, resume, compact) | Nothing; it restores the run summary, coding status, budget and last checkpoint |
+| `record-usage.sh` | Stop, SubagentStop, SessionEnd | Nothing; it records the provider-reported token use of the orchestrator and every agent in the usage ledger |
+| `guard-budget.sh` | Agent, Task, SendMessage | New or continued agent work once the token budget is reached |
 
 `check-ownership.sh` runs again at merge time as a deterministic second check.
 
@@ -500,7 +502,7 @@ How it stays within the context window on a long, real project:
   - batch small tickets;
   - skip conditional steps with a recorded reason;
   - scripts before agent reasoning.
-- **Token ledger:** every agent run is recorded (`usage add`). `usage summary` breaks usage down by model, agent and lane, and every gate summary shows the cost. With `DELIVERY_TOKEN_BUDGET` set, you get a warning at 80% and a stop for your decision at 100%.
+- **Token ledger:** hooks record the tokens the provider reported, for the orchestrator and every agent, from Claude Code's transcripts (input, cache writes, cache reads, output; each API call once). Nobody types a number, and the Agent result's token count (only the last turn) is not used. `usage summary` breaks usage down by model, agent and lane, and every gate summary shows it. With a budget set (`DELIVERY_TOKEN_BUDGET`, or one you approve with `usage budget`), you get a warning at 80%, and at 100% `guard-budget.sh` stops new agent work until you decide.
 
 ---
 
@@ -560,7 +562,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 | `ticket add/status/show/set`, `ready <ms>`, `bugs [open\|all]` | Tickets (type, size, bug links), validated status changes with history, ready-to-start lists, open bugs |
 | `msg add/answer/close/open` | Agent-to-agent messages |
 | `agent set/get` | Saved agent ids for continuing agents |
-| `usage add/summary` | The token ledger (exit 4 when the budget is reached) |
+| `usage sync/check/budget/summary` | The token ledger from provider-reported usage (the hooks run `sync`; exit 4 when the budget is reached; a new budget needs `--approved-by`) |
 | `note "<text>"`, `fail …` | Checkpoints and skipped steps; failure reports |
 
 ---
@@ -569,14 +571,14 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 195 checks against throwaway fixtures, covering:
+It runs 210 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;
 - coding before and after G2;
 - role boundaries and frozen contracts;
 - red and green commits;
-- the usage ledger and budget;
+- the usage ledger (provider-reported usage, each API call once, idempotent syncs) and the budget guard;
 - the ticket lifecycle (illegal transitions, history, bugs linked to their original);
 - checkpoints;
 - ownership.

@@ -39,10 +39,11 @@ The profile never changes the gates, the hooks or the testing rule.
 12. **Code map before code:** build briefs point to `docs/CODEMAP.md`; engineers open only the files it names and search with `grep` instead of reading directories ([memory.md](memory.md) §8).
 
 ## 4. Usage ledger and budget
-After every Agent result, record its token count (shown in the tool result) and model:
-```bash
-bash .claude/skills/deliver/scripts/delivery-state.sh usage add <agent> <model> <tokens>
-```
-- `usage summary` shows tokens by model, agent and lane; `/delivery-status` shows the total.
-- `DELIVERY_TOKEN_BUDGET` (0 = no budget): at 80% the helper prints `BUDGET_WARNING` (mention it in the next gate summary); at 100% it exits 4 with `BUDGET_REACHED`, and the orchestrator **stops and asks the human** (continue with a new budget, switch to `lean`, or pause). That is a major decision.
-- Each gate summary includes one line: tokens used in this lane and in total.
+The ledger records the **tokens the provider reported**, not an estimate. Claude Code writes the API's `usage` on every assistant line of its transcripts. The `record-usage.sh` hook reads them whenever the main session ends a turn (`Stop`), a subagent finishes (`SubagentStop`) and a session ends (`SessionEnd`), then runs `delivery-state.sh usage sync`. Nobody types a number.
+- **What is counted:** every API call of the main session (the orchestrator) and of every subagent, each response once (Claude Code writes one response as several lines), from the moment the run started (`started_at` in the state). It counts the four numbers the provider bills separately: **input, cache writes, cache reads and output**. The total is their sum.
+- **Why not the Agent result's token count:** that number is the size of the agent's last turn, not what the agent used across all its calls. It also leaves out the orchestrator. On a real run it was under 1% of the provider's total.
+- **Attribution:** usage goes to the lane and step the run is on when it is synced. A continued agent adds only what it used since its last sync. A repeated sync adds nothing.
+- **Catch-up:** `delivery-state.sh usage sync --all` re-reads every session of this project since the run started, for example after the hooks were off. `--since <ISO>` sets the start time for runs created before `started_at` existed.
+- **Reading it:** `usage summary` shows the total with its four parts and the API calls, then by model, agent (with its runs) and lane. `/delivery-status` and `stats` show it too. Cache reads are usually most of the total; they cost about a tenth of fresh input, so give the human the four parts next to the total.
+- **Budget:** the one the human approved (`usage budget <tokens> --approved-by "<name>"`, recorded with a note), else `DELIVERY_TOKEN_BUDGET` (0 = none), counted on the same total. At 80% the helper prints `BUDGET_WARNING` (mention it in the next gate summary). At 100%, `guard-budget.sh` blocks every new or continued agent (Agent, Task, SendMessage) and the helper exits 4 with `BUDGET_REACHED`. The orchestrator **stops and asks the human**: raise the budget, switch to `lean`, or pause. That is a major decision.
+- Each gate summary includes one line: tokens used in this lane and in total, with the four parts.

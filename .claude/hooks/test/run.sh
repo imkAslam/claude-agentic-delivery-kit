@@ -70,6 +70,7 @@ check "allows normal push"                 0 guard-prod.sh "$(bash_json "git pus
 check "blocks remote migration"            2 guard-prod.sh "$(bash_json "DATABASE_URL=postgres://u:p@db.prod.internal/app npm run db:migrate")"
 check "allows local migration"             0 guard-prod.sh "$(bash_json "DATABASE_URL=postgres://u:p@localhost/app npm run db:migrate")"
 check "blocks state file overwrite"        2 guard-prod.sh "$(bash_json "jq '.gates.g3.status=\"approved\"' .claude/delivery/state.json > /tmp/s && mv /tmp/s .claude/delivery/state.json")"
+check "blocks deleting the usage ledger"   2 guard-prod.sh "$(bash_json "rm .claude/delivery/usage.json")"
 check "allows state helper"                0 guard-prod.sh "$(bash_json "bash .claude/skills/deliver/scripts/delivery-state.sh summary")"
 check "allows staging workflow"            0 guard-prod.sh "$(bash_json "gh workflow run deploy.yml -f environment=staging")"
 check "blocks prod workflow before G3"     2 guard-prod.sh "$(bash_json "gh workflow run deploy.yml -f environment=production")"
@@ -103,6 +104,7 @@ echo "guard-gates"
 bash "$S" approve g1 approve "Client" "ok" docs/delivery/PRD.md >/dev/null
 check "blocks edit of approved PRD"        2 guard-gates.sh "$(edit_json "$REPO/docs/delivery/PRD.md")"
 check "blocks Write to state file"         2 guard-gates.sh "$(write_json "$REPO/.claude/delivery/state.json" "{}")"
+check "blocks Write to the usage ledger"   2 guard-gates.sh "$(write_json "$REPO/.claude/delivery/usage.json" "{}")"
 check "allows unrelated file"              0 guard-gates.sh "$(edit_json "$REPO/web/a.ts")"
 bash "$S" cr-open g1 "scope change" docs/delivery/PRD.md >/dev/null 2>&1; c=$?
 [ $c -ne 0 ] && { pass=$((pass+1)); echo "  ok   cr-open refuses without the human's approval"; } || { fail=$((fail+1)); echo "  FAIL cr-open refuses without the human's approval"; }
@@ -131,11 +133,38 @@ echo "guard-coding (after g2)"
 check "allows product file after g2"       0 guard-coding.sh "$(write_json "$REPO/web/new.ts" "x")"
 check "allows frontend agent after g2"     0 guard-coding.sh "$(agent_json frontend-engineer)"
 
-echo "usage ledger"
-bash "$S" usage add backend-engineer sonnet 1200 >/dev/null && bash "$S" usage add solution-architect opus 3000 >/dev/null
-bash "$S" usage summary | grep -q "Tokens: 4200" && { pass=$((pass+1)); echo "  ok   usage totals"; } || { fail=$((fail+1)); echo "  FAIL usage totals"; }
-DELIVERY_TOKEN_BUDGET=5000 bash "$S" usage add qa-agent sonnet 900 >/dev/null; c=$?
-[ $c -eq 4 ] && { pass=$((pass+1)); echo "  ok   budget reached stops"; } || { fail=$((fail+1)); echo "  FAIL budget reached stops (got $c)"; }
+echo "usage ledger (provider-reported, from the transcripts)"
+uok() { if [ "$1" -eq 0 ]; then pass=$((pass+1)); echo "  ok   $2"; else fail=$((fail+1)); echo "  FAIL $2"; bash "$S" usage summary | sed 's/^/       /'; fi; }
+TD="$TMP/transcripts"; mkdir -p "$TD/sess-1/subagents"; MAIN="$TD/sess-1.jsonl"; AG="$TD/sess-1/subagents/agent-a1.jsonl"
+now_ts=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+tline() { # tline <msg-id> <model> <input> <cache-write> <cache-read> <output> [timestamp]
+  jq -nc --arg id "$1" --arg m "$2" --argjson i "$3" --argjson w "$4" --argjson r "$5" --argjson o "$6" --arg t "${7:-$now_ts}" \
+    '{type:"assistant", timestamp:$t, message:{id:$id, model:$m, usage:{input_tokens:$i, cache_creation_input_tokens:$w, cache_read_input_tokens:$r, output_tokens:$o}}}'; }
+{ tline m1 claude-opus 10 100 1000 5; tline m1 claude-opus 10 100 1000 5      # one response, written as two lines
+  tline m2 claude-opus 1 0 200 7
+  tline m0 claude-opus 999 999 999 999 2000-01-01T00:00:00.000Z              # before the run started
+  echo '{"type":"user","message":{"content":"hi"}}'; echo '{not json'; } > "$MAIN"
+tline s1 claude-sonnet 2 50 400 30 > "$AG"; echo '{"agentType":"backend-engineer"}' > "${AG%.jsonl}.meta.json"
+stop_json() { jq -nc --arg t "$MAIN" '{hook_event_name:"Stop", transcript_path:$t}'; }
+check "record-usage never blocks"          0 record-usage.sh "$(stop_json)"
+bash "$S" usage summary | grep -q "^Tokens: 1805 "; uok $? "counts the orchestrator and every agent, each API response once, only since the run started"
+bash "$S" usage summary | grep -q "orchestrator=1323/1 runs.*backend-engineer=482/1 runs"; uok $? "attributes usage to the main session and to the agent type"
+bash "$S" usage summary | grep -q "cache reads 1600 · output 42"; uok $? "keeps input, cache writes, cache reads and output apart"
+printf '%s' "$(stop_json)" | bash "$H/record-usage.sh"; bash "$S" usage summary | grep -q "^Tokens: 1805 "; uok $? "a repeated sync adds nothing"
+bash "$S" set-step build dispatch >/dev/null; tline s2 claude-sonnet 0 0 100 20 >> "$AG"
+check "record-usage on SubagentStop"       0 record-usage.sh "$(jq -nc --arg t "$MAIN" --arg a "$AG" '{hook_event_name:"SubagentStop", transcript_path:$t, agent_transcript_path:$a, agent_type:"backend-engineer", agent_id:"a1"}')"
+bash "$S" usage summary | grep -q "^Tokens: 1925 .*" && bash "$S" usage summary | grep -q "By lane: build=120  understand=1805"; uok $? "a continued agent adds only its new usage, to the current lane"
+bash "$S" summary | grep -q "Usage: 1925 tokens, provider-reported"; uok $? "summary shows the provider-reported total"
+bash "$S" usage add qa-agent sonnet 900 >/dev/null 2>&1; [ $? -eq 1 ]; uok $? "the manual usage add is gone"
+DELIVERY_TOKEN_BUDGET=1000 check "budget reached blocks new agents"     2 guard-budget.sh "$(agent_json qa-agent)"
+DELIVERY_TOKEN_BUDGET=1000 bash "$S" usage check >/dev/null; [ $? -eq 4 ]; uok $? "usage check exits 4 at the budget"
+bash "$S" usage budget 5000 >/dev/null 2>&1; [ $? -eq 1 ]; uok $? "a new budget needs the human's approval"
+bash "$S" usage budget 5000 --approved-by "Client" >/dev/null
+DELIVERY_TOKEN_BUDGET=1000 check "the approved budget overrides the env" 0 guard-budget.sh "$(agent_json qa-agent)"
+bash "$S" usage budget 2000 --approved-by "Client" | grep -q "BUDGET_WARNING: 96%"; uok $? "warns at 80% of the budget"
+bash "$S" usage budget 0 --approved-by "Client" >/dev/null
+check "no budget, no block"                0 guard-budget.sh "$(agent_json qa-agent)"
+bash "$S" set-step understand intake >/dev/null
 
 bash "$S" note "checkpoint: build-fork done T-001; next T-002" >/dev/null
 bash "$S" summary | grep -q "Last note: checkpoint: build-fork" && { pass=$((pass+1)); echo "  ok   summary shows last checkpoint"; } || { fail=$((fail+1)); echo "  FAIL summary shows last checkpoint"; }

@@ -37,10 +37,10 @@ markers=$(dl_manifest '(.deploy.prod_markers // ["prod","production"]) | join("|
 [ -n "$markers" ] || markers="prod|production"
 prod_re="(^|[^a-z0-9])(${markers})([^a-z0-9]|$)"
 
-# Direct writes to the run state (it changes only through delivery-state.sh)
-if printf '%s' "$cmd" | grep -q '\.claude/delivery/state\.json'; then
+# Direct writes to the run state or the usage ledger (they change only through delivery-state.sh)
+if printf '%s' "$cmd" | grep -Eq '\.claude/delivery/(state|usage)\.json'; then
   if printf '%s' "$cmd" | grep -Eq '(>|tee[[:space:]]|mv[[:space:]]|cp[[:space:]]|sed[[:space:]]+-i|rm[[:space:]]|truncate|perl[[:space:]]+-[a-z]*i)'; then
-    printf '%s' "$cmd" | grep -q 'delivery-state\.sh' || deny "direct modification of .claude/delivery/state.json" "Use: bash .claude/skills/deliver/scripts/delivery-state.sh <command>"
+    printf '%s' "$cmd" | grep -q 'delivery-state\.sh' || deny "direct modification of the run state or the usage ledger (.claude/delivery/)" "Use: bash .claude/skills/deliver/scripts/delivery-state.sh <command>"
   fi
 fi
 

@@ -76,6 +76,82 @@ hash_paths() {
   printf '%s' "$lines" | jq -Rn '[inputs | select(length > 0) | split("\t") | {(.[0]): .[1]}] | add // {}'
 }
 
+# ---- Usage ledger: .claude/delivery/usage.json -------------------------------------------------------------------
+# Provider-reported token usage, read from Claude Code's transcripts (every assistant line carries the API's `usage`),
+# for the main session (the orchestrator) and every subagent. Written only by `usage sync` (the record-usage.sh hook)
+# under a lock, apart from state.json, so hooks finishing at the same time never clobber the run state.
+USAGE=".claude/delivery/usage.json"
+U_ZERO='{"sources": {}, "entries": [], "budget": null}'
+SINCE=""
+usage_json() { if [ -f "$USAGE" ]; then cat "$USAGE"; else printf '%s' "$U_ZERO"; fi; }
+usage_lock() {
+  local n=0
+  mkdir -p "$(dirname "$USAGE")"
+  while ! mkdir "$USAGE.lock" 2>/dev/null; do
+    n=$((n + 1))
+    if [ -n "$(find "$USAGE.lock" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then rm -rf "$USAGE.lock"; continue; fi   # stale
+    [ "$n" -lt 150 ] || die "the usage ledger is locked ($USAGE.lock)"
+    sleep 0.1
+  done
+  trap 'rm -rf "$USAGE.lock"' EXIT
+}
+usage_unlock() { rm -rf "$USAGE.lock"; trap - EXIT; }
+# usage_file_totals <transcript>: {model: {input, cache_write, cache_read, output, calls}} since $SINCE.
+# One API response is written as several lines with the same message id and the same usage: count it once.
+usage_file_totals() {
+  jq -nR --arg since "$SINCE" '
+    [inputs | (fromjson? // empty)
+      | select(.type == "assistant" and (.message.usage | type) == "object" and (.message.model // "") != "<synthetic>")
+      | select($since == "" or ((.timestamp // "")[0:19]) >= ($since[0:19]))
+      | {id: (.message.id // .requestId // .uuid), m: (.message.model // "unknown"), u: .message.usage}]
+    | unique_by(.id) | group_by(.m)
+    | map({key: .[0].m, value: {input: (map(.u.input_tokens // 0) | add), cache_write: (map(.u.cache_creation_input_tokens // 0) | add),
+           cache_read: (map(.u.cache_read_input_tokens // 0) | add), output: (map(.u.output_tokens // 0) | add), calls: length}})
+    | from_entries' "$1"
+}
+# usage_sync_one <transcript> <key> <agent> <session|subagent>: add what this transcript used since its last sync,
+# attributed to the current lane/step. Idempotent: an unchanged file is skipped, a grown one adds only the difference.
+usage_sync_one() {
+  local f="$1" key="$2" agent="$3" kind="$4" size old totals step tmp
+  size=$(wc -c < "$f" | tr -d ' ')
+  old=$(jq -r --arg k "$key" '.sources[$k].size // -1' "$USAGE")
+  [ "$size" = "$old" ] && return 0
+  totals=$(usage_file_totals "$f") || return 0
+  step=$(jq -r '(.lane // "") + "/" + (.step // "")' "$STATE")
+  tmp=$(mktemp "${USAGE}.XXXXXX")
+  if jq --arg k "$key" --arg a "$agent" --arg kind "$kind" --arg step "$step" --arg f "$f" --argjson size "$size" \
+       --argjson t "$totals" --arg now "$(now)" '
+    def d(a; b): if a > b then a - b else 0 end;
+    (.sources[$k].models // {}) as $old
+    | [ $t | to_entries[] | .key as $m | .value as $n | ($old[$m] // {}) as $o
+        | {model: $m, input: d($n.input; $o.input // 0), cache_write: d($n.cache_write; $o.cache_write // 0),
+           cache_read: d($n.cache_read; $o.cache_read // 0), output: d($n.output; $o.output // 0), calls: d($n.calls; $o.calls // 0)}
+        | select(.input + .cache_write + .cache_read + .output > 0) ] as $new
+    | reduce $new[] as $e (.;
+        (first(range(.entries | length) as $i
+          | select(.entries[$i].source == $k and .entries[$i].model == $e.model and .entries[$i].step == $step) | $i) // null) as $i
+        | if $i == null then .entries += [$e + {source: $k, agent: $a, kind: $kind, step: $step, first: $now, last: $now}]
+          else .entries[$i] |= (.input += $e.input | .cache_write += $e.cache_write | .cache_read += $e.cache_read
+                                | .output += $e.output | .calls += $e.calls | .last = $now) end)
+    | .sources[$k] = {agent: $a, kind: $kind, file: $f, size: $size, models: $t, updated: $now}' "$USAGE" > "$tmp"
+  then mv "$tmp" "$USAGE"; else rm -f "$tmp"; fi
+}
+usage_budget() { # the human-approved budget in the ledger, else DELIVERY_TOKEN_BUDGET; 0 = none
+  local b; b=$(usage_json | jq -r '.budget.tokens // empty')
+  [ -n "$b" ] || b="${DELIVERY_TOKEN_BUDGET:-0}"
+  case "$b" in ''|*[!0-9]*) b=0 ;; esac
+  printf '%s' "$b"
+}
+usage_total() { usage_json | jq '[(.entries // [])[] | .input + .cache_write + .cache_read + .output] | add // 0'; }
+usage_status() { # prints the total; BUDGET_WARNING at 80%; BUDGET_REACHED and return 4 at 100%
+  local total budget; total=$(usage_total); budget=$(usage_budget)
+  if [ "$budget" -gt 0 ]; then echo "total tokens: ${total} / budget ${budget}"; else echo "total tokens: ${total}"; fi
+  [ "$budget" -gt 0 ] || return 0
+  if [ "$total" -ge "$budget" ]; then echo "BUDGET_REACHED: ${total} of ${budget} tokens used. Ask the human before starting or continuing any agent (decision-policy: major decisions)"; return 4; fi
+  if [ "$total" -ge $(( budget * 8 / 10 )) ]; then echo "BUDGET_WARNING: $(( total * 100 / budget ))% of the token budget used"; fi
+  return 0
+}
+
 log_gate() {
   mkdir -p "$(dirname "$LOG")"
   [ -f "$LOG" ] || printf '# Gate log\n\n| When (UTC) | Gate | Status | Decision | Approver | Notes |\n|---|---|---|---|---|---|\n' > "$LOG"
@@ -131,9 +207,12 @@ delivery-state.sh <command> [args]
   msg add <from> <to> <question|request|handoff|finding|info|decision-needed> "<re>" "<body>" [blocking]
   msg answer <M-id> <from> "<body>" | msg close <M-id> | msg open [to]
   agent set <key> <agent-id> | agent get <key>    remember subagent ids so they can be continued (SendMessage)
-  usage add <agent> <model> <tokens> [step]    record one subagent run (tokens from the Agent result); prints the
-                                               total; exit 4 + BUDGET_REACHED when DELIVERY_TOKEN_BUDGET (>0) is hit
-  usage summary                                tokens and runs by model and by agent
+  usage sync [--agent-type t] [transcript...]  record provider-reported usage from Claude Code transcripts (the record-usage.sh
+                                               hook calls it; with no file or --all [--since ISO]: every session of this project);
+                                               exit 4 + BUDGET_REACHED when the budget is hit
+  usage check                                  the total against the budget (exit 4 + BUDGET_REACHED at 100%)
+  usage budget <tokens> --approved-by "<human>"   set the budget the human approved (overrides DELIVERY_TOKEN_BUDGET)
+  usage summary                                input, cache writes, cache reads, output; by model, agent and lane
 EOF
 }
 
@@ -152,7 +231,7 @@ case "$cmd" in
     mkdir -p "$(dirname "$STATE")"
     if [ ! -f "$STATE" ]; then
       [ -f "$EXAMPLE" ] || die "missing $EXAMPLE"
-      cp "$EXAMPLE" "$STATE"; upd '.'
+      cp "$EXAMPLE" "$STATE"; upd '.started_at = $now'
       if [ "$mode" = "adopt" ]; then
         upd '.mode = "adopt" | .lane = "adopt" | .step = "detect" | .gates.baseline = {status: "pending", decision: null, approver: null, ts: null, notes: null, package: {}}'
       fi
@@ -168,7 +247,7 @@ case "$cmd" in
     ;;
   summary)
     need_state
-    jq -r --arg max "$MAX" '
+    jq -r --arg max "$MAX" --argjson U "$(usage_json)" '
       (if (.mode // "new") == "adopt" then "Mode: adopt (existing codebase)   Baseline: " + (if .baseline then "\(.baseline.tag) @ \(.baseline.commit[0:7])" else "not approved yet" end) else empty end),
       "Lane: \(.lane)   Step: \(.step)   Milestone: \(.milestone // "-")",
       "Gates: " + ([.gates | to_entries[] | "\(.key)=\(.value.status)" + (if .value.decision then "(\(.value.decision))" else "" end)] | join("  ")),
@@ -180,8 +259,9 @@ case "$cmd" in
       (([(.messages // [])[] | select(.status == "open")]) as $m | if ($m | length) > 0 then "Open messages: \($m | length)" + (if ([$m[] | select(.blocking)] | length) > 0 then " (\([$m[] | select(.blocking)] | length) blocking)" else "" end) else empty end),
       (if (.rounds | length) > 0 then "Rounds: " + ([.rounds | to_entries[] | "\(.key)=\(.value)/\($max)"] | join("  ")) else empty end),
       (if ((.notes // []) | length) > 0 then "Last note: \(.notes[-1].text)" else empty end),
-      (if ((.usage // []) | length) > 0 then "Usage: \(.usage | length) agent runs, \([.usage[].tokens] | add) tokens" else empty end),
+      (($U.entries // []) as $e | if ($e | length) > 0 then "Usage: \([$e[] | .input + .cache_write + .cache_read + .output] | add) tokens, provider-reported (\([$U.sources[]? | select(.kind == "session")] | length) main sessions, \([$U.sources[]? | select(.kind == "subagent")] | length) agent runs)" else empty end),
       "Validated: \(.validated_at // "no")   Updated: \(.updated_at // "-")"' "$STATE"
+    usage_status | grep '^BUDGET_' || true
     ;;
   set-step)
     need_state; [ $# -eq 2 ] || die "usage: set-step <lane> <step>"
@@ -303,28 +383,76 @@ case "$cmd" in
   usage)
     need_state; sub="${1:-}"; shift || true
     case "$sub" in
-      add)
-        [ $# -ge 3 ] || die "usage: usage add <agent> <model> <tokens> [step]"
-        case "$3" in ''|*[!0-9]*) die "tokens must be a whole number" ;; esac
-        upd '.usage = ((.usage // []) + [{agent: $a, model: $m, tokens: ($t | tonumber), step: ((.lane // "") + "/" + (if $s == "" then (.step // "") else $s end)), ts: $now}])' \
-          --arg a "$1" --arg m "$2" --arg t "$3" --arg s "${4:-}"
-        total=$(jq '[.usage[].tokens] | add // 0' "$STATE")
-        budget="${DELIVERY_TOKEN_BUDGET:-0}"
-        case "$budget" in ''|*[!0-9]*) budget=0 ;; esac
-        if [ "$budget" -gt 0 ]; then echo "total tokens: ${total} / budget ${budget}"; else echo "total tokens: ${total}"; fi
-        if [ "$budget" -gt 0 ]; then
-          if [ "$total" -ge "$budget" ]; then echo "BUDGET_REACHED: ask the human before starting more agent runs (decision-policy: major decisions)"; exit 4; fi
-          if [ "$total" -ge $(( budget * 8 / 10 )) ]; then echo "BUDGET_WARNING: 80% of the token budget used"; fi
+      sync)
+        SINCE=$(jq -r '.started_at // ""' "$STATE"); atype=""; files=""; all=0
+        while [ $# -gt 0 ]; do
+          case "$1" in
+            --agent-type) atype="${2:-}"; shift 2 ;;
+            --since) SINCE="${2:-}"; shift 2 ;;
+            --all) all=1; shift ;;
+            *) files="${files}$1
+"; shift ;;
+          esac
+        done
+        if [ -z "$files" ] || [ "$all" -eq 1 ]; then
+          # Catch-up: every main-session transcript Claude Code keeps for this project.
+          tdir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/$(printf '%s' "$ROOT" | sed 's/[^A-Za-z0-9]/-/g')"
+          [ -d "$tdir" ] || die "no transcripts found for this project in $tdir"
+          [ -n "$SINCE" ] || die "this run has no start time recorded; pass --since <ISO time> so earlier sessions are not counted"
+          for f in "$tdir"/*.jsonl; do [ -f "$f" ] && files="${files}${f}
+"; done
         fi
+        main=$(jq -r '.agent // "main-session"' .claude/settings.json 2>/dev/null || echo main-session)
+        usage_lock
+        [ -f "$USAGE" ] || printf '%s\n' "$U_ZERO" > "$USAGE"
+        while IFS= read -r f; do
+          { [ -n "$f" ] && [ -f "$f" ]; } || continue
+          b=$(basename "$f" .jsonl)
+          case "$b" in
+            agent-*)
+              a=$(jq -r '.agentType // empty' "${f%.jsonl}.meta.json" 2>/dev/null || true)
+              usage_sync_one "$f" "$(basename "$(dirname "$(dirname "$f")")")/$b" "${a:-${atype:-subagent}}" subagent ;;
+            *)
+              usage_sync_one "$f" "$b" "$main" session
+              for s in "${f%.jsonl}"/subagents/agent-*.jsonl; do
+                [ -f "$s" ] || continue
+                a=$(jq -r '.agentType // empty' "${s%.jsonl}.meta.json" 2>/dev/null || true)
+                usage_sync_one "$s" "$b/$(basename "$s" .jsonl)" "${a:-subagent}" subagent
+              done ;;
+          esac
+        done <<EOF
+$files
+EOF
+        usage_unlock
+        rc=0; usage_status || rc=$?; exit "$rc"
+        ;;
+      check) rc=0; usage_status || rc=$?; exit "$rc" ;;
+      budget)
+        [ $# -eq 3 ] && [ "$2" = "--approved-by" ] && [ -n "$3" ] || die "usage: usage budget <tokens> --approved-by \"<human>\" (0 = no budget)"
+        case "$1" in ''|*[!0-9]*) die "tokens must be a whole number" ;; esac
+        usage_lock
+        [ -f "$USAGE" ] || printf '%s\n' "$U_ZERO" > "$USAGE"
+        tmp=$(mktemp "${USAGE}.XXXXXX")
+        jq --argjson t "$1" --arg by "$3" --arg now "$(now)" '.budget = {tokens: $t, approved_by: $by, ts: $now}' "$USAGE" > "$tmp" && mv "$tmp" "$USAGE"
+        usage_unlock
+        upd '.notes = ((.notes // []) + [{ts: $now, text: ("token budget set to " + $t + " by " + $by)}])' --arg t "$1" --arg by "$3"
+        rc=0; usage_status || rc=$?; exit "$rc"
         ;;
       summary)
-        jq -r '(.usage // []) as $u
-          | "Runs: \($u | length)   Tokens: \([$u[].tokens] | add // 0)",
-            "By model: " + ([$u | group_by(.model)[] | "\(.[0].model)=\([.[].tokens] | add) (\(length) runs)"] | join("  ")),
-            "By agent (top 8): " + ([$u | group_by(.agent)[] | {a: .[0].agent, t: ([.[].tokens] | add), n: length}] | sort_by(-.t) | .[0:8] | map("\(.a)=\(.t)/\(.n)") | join("  ")),
-            "By lane: " + ([$u | group_by(.step | split("/")[0])[] | "\(.[0].step | split("/")[0])=\([.[].tokens] | add)"] | join("  "))' "$STATE"
+        usage_json | jq -r --argjson b "$(usage_budget)" '
+          def tot: .input + .cache_write + .cache_read + .output;
+          def sum(f): map(f) | add // 0;
+          (.entries // []) as $e | ($e | sum(tot)) as $t
+          | "Tokens: \($t)   (input \($e | sum(.input)) · cache writes \($e | sum(.cache_write)) · cache reads \($e | sum(.cache_read)) · output \($e | sum(.output)); \($e | sum(.calls)) API calls)"
+              + (if $b > 0 then "   Budget: \($b) (\($t * 100 / $b | floor)% used)" else "" end),
+            "Recorded from: \([.sources[]? | select(.kind == "session")] | length) main-session transcripts, \([.sources[]? | select(.kind == "subagent")] | length) agent runs",
+            "By model: " + ([$e | group_by(.model)[] | "\(.[0].model)=\(sum(tot))"] | join("  ")),
+            "By agent (top 8): " + ([$e | group_by(.agent)[] | {a: .[0].agent, t: sum(tot), n: ([.[].source] | unique | length)}] | sort_by(-.t) | .[0:8] | map("\(.a)=\(.t)/\(.n) runs") | join("  ")),
+            "By lane: " + ([$e | group_by(.step | split("/")[0])[] | "\(.[0].step | split("/")[0])=\(sum(tot))"] | join("  "))'
+        usage_status | grep '^BUDGET_' || true
         ;;
-      *) die "usage: usage add|summary" ;;
+      add) die "usage add was removed: usage is now recorded automatically from Claude Code's transcripts (the record-usage.sh hook runs 'usage sync'). See cost.md §4." ;;
+      *) die "usage: usage sync|check|budget|summary" ;;
     esac
     ;;
   ticket)
@@ -549,7 +677,7 @@ case "$cmd" in
     ;;
   stats)
     need_state
-    jq -r --arg m "${1:-}" '
+    jq -r --arg m "${1:-}" --argjson U "$(usage_json)" '
       def returns: [(.value.history // [])[] | select(.to == "changes_requested" or .to == "reopened")] | length;
       [.tickets | to_entries[] | select($m == "" or .value.milestone == $m)] as $ts
       | "Tickets: \($ts | length)   done: \([$ts[] | select(.value.status | IN("done", "verified"))] | length)   bugs: \([$ts[] | select((.value.type // "") == "bug")] | length)",
@@ -557,8 +685,8 @@ case "$cmd" in
           | "\($g[0].value.role): \($g | length) tickets, \([$g[].value.attempts // 0] | add) attempts, \([$g[] | returns] | add) sent back by review or reopened, \([$g[] | select(((.value.bugs // []) | length) > 0)] | length) with bugs found later" ),
         ( [$ts[] | {k: .key, n: returns, a: (.value.attempts // 0)} | select((.n + .a) > 1)] | sort_by(-(.n + .a)) | .[0:5]
           | if length > 0 then "Most rework: " + (map("\(.k) (\(.a) attempts, \(.n) returns)") | join(", ")) else "Most rework: none" end ),
-        ( (.usage // []) as $u | if ($u | length) > 0
-          then "Tokens by agent (whole run): " + ([$u | group_by(.agent)[] | {a: .[0].agent, t: ([.[].tokens] | add), n: length}] | sort_by(-.t) | .[0:8] | map("\(.a) \(.t) in \(.n) runs") | join(" · "))
+        ( (($U.entries // []) | map(. + {t: (.input + .cache_write + .cache_read + .output)})) as $u | if ($u | length) > 0
+          then "Tokens by agent (whole run): " + ([$u | group_by(.agent)[] | {a: .[0].agent, t: ([.[].t] | add), n: ([.[].source] | unique | length)}] | sort_by(-.t) | .[0:8] | map("\(.a) \(.t) in \(.n) runs") | join(" · "))
           else empty end )' "$STATE"
     ;;
   bugs)
