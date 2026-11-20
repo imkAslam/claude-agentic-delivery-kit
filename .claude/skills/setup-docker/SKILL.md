@@ -18,10 +18,11 @@ Inputs: `.claude/project.json` (`stack`, `commands`, `deploy.health_path`). If i
 7. Make the start command the process itself (exec form), so signals reach it.
 
 ## Free local services (always first)
-Every backing service for development and testing runs locally in Docker, **one container per service** (tests use a separate database inside the same container; without Docker, SQLite: [NO_DOCKER.md](references/NO_DOCKER.md)), using the free substitutes in [LOCAL_SERVICES.md](references/LOCAL_SERVICES.md) (database, cache, object storage, mail capture, queues, search, antivirus, mock OIDC, cloud emulators). Use the remote fallback only when Docker isn't running (per SYSTEM-PROFILE) or a service has no local substitute. Then the human supplies URLs in `.env`, asked once by the orchestrator.
+Every backing service for development and testing runs locally in Docker, **one container per service** (tests use a separate database inside the same container; without Docker, SQLite: [NO_DOCKER.md](references/NO_DOCKER.md)). The orchestrator starts the services **once**, from the main checkout (`app.sh services`), and every agent uses them; tests make their databases inside that container ([TEST_DATABASE.md](references/TEST_DATABASE.md)). Every task is a named script of the project ([PROJECT_COMMANDS.md](references/PROJECT_COMMANDS.md)), using the free substitutes in [LOCAL_SERVICES.md](references/LOCAL_SERVICES.md) (database, cache, object storage, mail capture, queues, search, antivirus, mock OIDC, cloud emulators). Use the remote fallback only when Docker isn't running (per SYSTEM-PROFILE) or a service has no local substitute. Then the human supplies URLs in `.env`, asked once by the orchestrator.
 
 ## compose for development (`compose.yml`)
 - `app`: build target `build` or a dev stage, with a source bind mount and the dev command from `commands.dev`.
+- A fixed top-level `name: <app>`, so every checkout and worktree means the same project; started and stopped through the `infra:up` / `infra:down` scripts (PROJECT_COMMANDS.md).
 - Add only the services that `stack` implies (for example a database, cache, queue or object storage). Each one gets a healthcheck, a named volume and `depends_on: condition: service_healthy`.
 - Credentials for local services come from an `.env` file that's git-ignored, plus a committed `.env.example` with placeholder values.
 
@@ -29,4 +30,4 @@ Every backing service for development and testing runs locally in Docker, **one 
 VCS metadata, dependency folders, build outputs, test coverage, local env files (keep `.env.example`), logs, editor folders, `docs/`, and `.claude/`.
 
 ## Verify
-`docker build --target runtime .` succeeds, `docker compose up -d --wait` brings every service up healthy, and `curl -fsS http://localhost:<port><health_path>` returns 200. Paste the output into the ticket report.
+`docker build --target runtime .` succeeds and `docker compose config --quiet` passes; paste the output into the ticket report. Agents never start containers (`guard-services.sh`): after the ticket is merged, the orchestrator runs `app.sh services` from the main checkout (every service healthy) and `app.sh start` (`curl -fsS http://localhost:<port><health_path>` returns 200); a failure goes back to the devops-engineer.

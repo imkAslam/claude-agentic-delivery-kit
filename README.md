@@ -62,7 +62,7 @@ Main features:
 - **Complete documentation:** PRD with every architecture diagram inline (mirrored into the architecture document), ADRs, data model, feature catalog, database document, as-built system flows, code map, README, CHANGELOG.
 - **Modern frontend defaults:** Next.js App Router with route groups and a defined folder tree, Tailwind CSS + shadcn/ui as the default UI layer (you can name another), components built library-first and themed by the design tokens.
 - **Performance built in:** measurable budgets in the PRD, a performance guide for every engineer, and a performance-specialist that measures each milestone and the release candidate.
-- **A clean codebase:** a hygiene check at every integration finds scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code and dead doc links; they are removed before each milestone review.
+- **A clean codebase:** a hygiene check at every integration finds scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code and dead doc links, extra containers in tests, commands that are not the project's own scripts and unused shell scripts; they are removed before each milestone review.
 - **Free-first development:** every dev and test service runs locally in Docker.
 - **Cost controls:** model tiering, profiles, a parallel-agent cap and a token ledger, recorded automatically from the provider-reported usage, with an optional budget.
 
@@ -362,9 +362,9 @@ Bundled scripts:
 - `render-png.sh`: mockups to PNG with Playwright, falling back to Chrome headless.
 - `check-migrations.sh`: migration safety checks.
 - `check-ownership.sh`: every changed file belongs to the role that changed it.
-- `app.sh start | stop | test | build | status`: runs the product locally from `project.json`; one set of services in Docker, or SQLite when Docker is not running.
+- `app.sh start | stop | test | build | status | services | clean`: runs the product locally from `project.json`; one set of services in Docker, or SQLite when Docker is not running. `services` starts only the services (the orchestrator, once, before parallel work); `clean` removes leftover containers (`--volumes`: unused volumes too); `stop --app` stops only the app. In an agent's worktree it uses the running services and never starts or stops containers.
 - `delivery-state.sh plan-check | board | stats`: are the tickets independent, who is working on what, and where the rework and cost went.
-- `check-hygiene.sh`: no scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code or dead doc links.
+- `check-hygiene.sh`: no scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code or dead doc links; one container per service and no test that starts its own; every command a named project script; no shell script that nothing uses, and no proof scripts.
 - `delivery-state.sh`: the run state helper.
 
 ---
@@ -385,6 +385,7 @@ A hook that exits with code 2 blocks the tool call.
 | `session-context.sh` | SessionStart (startup, resume, compact) | Nothing; it restores the run summary, coding status, budget and last checkpoint |
 | `record-usage.sh` | Stop, SubagentStop, SessionEnd | Nothing; it records the provider-reported token use of the orchestrator and every agent in the usage ledger |
 | `guard-budget.sh` | Agent, Task, SendMessage | New or continued agent work once the token budget is reached |
+| `guard-services.sh` | Bash (subagents) | Starting, stopping or removing containers (`docker run`, `compose up/down`, `infra:up`, `app.sh services/clean/stop`): the orchestrator runs the shared services once |
 
 `check-ownership.sh` runs again at merge time as a deterministic second check.
 
@@ -575,7 +576,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 218 checks against throwaway fixtures, covering:
+It runs 241 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;
@@ -583,6 +584,7 @@ It runs 218 checks against throwaway fixtures, covering:
 - role boundaries and frozen contracts;
 - red and green commits;
 - the usage ledger (provider-reported usage, each API call once, idempotent syncs) and the budget guard;
+- infrastructure: no container started by an agent or a test, commands as named project scripts, no unused shell scripts, app.sh in a worktree;
 - the ticket lifecycle (illegal transitions, history, bugs linked to their original);
 - checkpoints;
 - ownership.

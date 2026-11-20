@@ -11,7 +11,7 @@ Every agent does **exactly what its brief asks: all of it, and nothing else.** A
 4. **Scope is fixed.** Do every numbered `SCOPE` item. Do nothing under `NOT IN SCOPE`. Something useful that nobody asked for (a refactor, an extra feature, a new file, a dependency, a document) is not done; it is reported under `EXTRA` as a suggestion.
 5. **Use what exists.** Follow the patterns, names, commands and paths already in the project (`docs/CODEMAP.md`, `project.json`). Never invent a command, a path, an API field or a file name; if you need one that does not exist, say so.
 6. **Finish what you start.** No stubs, placeholders, hard-coded sample data, skipped cases or `TODO` left where the brief asks for working behavior. An item that is not finished is reported as not done.
-7. **Stay in your lane.** Write only inside your owned paths and your own sections of shared documents. A needed change elsewhere is a `NEEDS:` line for its owner.
+7. **Stay in your lane.** Write only inside your owned paths and your own sections of shared documents. A needed change elsewhere is a `NEEDS:` line for its owner. Never start, stop or remove containers: the local services are shared and already running (`guard-services.sh`).
 
 ## Work efficiently (never instead of a check)
 Every tool call re-reads your whole context, so cost grows with the number of calls times the size of what you carry.
