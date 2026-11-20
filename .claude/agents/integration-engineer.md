@@ -40,7 +40,7 @@ Map and validate provider responses at the boundary. Reconciliation and backfill
 Local mocks or emulators in dev (Docker), sandbox accounts in staging, recorded contract tests, and no calls to real providers from unit tests.
 
 ## Process
-Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in build mode and, once the whole module is built, test it with the `feature-testing` skill. In a fresh worktree, run `commands.install` first.
+Follow the `build-integration` skill: Steps 0–2 in plan mode, Steps 3–7 in build mode and, once the whole module is built, test it with the `feature-testing` skill. In a fresh worktree, `git switch <BRANCH>` from the brief, then run `commands.install`.
 
 ## Skills & Resources
 | Resource | Use |

@@ -113,7 +113,14 @@ delivery-state.sh <command> [args]
   ticket show <id>                             fields, links (bug of / bugs) and the status history
   ticket attempt <id>                          increment attempts (exit 3 + CAP_REACHED at the cap)
   ticket set <id> <branch|tracker_ref|title|size> <value>
-  ready <ms-n>                                 list ready tickets whose dependencies are done (or verified)
+  branch milestone <ms-n>                      create develop from the default branch if missing; refuse while the previous
+                                               milestone is not merged into develop; create ms-<n>/integration from develop
+  branch ticket <id> [--base <branch>]         name, create and record the ticket branch: feature|chore|spike|bugfix/<id>-<slug>
+                                               (hotfix/ when the base is the default branch); base defaults to ms-<n>/integration
+                                               (a bug found in verify or release: --base release/<version>)
+  branch release <vX.Y.Z>                      cut release/<vX.Y.Z> from develop once every milestone is merged into it
+  branch cleanup <ms-n>                        after the milestone is merged into develop: remove its clean ticket worktrees and branches
+  ready <ms-n>                                list ready tickets whose dependencies are done (or verified)
   plan-check <ms-n>                            are the milestone's tickets independent? fails when a feature ticket depends on
                                                another feature ticket in the same milestone, or when two tickets that can run
                                                together touch the same files (ticket add --paths); prints how many can start together
@@ -266,7 +273,7 @@ case "$cmd" in
     ;;
   release)
     need_state; [ $# -eq 3 ] || die "usage: release <name> <artifact> <environment>"
-    upd '.release = {name: $n, artifact: $a, environment: $e}' --arg n "$1" --arg a "$2" --arg e "$3"
+    upd '.release = ((.release // {}) + {name: $n, artifact: $a, environment: $e})' --arg n "$1" --arg a "$2" --arg e "$3"
     ;;
   cr-open)
     need_state; [ $# -ge 3 ] || die "usage: cr-open <gate> <reason> --approved-by <human> <path>..."
@@ -397,6 +404,7 @@ case "$cmd" in
           | "\($i) · \($t.title)",
             "type: \($t.type // "feature")  role: \($t.role)  milestone: \($t.milestone)  size: \($t.size // "-")  status: \($t.status)  attempts: \($t.attempts // 0)",
             "depends_on: \((($t.depends_on // []) | join(", ")) as $d | if $d == "" then "-" else $d end)",
+            (if $t.branch then "branch: \($t.branch)  base: \($t.base // "-")" else empty end),
             (if ($t.type // "") == "bug" then "bug of: \($t.bug_of // "none")  severity: \($t.severity)  found in: \($t.found_in // "-")" else empty end),
             (if (($t.bugs // []) | length) > 0 then "bugs: " + ($t.bugs | join(", ")) else empty end),
             "history:",
@@ -415,6 +423,89 @@ case "$cmd" in
         upd '.tickets[$i][$f] = $v' --arg i "$1" --arg f "$2" --arg v "$3"
         ;;
       *) die "usage: ticket add|status|show|attempt|set ..." ;;
+    esac
+    ;;
+  branch)
+    # Git Flow (.claude/rules/git.md): main = released code, develop = integrated milestones,
+    # ms-<n>/integration = the milestone join, <type>/<id>-<slug> = one ticket, release/<vX.Y.Z> = the candidate.
+    need_state; sub="${1:-}"; shift || true
+    git rev-parse --git-dir >/dev/null 2>&1 || die "not a git repository"
+    ref_ok() { git rev-parse -q --verify "refs/heads/$1" >/dev/null 2>&1 || git rev-parse -q --verify "refs/remotes/origin/$1" >/dev/null 2>&1; }
+    ref_of() { # the newest known copy: origin/<b> after a fetch when the remote has it, else the local branch
+      if git rev-parse -q --verify "refs/remotes/origin/$1" >/dev/null 2>&1; then echo "origin/$1"; else echo "$1"; fi; }
+    new_branch() { # new_branch <name> <base>: create the local branch unless it exists
+      git rev-parse -q --verify "refs/heads/$1" >/dev/null 2>&1 && return 0
+      git branch -q "$1" "$(ref_of "$2")" || die "could not create $1 from $2"; }
+    merged() { git merge-base --is-ancestor "$(ref_of "$1")" "$(ref_of develop)"; }
+    if git remote | grep -qx origin; then git fetch -q origin 2>/dev/null || echo "warning: git fetch origin failed; using local branches" >&2; fi
+    DEF=$(jq -r '.ci.default_branch // empty' .claude/project.json 2>/dev/null || true)
+    if [ -z "$DEF" ]; then
+      for b in main master; do ref_ok "$b" && { DEF="$b"; break; }; done
+      [ -n "$DEF" ] || DEF=$(git rev-parse --abbrev-ref HEAD)
+    fi
+    case "$sub" in
+      milestone)
+        [ $# -eq 1 ] || die "usage: branch milestone <ms-n>"
+        n="${1#ms-}"; case "$n" in ''|*[!0-9]*) die "a milestone looks like ms-<n>" ;; esac
+        if ! ref_ok develop; then
+          ref_ok "$DEF" || die "default branch $DEF not found (project.json ci.default_branch)"
+          new_branch develop "$DEF"; echo "created develop from $DEF (publish it once: git push -u origin develop)"
+        fi
+        if [ "$n" -gt 1 ]; then
+          prev="ms-$((n - 1))"
+          if ref_ok "$prev/integration"; then
+            merged "$prev/integration" || die "$prev/integration is not merged into develop yet. Merge its PR/MR (after gate mbr:$prev) and retry"
+          else
+            [ "$(jq -r --arg g "mbr:$prev" '.gates[$g].status // "pending"' "$STATE")" = "approved" ] \
+              || die "gate mbr:$prev is not approved and $prev/integration does not exist: finish $prev first"
+          fi
+        fi
+        new_branch "ms-$n/integration" develop
+        echo "ms-$n/integration (from develop @ $(git rev-parse --short "$(ref_of develop)"))"
+        ;;
+      ticket)
+        [ $# -ge 1 ] || die "usage: branch ticket <id> [--base <branch>]"
+        id="$1"; shift; base=""
+        if [ "${1:-}" = "--base" ]; then base="${2:-}"; [ -n "$base" ] || die "--base needs a branch"; fi
+        t=$(jq -c --arg i "$id" '.tickets[$i] // empty' "$STATE"); [ -n "$t" ] || die "no ticket $id"
+        cur=$(printf '%s' "$t" | jq -r '.branch // empty')
+        if [ -n "$cur" ]; then # idempotent: correction rounds reuse the branch
+          printf '%s\t%s\n' "$cur" "$(printf '%s' "$t" | jq -r '.base // "-"')"; exit 0
+        fi
+        ms=$(printf '%s' "$t" | jq -r '.milestone'); [ -n "$base" ] || base="$ms/integration"
+        ref_ok "$base" || die "base branch $base not found (start the milestone first: branch milestone $ms)"
+        case "$(printf '%s' "$t" | jq -r '.type // "feature"')" in
+          chore) prefix="chore" ;; spike) prefix="spike" ;; bug) prefix="bugfix" ;; *) prefix="feature" ;;
+        esac
+        [ "$base" != "$DEF" ] || prefix="hotfix"
+        slug=$(printf '%s' "$t" | jq -r '.title' | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//' | cut -c1-40 | sed -E 's/-+$//')
+        name="$prefix/$(printf '%s' "$id" | tr '[:upper:]' '[:lower:]')${slug:+-$slug}"
+        new_branch "$name" "$base"
+        upd '.tickets[$i].branch = $b | .tickets[$i].base = $s' --arg i "$id" --arg b "$name" --arg s "$base"
+        printf '%s\t%s\n' "$name" "$base"
+        ;;
+      release)
+        [ $# -eq 1 ] || die "usage: branch release <vX.Y.Z>"
+        printf '%s' "$1" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$' || die "a release version looks like v1.2.0 (semver with a leading v)"
+        ref_ok develop || die "develop not found: start the first milestone with branch milestone ms-1"
+        for ms in $(jq -r '[.tickets[].milestone] | unique[]' "$STATE"); do
+          if ref_ok "$ms/integration"; then merged "$ms/integration" || die "$ms/integration is not merged into develop yet"; fi
+        done
+        new_branch "release/$1" develop
+        upd '.release = ((.release // {}) + {branch: $b})' --arg b "release/$1"
+        echo "release/$1 (from develop @ $(git rev-parse --short "$(ref_of develop)"))"
+        ;;
+      cleanup)
+        [ $# -eq 1 ] || die "usage: branch cleanup <ms-n>"
+        ref_ok "$1/integration" && { merged "$1/integration" || die "$1/integration is not merged into develop yet: nothing removed"; }
+        for b in $(jq -r --arg m "$1" '.tickets[] | select(.milestone == $m and (.status | IN("done", "verified", "cancelled")) and .branch) | .branch' "$STATE"); do
+          wt=$(git worktree list --porcelain | awk -v b="refs/heads/$b" '/^worktree /{p=substr($0, 10)} $0 == "branch " b {print p}')
+          if [ -n "$wt" ]; then git worktree remove "$wt" 2>/dev/null || { echo "kept $b: its worktree $wt has uncommitted changes"; continue; }; fi
+          git rev-parse -q --verify "refs/heads/$b" >/dev/null 2>&1 && git branch -q -D "$b" && echo "removed $b"
+        done
+        git worktree prune
+        ;;
+      *) die "usage: branch milestone|ticket|release|cleanup ..." ;;
     esac
     ;;
   ready)

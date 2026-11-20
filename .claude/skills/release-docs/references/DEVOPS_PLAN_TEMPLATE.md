@@ -16,13 +16,13 @@ Start: `<commands.dev>` · Seeds: `<seed command>` · Remote fallback items (hum
 | Env | Purpose | URL | Host / target | Data | Deploy trigger |
 |---|---|---|---|---|---|
 | dev | local development | <dev_url> | docker compose / local | seeds | — |
-| staging | pre-production, mirrors prod | <staging_url> | <target> | synthetic | automatic on default branch |
+| staging | pre-production, mirrors prod | <staging_url> | <target> | synthetic | automatic on `develop`, `release/**`, `hotfix/**` |
 | production | live | <prod_url> | <target> | real | manual, protected, after G3 |
 
 ## 2. Pipeline (ci.kind = <github|gitlab>)
 Diagram: **PRD §12 · D8 CI/CD flow** (you refine the architect\'s outline; send the Mermaid source to the solution-architect in a `handoff` message). Deployment changes go to **D3** the same way.
 Stages: install → lint → typecheck → test → build (one immutable artifact) → e2e → deploy-staging → smoke → deploy-production (manual, protected, same artifact) → smoke.
-Branch protection: required checks; PR/MR review; no direct pushes to the default branch.
+Branches (Git Flow, `.claude/rules/git.md`): `main` = released, `develop` = integrated milestones, `release/v<X.Y.Z>` = the candidate. Protection on `main` and `develop`: required checks; PR/MR review; up to date; no direct pushes or force-pushes. Pre-push hook: lint, typecheck, test, build.
 
 ## 3. Infrastructure as code
 Files and their location (within `roles.devops.paths`), state management (remote state + locking where it applies), and how changes are reviewed (plan output attached to the MR/PR).

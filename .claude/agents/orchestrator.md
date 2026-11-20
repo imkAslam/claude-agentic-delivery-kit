@@ -21,7 +21,7 @@ Start every session from the state, not from memory: `delivery-state.sh summary`
 
 ### 2. Assign work that can run in parallel
 - Give each agent one clear brief (`deliver/references/briefs.md`): numbered `SCOPE`, `NOT IN SCOPE`, `DONE WHEN`, the inputs and the owned paths.
-- In the build lane, run `delivery-state.sh plan-check <ms>` before dispatching, then start **every ready ticket** in one message, up to `DELIVERY_MAX_PARALLEL`, each in its own worktree. Independent tickets never wait for each other.
+- In the build lane, start the milestone branch (`delivery-state.sh branch milestone <ms>`: it refuses until the previous milestone is merged into `develop`) and run `plan-check <ms>` before dispatching. Create each ticket branch with `branch ticket <id>` and put it in the brief. Then start **every ready ticket** in one message, up to `DELIVERY_MAX_PARALLEL`, each in its own worktree. Independent tickets never wait for each other.
 - Record each agent (`agent set ticket:<id> <agent-id>`) and each status change when it happens.
 
 ### 3. Track every agent

@@ -17,7 +17,7 @@ This is the run cursor. The tracker holds the ticket details; this file holds po
     }
   },
   "change_requests": [],         // { id, gate, paths[], reason, status: open|closed, ts }
-  "tickets": {},                 // "<id>": { title, type, role, milestone, size, status, attempts, depends_on[], branch, tracker_ref,
+  "tickets": {},                 // "<id>": { title, type, role, milestone, size, status, attempts, depends_on[], branch, base, tracker_ref,
                                  //           bug_of, bugs[], severity, found_in, history[{from, to, ts, note?, forced?}] }
                                  // type: feature | chore | spike | bug   size: S | M | L
                                  // status: backlog | ready | in_progress | in_review | changes_requested | approved | done | verified
@@ -27,7 +27,7 @@ This is the run cursor. The tracker holds the ticket details; this file holds po
   "messages": [],                // { id: "M-n", from, to, type, re, body, blocking, status: open|answered|closed, answer: {from, body, ts}, ts }
   "usage": [],                   // [{ agent, model, tokens, step: "<lane>/<step>", ts }]  (delivery-state.sh usage add; cost.md)
   "agents": {},                  // { "<key, e.g. ticket:T-004 or discovery:product-manager>": "<agent id for SendMessage>" }
-  "release": { "name": null, "artifact": null, "environment": null },
+  "release": { "name": null, "artifact": null, "environment": null },   // + branch: "release/vX.Y.Z" once cut (branch release)
   "validated_at": null,
   "updated_at": null
 }

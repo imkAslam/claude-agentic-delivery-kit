@@ -198,14 +198,15 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | Step | Who | Output |
 |---|---|---|
 | `foundation` | orchestrator | Validates the stack and CI foundation; the design-foundation tickets come first |
-| `dispatch` | orchestrator | Picks ready tickets whose dependencies are done; checks they don't touch the same files |
+| `dispatch` | orchestrator | Starts the milestone branch from `develop` (only once the previous milestone is merged), picks ready tickets whose dependencies are done, checks they don't touch the same files, and creates one `feature/<id>-<slug>` branch per ticket |
 | `build-fork` (parallel) | frontend-, backend-, mobile-, devops-, integration-engineer, cybersecurity-agent, each in its own worktree, each paired with its reviewer (+ database-reviewer on data changes) | Code + tests (test results), screenshots or logs, one commit per ticket |
-| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Merges in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `REVIEW.md › Design QA` and `REVIEW.md › Performance`). Failures go through triage to the right role |
-| `mbr` | **you** | Milestone Build Review: approve or request fixes |
+| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Squash-merges each ticket (one commit) in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `REVIEW.md › Design QA` and `REVIEW.md › Performance`). Failures go through triage to the right role |
+| `mbr` | **you** | Milestone Build Review: approve or request fixes. Approved → PR/MR `ms-<n>/integration` → `develop` |
 
 ### 4 · Verify & Accept (lane `verify`)
 | Step | Who | Output |
 |---|---|---|
+| `release-branch` | orchestrator | Cuts `release/v<X.Y.Z>` from `develop` (feature freeze); late fixes are `bugfix/` branches into it |
 | `verify-fork` | qa-agent, quality-security-agent, security-auditor, performance-specialist | `ACCEPTANCE.md › QA`, `ACCEPTANCE.md › Open issues`, `ACCEPTANCE.md › Quality and security`, `ACCEPTANCE.md › Security audit`, `REVIEW.md › Performance` (dynamic testing only on owned, authorized environments) |
 | `evidence-policy` | orchestrator | Missing, failing or stale evidence goes back to triage |
 | `acceptance` | **you** | Accept, or send bug feedback |
@@ -376,7 +377,7 @@ A hook that exits with code 2 blocks the tool call.
 | Hook | Runs on | Blocks |
 |---|---|---|
 | `guard-secrets.sh` | Write/Edit, Bash | Keys, tokens, private keys, credentialed connection strings in files or commits (a marked fake value for tests is allowed) |
-| `guard-prod.sh` | Bash | Local deploy CLIs, IaC apply, force-push, `reset --hard`, `--no-verify`, remote migrations, hand-editing the run state, production pipeline triggers and release tags without a valid G3 |
+| `guard-prod.sh` | Bash | Local deploy CLIs, IaC apply, force-push, direct pushes to `main`/`develop`, `reset --hard`, `--no-verify`, remote migrations, hand-editing the run state, production pipeline triggers and release tags without a valid G3 |
 | `guard-gates.sh` | Write/Edit | Edits to a file in an approved gate package without an open change request |
 | `guard-coding.sh` | Write/Edit, Bash, Agent | Before G2: product code, scaffolding commands, code commits and build agents |
 | `guard-boundary.sh` | Write/Edit | Writes outside the agent's role paths; writes to frozen contracts after G2 |
@@ -398,6 +399,8 @@ A hook that exits with code 2 blocks the tool call.
 | **`coding-foundations` skill** (the foundation layer) | **OOP_AND_PATTERNS:** SOLID in practice, class design, domain modeling (value objects, entities, aggregates, repositories, use cases, events), 20+ design patterns with when to use and when to avoid, anti-patterns. **FORMS_AND_VALIDATION:** one schema shared by client and server; per-stack libraries (React Hook Form or Formik with zod or yup, VeeValidate, Angular Reactive Forms, Superforms, Pydantic, class-validator, Bean Validation, FluentValidation); rules for passwords, phones, OTP, files, dates and money; accessible errors; server-error mapping; tests. **Stack guides:** TypeScript, Node.js, NestJS, React (UI-library-first components, component layers), Next.js (App Router, route groups, error layers), React Native/Expo, Python (FastAPI, Django, SQLAlchemy), Go, Java/Kotlin Spring, .NET. **Cross-stack guides:** PERFORMANCE (budgets, measure-first, frontend, backend, heavy data), REALTIME (SSE, WebSockets, WebRTC), WORKERS (web workers, thread pools, durable jobs). Each has musts, prefers and a review checklist |
 
 The architect picks the stack guides for each role (`project.json → roles.<role>.guides`; every build and review brief lists them) and pins the stack-specific formatter, linter (with the complexity limits) and strict type checker in `PROJECT.md` and `project.json`. `commit-gate.sh` runs them before every commit, and every reviewer checks against these rules.
+
+**Branches (Git Flow, `.claude/rules/git.md`):** `main` holds released code and `develop` the integrated milestones; both are protected and change only through PR/MRs. Each milestone works on `ms-<n>/integration` (from `develop`), each ticket on `feature|chore|bugfix/<id>-<slug>` (squashed into one Conventional Commit), each release on `release/v<X.Y.Z>` (merged into `main` and tagged after G3, then back into `develop`), and production fixes on `hotfix/<id>-<slug>` from `main`. `delivery-state.sh branch …` creates every branch, so names and bases are always right.
 
 The non-negotiable rules (see `CLAUDE.md`):
 1. Ownership.
@@ -566,7 +569,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 91 checks against throwaway fixtures, covering:
+It runs 195 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;

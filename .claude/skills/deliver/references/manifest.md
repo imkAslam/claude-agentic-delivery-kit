@@ -57,7 +57,7 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
     // "provider": "remote" only when Docker is unavailable or there's no local substitute; the human sets the values in .env
   ],
   "tracker": { "kind": "local|linear|github", "project": "<key or repo>", "team": "<team|null>" },
-  "ci":      { "kind": "github|gitlab", "default_branch": "main" },
+  "ci":      { "kind": "github|gitlab", "default_branch": "main" },   // released code; develop and the Git Flow branches come from rules/git.md
   "deploy": {
     "target": "vercel|docker-vps|fly|railway|render|aws",
     "mobile_target": "eas|null",

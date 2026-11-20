@@ -1,6 +1,6 @@
 ---
 name: integrate-milestone
-description: "Integration procedure at the accepted-lanes join: merge approved role branches in dependency order into the milestone integration branch, enforce ownership, regenerate lockfile and contract clients, run combined checks and a real end-to-end journey, emit triage findings on failure, and write the Milestone Build Review package on success."
+description: "Integration procedure at the accepted-lanes join: squash-merge approved ticket branches in dependency order into their target (the milestone integration branch, or the release branch for late bug fixes), enforce ownership, regenerate lockfile and contract clients, run combined checks and a real end-to-end journey, emit triage findings on failure, and write the Milestone Build Review package on success."
 when_to_use: "Use when a set of approved tickets in a milestone is ready to be joined, or when re-running integration after triage fixes."
 ---
 
@@ -16,16 +16,18 @@ For the **integrator** in lane `build`, step `integrate`. On success, it produce
 ## Instructions
 
 ### Step 0: Prepare
-1. Inputs from the brief: milestone `ms-<n>`, the approved tickets with their branches, and the merge order (topological by `depends_on`).
-2. `git fetch` (if a remote exists); check out `ms-<n>/integration`, creating it from the default branch if it's missing. The working tree must be clean.
+1. Inputs from the brief: the **target** branch (`ms-<n>/integration`, or `release/<version>` for bug tickets found in verify or release), the approved tickets with their recorded branches (`delivery-state.sh ticket show <id>` → `branch`, `base`; every base must equal the target), and the merge order (topological by `depends_on`).
+2. `git fetch` (if a remote exists); check out the target. The orchestrator created it at dispatch (`delivery-state.sh branch milestone` / `branch release`); if it is missing, stop and report. The working tree must be clean.
 
-### Step 1: Ownership check, then merge (per ticket, in order)
+### Step 1: Ownership check, then squash-merge (per ticket, in order)
 ```bash
 bash .claude/skills/deliver/scripts/check-ownership.sh <branch> <role>   # exit 1 → stop, report the violation
-git checkout -q <branch> && bash .claude/skills/design-database/scripts/check-migrations.sh --base ms-<n>/integration; git checkout -q ms-<n>/integration   # only if the branch touches migrations; exit 1 → stop, report
-git merge --no-ff --no-edit <branch>                                      # conflict → git merge --abort, report
+git checkout -q <branch> && bash .claude/skills/design-database/scripts/check-migrations.sh --base <target>; git checkout -q <target>   # only if the branch touches migrations; exit 1 → stop, report
+first=$(git rev-list --reverse <target>..<branch> | head -n 1)           # the ticket's Conventional Commit
+git merge --squash <branch>                                               # conflict → git reset --merge, report
+git commit -C "$first"                                                    # one commit per ticket (git.md); commit-gate.sh runs the checks
 ```
-Never resolve a conflict by editing another role's code. Report `FINDING: conflict — <files> — <ticket A> vs <ticket B>`.
+The squash keeps the history to one commit per ticket, whatever the number of correction rounds. Never resolve a conflict by editing another role's code. Report `FINDING: conflict — <files> — <ticket A> vs <ticket B>`.
 
 ### Step 2: Regenerate shared artifacts
 Run `commands.install` (you own the lockfile and the root manifest), then `contracts.codegen_cmd`. Commit the regenerated files: `chore(integration): regenerate lockfile and clients` with `Refs: <ms>`.
@@ -50,7 +52,7 @@ Start the app with `bash .claude/skills/deliver/scripts/app.sh start` (it starts
 ## Rules
 - Edit only the files you own (the `shared_files` mapped to `integrator`) and the milestone docs.
 - No force-push, no history rewrite, no `--no-verify`.
-- The default branch changes only after the `mbr` gate (PR/MR through the **ci** skill).
+- You merge only into the target. `ms-<n>/integration` reaches `develop` after the `mbr` gate, and `release/<version>` reaches `main` after `g3`, both through a PR/MR with a merge commit (the **ci** skill), never by you.
 
 ## Integration with Other Skills
 - **deliver** (`references/triage.md`): how the findings get routed

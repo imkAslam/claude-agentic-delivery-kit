@@ -32,7 +32,7 @@ backlog → ready → in_progress → in_review → approved → done → verifi
 | `in_review` | Returned DONE with evidence; reviewer(s) checking | after the engineer's return block |
 | `changes_requested` | The reviewer returned CHANGES | review verdict; next attempt → `in_progress` |
 | `approved` | All reviewers APPROVE | review verdict |
-| `done` | Merged into the milestone integration branch, combined checks and the journey passed | integrator |
+| `done` | Squash-merged into its base (the milestone integration branch, or the release branch), combined checks and the journey passed | integrator |
 | `verified` | QA confirmed it on the candidate (required for bugs; optional for features) | QA in Lane 4, or after a bug fix |
 | `reopened` | A defect inside its own AC found **before** the milestone review approved it | triage (integration, design QA, `mbr` "request fixes") |
 | `blocked` | Can't proceed (failure report, missing input, dependency problem) | `delivery-state.sh fail`, or the orchestrator with a note |

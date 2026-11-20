@@ -66,7 +66,7 @@ check "allows terraform plan"              0 guard-prod.sh "$(bash_json "terrafo
 check "blocks force push"                  2 guard-prod.sh "$(bash_json "git push --force origin main")"
 check "blocks reset --hard"                2 guard-prod.sh "$(bash_json "git status && git reset --hard HEAD~1")"
 check "blocks --no-verify"                 2 guard-prod.sh "$(bash_json "git commit --no-verify -m x")"
-check "allows normal push"                 0 guard-prod.sh "$(bash_json "git push origin ms-1/frontend/T-001")"
+check "allows normal push"                 0 guard-prod.sh "$(bash_json "git push origin feature/t-001-api")"
 check "blocks remote migration"            2 guard-prod.sh "$(bash_json "DATABASE_URL=postgres://u:p@db.prod.internal/app npm run db:migrate")"
 check "allows local migration"             0 guard-prod.sh "$(bash_json "DATABASE_URL=postgres://u:p@localhost/app npm run db:migrate")"
 check "blocks state file overwrite"        2 guard-prod.sh "$(bash_json "jq '.gates.g3.status=\"approved\"' .claude/delivery/state.json > /tmp/s && mv /tmp/s .claude/delivery/state.json")"
@@ -398,10 +398,41 @@ done
 [ -z "$miss" ] && { pass=$((pass+1)); echo "  ok   every reference linked from a SKILL.md exists"; } || { fail=$((fail+1)); echo "  FAIL broken skill references:$miss"; }
 
 echo "check-ownership"
-git checkout -qb ms-1/frontend/T-9; echo z > api/sneaky.ts; echo z > web/ok.ts; git add -A; git commit -qm t --no-verify
+git checkout -qb feature/t-9-sneaky; echo z > api/sneaky.ts; echo z > web/ok.ts; git add -A; git commit -qm t --no-verify
 git checkout -q -
-bash "$REPO/.claude/skills/deliver/scripts/check-ownership.sh" ms-1/frontend/T-9 frontend >/dev/null; c=$?
+bash "$REPO/.claude/skills/deliver/scripts/check-ownership.sh" feature/t-9-sneaky frontend >/dev/null; c=$?
 [ $c -eq 1 ] && { pass=$((pass+1)); echo "  ok   flags out-of-role file"; } || { fail=$((fail+1)); echo "  FAIL flags out-of-role file (got $c)"; }
+
+echo "git flow (branch helper and protected branches)"
+DEFB=$(git rev-parse --abbrev-ref HEAD)
+br() { out=$(bash "$S" branch "$@" 2>&1); c=$?; }
+has_ref() { git rev-parse -q --verify "refs/heads/$1" >/dev/null 2>&1; }
+yes() { if [ "$1" -eq 0 ]; then pass=$((pass+1)); echo "  ok   $2"; else fail=$((fail+1)); echo "  FAIL $2"; printf '%s\n' "$out" | sed 's/^/       /'; fi; }
+br milestone ms-1; has_ref develop && has_ref ms-1/integration; yes $? "milestone start creates develop and ms-1/integration"
+bash "$S" ticket add T-101 backend ms-1 "Auth API: signup & login!" --paths "api/**" >/dev/null
+br ticket T-101; [ "$(printf '%s' "$out" | cut -f1)" = "feature/t-101-auth-api-signup-login" ] && [ "$(git rev-parse feature/t-101-auth-api-signup-login)" = "$(git rev-parse ms-1/integration)" ]
+yes $? "ticket branch is named feature/<id>-<slug> and starts from the milestone branch"
+bash "$S" ticket show T-101 | grep -q "branch: feature/t-101-auth-api-signup-login  base: ms-1/integration"; yes $? "ticket branch and base are recorded"
+br ticket T-101; [ "$(printf '%s' "$out" | cut -f1)" = "feature/t-101-auth-api-signup-login" ]; yes $? "a correction round reuses the same branch"
+br ticket T-004 --base "$DEFB"; printf '%s' "$out" | grep -q "^hotfix/t-004-login-fails-on-uppercase-email"; yes $? "a bug based on the default branch is a hotfix/ branch"
+git checkout -q ms-1/integration; echo i > web/i.ts; git add web/i.ts; git commit -qm "feat(web): integrate" --no-verify; git checkout -q "$DEFB"
+br milestone ms-2; [ $c -eq 1 ]; yes $? "the next milestone waits until the previous one is merged into develop"
+git checkout -q develop; git merge -q --no-ff --no-edit ms-1/integration; git checkout -q "$DEFB"
+br milestone ms-2; [ $c -eq 0 ] && has_ref ms-2/integration; yes $? "the next milestone starts once the previous one is merged"
+br release 1.0; [ $c -eq 1 ]; yes $? "a release version must be semver with a leading v"
+br release v1.0.0; [ $c -eq 0 ] && has_ref release/v1.0.0; yes $? "release branch is cut from develop"
+for st in in_progress in_review approved done; do bash "$S" ticket status T-101 $st >/dev/null; done
+br cleanup ms-1; ! has_ref feature/t-101-auth-api-signup-login && has_ref hotfix/t-004-login-fails-on-uppercase-email
+yes $? "cleanup removes done ticket branches and keeps open ones"
+check "allows first publish of develop"    0 guard-prod.sh "$(bash_json "git push -u origin develop")"
+git update-ref refs/remotes/origin/develop develop; git update-ref "refs/remotes/origin/$DEFB" "$DEFB"
+check "blocks direct push to develop"      2 guard-prod.sh "$(bash_json "git push origin develop")"
+check "blocks push HEAD:<default branch>"  2 guard-prod.sh "$(bash_json "git push origin HEAD:$DEFB")"
+git checkout -q develop
+check "blocks bare push while on develop"  2 guard-prod.sh "$(bash_json "git push")"
+git checkout -q "$DEFB"
+check "allows pushing a ticket branch"     0 guard-prod.sh "$(bash_json "git push -u origin feature/t-101-auth-api")"
+check "allows pushing a release branch"    0 guard-prod.sh "$(bash_json "git push -u origin release/v1.0.0")"
 
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]
