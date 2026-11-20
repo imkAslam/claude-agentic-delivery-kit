@@ -13,8 +13,8 @@ The human performs these steps once. Agents never handle credential values. When
 - [ ] (Mobile) Expo project, Apple Developer and Google Play accounts, app records
 
 ## 2. Repository and CI
-- [ ] Create the remote repository and push the default branch
-- [ ] Protect the default branch: required checks `checks`, `e2e`; review required
+- [ ] Create the remote repository, push the default branch (`main`) and publish `develop` (`git push -u origin develop`)
+- [ ] Protect `main` and `develop`: PR/MR with one review, required checks `checks`, `e2e`, up to date before merging, no force-push, no deletion; allow merge commits (ci skill → `protect-branches`)
 - [ ] Create the environments `staging` and `production`; add the required approvers to `production`
 
 ## 3. Secrets / variables (names only; values go into the CI or platform secret store)

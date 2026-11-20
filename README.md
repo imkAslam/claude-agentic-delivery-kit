@@ -64,7 +64,7 @@ Main features:
 - **Performance built in:** measurable budgets in the PRD, a performance guide for every engineer, and a performance-specialist that measures each milestone and the release candidate.
 - **A clean codebase:** a hygiene check at every integration finds scaffold leftovers, stray files, debug output, TODOs without a ticket, unused code and dead doc links; they are removed before each milestone review.
 - **Free-first development:** every dev and test service runs locally in Docker.
-- **Cost controls:** model tiering, profiles, a parallel-agent cap and a token ledger with an optional budget.
+- **Cost controls:** model tiering, profiles, a parallel-agent cap and a token ledger, recorded automatically from the provider-reported usage, with an optional budget.
 
 ---
 
@@ -198,14 +198,15 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | Step | Who | Output |
 |---|---|---|
 | `foundation` | orchestrator | Validates the stack and CI foundation; the design-foundation tickets come first |
-| `dispatch` | orchestrator | Picks ready tickets whose dependencies are done; checks they don't touch the same files |
+| `dispatch` | orchestrator | Starts the milestone branch from `develop` (only once the previous milestone is merged), picks ready tickets whose dependencies are done, checks they don't touch the same files, and creates one `feature/<id>-<slug>` branch per ticket |
 | `build-fork` (parallel) | frontend-, backend-, mobile-, devops-, integration-engineer, cybersecurity-agent, each in its own worktree, each paired with its reviewer (+ database-reviewer on data changes) | Code + tests (test results), screenshots or logs, one commit per ticket |
-| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Merges in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `REVIEW.md › Design QA` and `REVIEW.md › Performance`). Failures go through triage to the right role |
-| `mbr` | **you** | Milestone Build Review: approve or request fixes |
+| `integrate` | integrator, then uiux-agent (design QA), performance-specialist and docs-writer | Squash-merges each ticket (one commit) in dependency order after ownership checks, regenerates the lockfile and contract clients, runs the hygiene check and a real end-to-end journey, writes the milestone package (with `REVIEW.md › Design QA` and `REVIEW.md › Performance`). Failures go through triage to the right role |
+| `mbr` | **you** | Milestone Build Review: approve or request fixes. Approved → PR/MR `ms-<n>/integration` → `develop` |
 
 ### 4 · Verify & Accept (lane `verify`)
 | Step | Who | Output |
 |---|---|---|
+| `release-branch` | orchestrator | Cuts `release/v<X.Y.Z>` from `develop` (feature freeze); late fixes are `bugfix/` branches into it |
 | `verify-fork` | qa-agent, quality-security-agent, security-auditor, performance-specialist | `ACCEPTANCE.md › QA`, `ACCEPTANCE.md › Open issues`, `ACCEPTANCE.md › Quality and security`, `ACCEPTANCE.md › Security audit`, `REVIEW.md › Performance` (dynamic testing only on owned, authorized environments) |
 | `evidence-policy` | orchestrator | Missing, failing or stale evidence goes back to triage |
 | `acceptance` | **you** | Accept, or send bug feedback |
@@ -376,12 +377,14 @@ A hook that exits with code 2 blocks the tool call.
 | Hook | Runs on | Blocks |
 |---|---|---|
 | `guard-secrets.sh` | Write/Edit, Bash | Keys, tokens, private keys, credentialed connection strings in files or commits (a marked fake value for tests is allowed) |
-| `guard-prod.sh` | Bash | Local deploy CLIs, IaC apply, force-push, `reset --hard`, `--no-verify`, remote migrations, hand-editing the run state, production pipeline triggers and release tags without a valid G3 |
+| `guard-prod.sh` | Bash | Local deploy CLIs, IaC apply, force-push, direct pushes to `main`/`develop`, `reset --hard`, `--no-verify`, remote migrations, hand-editing the run state, production pipeline triggers and release tags without a valid G3 |
 | `guard-gates.sh` | Write/Edit | Edits to a file in an approved gate package without an open change request |
 | `guard-coding.sh` | Write/Edit, Bash, Agent | Before G2: product code, scaffolding commands, code commits and build agents |
 | `guard-boundary.sh` | Write/Edit | Writes outside the agent's role paths; writes to frozen contracts after G2 |
 | `commit-gate.sh` | Bash (`git commit`) | Commits whose role checks (lint, typecheck, test from `project.json`) fail |
 | `session-context.sh` | SessionStart (startup, resume, compact) | Nothing; it restores the run summary, coding status, budget and last checkpoint |
+| `record-usage.sh` | Stop, SubagentStop, SessionEnd | Nothing; it records the provider-reported token use of the orchestrator and every agent in the usage ledger |
+| `guard-budget.sh` | Agent, Task, SendMessage | New or continued agent work once the token budget is reached |
 
 `check-ownership.sh` runs again at merge time as a deterministic second check.
 
@@ -398,6 +401,8 @@ A hook that exits with code 2 blocks the tool call.
 | **`coding-foundations` skill** (the foundation layer) | **OOP_AND_PATTERNS:** SOLID in practice, class design, domain modeling (value objects, entities, aggregates, repositories, use cases, events), 20+ design patterns with when to use and when to avoid, anti-patterns. **FORMS_AND_VALIDATION:** one schema shared by client and server; per-stack libraries (React Hook Form or Formik with zod or yup, VeeValidate, Angular Reactive Forms, Superforms, Pydantic, class-validator, Bean Validation, FluentValidation); rules for passwords, phones, OTP, files, dates and money; accessible errors; server-error mapping; tests. **Stack guides:** TypeScript, Node.js, NestJS, React (UI-library-first components, component layers), Next.js (App Router, route groups, error layers), React Native/Expo, Python (FastAPI, Django, SQLAlchemy), Go, Java/Kotlin Spring, .NET. **Cross-stack guides:** PERFORMANCE (budgets, measure-first, frontend, backend, heavy data), REALTIME (SSE, WebSockets, WebRTC), WORKERS (web workers, thread pools, durable jobs). Each has musts, prefers and a review checklist |
 
 The architect picks the stack guides for each role (`project.json → roles.<role>.guides`; every build and review brief lists them) and pins the stack-specific formatter, linter (with the complexity limits) and strict type checker in `PROJECT.md` and `project.json`. `commit-gate.sh` runs them before every commit, and every reviewer checks against these rules.
+
+**Branches (Git Flow, `.claude/rules/git.md`):** `main` holds released code and `develop` the integrated milestones; both are protected and change only through PR/MRs. Each milestone works on `ms-<n>/integration` (from `develop`), each ticket on `feature|chore|bugfix/<id>-<slug>` (squashed into one Conventional Commit), each release on `release/v<X.Y.Z>` (merged into `main` and tagged after G3, then back into `develop`), and production fixes on `hotfix/<id>-<slug>` from `main`. `delivery-state.sh branch …` creates every branch, so names and bases are always right.
 
 The non-negotiable rules (see `CLAUDE.md`):
 1. Ownership.
@@ -474,7 +479,7 @@ How it stays within the context window on a long, real project:
 - **Briefs point, never paste:** `PRD §4 F-3`, not the PRD. The orchestrator routes from return blocks and the one-screen `summary`.
 - **Checkpoints:** state changes the moment each event happens. Long steps write a checkpoint note, which `summary` and the SessionStart hook show on resume.
 - **Compaction:** Claude Code compacts automatically. Each gate also suggests a `/compact`, because a gate is the cheapest moment. The SessionStart hook then restores the run, and the orchestrator re-reads only the current workflow step.
-- **Agent continuity:** correction rounds continue the same agent. If its id can't be reached after a restart, a fresh agent gets the original brief, the last return block and the open findings.
+- **Agent continuity:** a correction round continues the same agent while its context is small. Once the context is above `DELIVERY_FRESH_CONTEXT` (100k tokens), or the agent can't be reached after a restart, a fresh agent takes over. It gets the original brief, the last return block, the open findings and the diff, after `branch handover` frees the ticket branch. Handover is refused while the old worktree has uncommitted work.
 - **Append-only logs are queried, never read whole:** MESSAGES, GATE-LOG, LESSONS and failures are read with `grep` or `tail`.
 - **Lessons log:** a mistake found in 2 or more tickets, a P1 finding or a root cause becomes a one-line rule in `docs/delivery/LESSONS.md` (at most 30 active lines). Each brief carries the role's relevant lines.
 - **Code map:** `docs/CODEMAP.md` (about 150 lines) is rebuilt each milestone, so engineers go straight to the right files instead of exploring the repository.
@@ -492,12 +497,15 @@ How it stays within the context window on a long, real project:
   Profiles never change the gates, the hooks or the testing rule.
 - **Context discipline:**
   - short path-based briefs;
-  - continue agents instead of respawning them;
+  - continue small agents and hand big ones over to a fresh agent;
+  - agents batch independent calls, read only the lines they need and keep feedback loops fast (agent-conduct);
   - re-review only the diff;
   - batch small tickets;
   - skip conditional steps with a recorded reason;
-  - scripts before agent reasoning.
-- **Token ledger:** every agent run is recorded (`usage add`). `usage summary` breaks usage down by model, agent and lane, and every gate summary shows the cost. With `DELIVERY_TOKEN_BUDGET` set, you get a warning at 80% and a stop for your decision at 100%.
+  - scripts before agent reasoning;
+  - a short `CLAUDE.md` and always-on rules (every agent loads them on every call); for a delivery project, turn off the plugins and MCP servers the run doesn't use (`/plugin`, `/mcp`), because each one is loaded into every call of every agent.
+- **Quality floor:** none of these savings removes or shortens a check. Full role checks before every report and in `commit-gate.sh`, an independent review of every ticket, end-to-end tests per milestone, the scans, the audits and all 7 gates stay as they are (`cost.md` §3).
+- **Token ledger:** hooks record the tokens the provider reported, for the orchestrator and every agent, from Claude Code's transcripts (input, cache writes, cache reads, output; each API call once). Nobody types a number, and the Agent result's token count (only the last turn) is not used. `usage summary` breaks usage down by model, agent and lane, and every gate summary shows it. With a budget set (`DELIVERY_TOKEN_BUDGET`, or one you approve with `usage budget`), you get a warning at 80%, and at 100% `guard-budget.sh` stops new agent work until you decide.
 
 ---
 
@@ -510,6 +518,7 @@ How it stays within the context window on a long, real project:
 | `DELIVERY_PROFILE` | `standard` | `lean` · `standard` · `thorough` |
 | `DELIVERY_MAX_PARALLEL` | `3` | Agents running at once in a fork |
 | `DELIVERY_TOKEN_BUDGET` | `0` | Token budget for the run (0 = none) |
+| `DELIVERY_FRESH_CONTEXT` | `100000` | Above this context size (tokens), a correction round goes to a fresh agent with a handover instead of continuing the old one |
 
 ### Project manifest (`.claude/project.json`, written by the solution-architect)
 The single source of project commands and paths. Agents never guess them. The full schema is in `.claude/skills/deliver/references/manifest.md`.
@@ -557,7 +566,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 | `ticket add/status/show/set`, `ready <ms>`, `bugs [open\|all]` | Tickets (type, size, bug links), validated status changes with history, ready-to-start lists, open bugs |
 | `msg add/answer/close/open` | Agent-to-agent messages |
 | `agent set/get` | Saved agent ids for continuing agents |
-| `usage add/summary` | The token ledger (exit 4 when the budget is reached) |
+| `usage sync/check/budget/context/summary` | The token ledger from provider-reported usage (the hooks run `sync`; exit 4 when the budget is reached; a new budget needs `--approved-by`); `context` says continue or fresh for an agent |
 | `note "<text>"`, `fail …` | Checkpoints and skipped steps; failure reports |
 
 ---
@@ -566,14 +575,14 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 91 checks against throwaway fixtures, covering:
+It runs 218 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;
 - coding before and after G2;
 - role boundaries and frozen contracts;
 - red and green commits;
-- the usage ledger and budget;
+- the usage ledger (provider-reported usage, each API call once, idempotent syncs) and the budget guard;
 - the ticket lifecycle (illegal transitions, history, bugs linked to their original);
 - checkpoints;
 - ownership.

@@ -36,10 +36,10 @@ Transactions, atomic updates, safe migrations (you own the migration files).
 Structured logs without PII, metrics, a healthy health endpoint.
 
 ## Process
-1. In a fresh worktree, run `project.json → commands.install` first.
+1. In a fresh worktree: `git switch <BRANCH>` from the brief (`git branch --show-current` must print it), then run `project.json → commands.install`.
 2. Follow `create-endpoint` Steps 0–6 and, once the whole module is built, test it with the `feature-testing` skill.
 3. Exercise each operation once on the running server, and paste an example request and response.
-4. Make one Conventional Commit (`Refs: <ticket>`).
+4. Make one Conventional Commit in the git.md format (`Refs: <ticket>`); in a correction round, add a `fix(<scope>): …` commit on the same branch (the integrator squashes them).
 
 ## Skills & Resources
 | Resource | Use |

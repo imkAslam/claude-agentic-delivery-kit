@@ -26,7 +26,7 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 - history: `git log --oneline -20`, `git log --oneline -- <path>`
 
 ## 4. Checkpoints
-- Run state changes **when the event happens** (`set-step`, `ticket status`, `round`, `agent set`, `usage add`), never in a batch at the end of a step.
+- Run state changes **when the event happens** (`set-step`, `ticket status`, `round`, `agent set`); token use is recorded by the `record-usage.sh` hook, not by hand, never in a batch at the end of a step.
 - Before a step that spans many agent calls (a build fork, a long correction loop), write one checkpoint: `delivery-state.sh note "checkpoint: <step> — done: <ids>; next: <ids>"`. `summary` shows the last note, so a resumed session knows where inside the step it was.
 
 ## 5. Compaction and new sessions
@@ -35,8 +35,8 @@ The kit does **not** rely on Claude Code's personal auto memory for project fact
 3. The orchestrator re-reads **only** the current step in [workflow.md](workflow.md) and continues. Approved gates are never redone.
 
 ## 6. Continuing agents, and when that fails
-- Correction rounds and follow-ups continue the same agent (`delivery-state.sh agent get <key>` → SendMessage), so it doesn't re-read everything.
-- **Fallback:** an agent id from an earlier session, or one whose context was itself compacted away, may not be reachable. If SendMessage fails or the agent no longer knows the task, start a fresh agent of the same type with the **original brief + its last return block + the open findings**, then `agent set <key> <new-id>`. Nothing is lost: the work is on disk.
+- Before a correction round, `delivery-state.sh usage context <key>` decides. `continue`: continue the same agent (`agent get <key>` → SendMessage), so it doesn't re-read everything. `fresh` (its context is above `DELIVERY_FRESH_CONTEXT`): start a fresh agent with the handover below, because each call of a big agent re-reads all of it ([cost.md](cost.md) §3 rule 5). Short questions always continue.
+- **Handover and fallback:** an agent id from an earlier session, or one whose context was itself compacted away, may not be reachable. If SendMessage fails, the agent no longer knows the task, or `usage context` says `fresh`, start a fresh agent of the same type with the **original brief (same `BRANCH:`) + its last return block + the open findings + `git diff --stat <base>...<branch>`**, after `delivery-state.sh branch handover <id>` frees the ticket branch (it refuses when the old worktree has uncommitted work: then continue the old agent), then `agent set <key> <new-id>`. Nothing is lost: the work is committed on the branch.
 - Don't continue one agent forever. After 3 correction rounds or a changed ticket scope, start fresh with a clean brief.
 
 ## 7. Lessons log: learning across tickets

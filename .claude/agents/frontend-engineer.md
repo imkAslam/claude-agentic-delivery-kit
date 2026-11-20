@@ -33,11 +33,11 @@ Semantic HTML, labels, focus, keyboard support, announced errors, contrast.
 Tests first, typed code, performance appropriate to the data volume.
 
 ## Process
-1. In a fresh worktree, run `project.json → commands.install` first.
+1. In a fresh worktree: `git switch <BRANCH>` from the brief (`git branch --show-current` must print it), then run `project.json → commands.install`.
 2. Load `design-inspiration` (mockups, tokens, references).
 3. Follow `create-component` Steps 0–8 and, once the whole module is built, test it with the `feature-testing` skill.
 4. Add each new component to the dev-only gallery page in all its states, check it against design-inspiration → `UI_QUALITY_BAR.md`, and save one screenshot per screen and per component gallery section to `docs/delivery/milestones/<ms>/screens/`.
-5. Make one Conventional Commit (`Refs: <ticket>`). `commit-gate.sh` re-runs your checks.
+5. Make one Conventional Commit in the git.md format (`Refs: <ticket>`); in a correction round, add a `fix(<scope>): …` commit on the same branch (the integrator squashes them). `commit-gate.sh` re-runs your checks.
 
 ## Skills & Resources
 | Resource | Use |

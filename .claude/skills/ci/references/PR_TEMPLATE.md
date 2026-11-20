@@ -1,6 +1,6 @@
 # Pull and merge request template
 
-Used by `open-pr` (the ci skill) for every PR or MR from an integration branch into the default branch. The title is a Conventional Commit line, so the merged history reads as a changelog.
+Used by `open-pr` (the ci skill) for every PR or MR: `ms-<n>/integration` → `develop`, `release/<version>` → `main` and → `develop`, `hotfix/<id>-<slug>` → `main`. The title is a Conventional Commit line, so the merged history reads as a changelog.
 
 ## Title
 `<type>(<scope>): <subject>`, for example `feat(orders): add refund request`. Types as in `.claude/rules/git.md`.
@@ -40,8 +40,8 @@ None, or the steps for users and operators.
 ```
 
 ## Merge requirements
-- The milestone build review gate is approved.
+- The gate is approved: `mbr:<ms>` for a milestone into `develop`, `g3` for a release or hotfix into `main`.
 - The CI `checks` job is green on the PR.
 - Every review thread is resolved.
-- The branch is up to date with the default branch.
-- Merges to the default branch follow `.claude/rules/git.md`.
+- The branch is up to date with its target (`develop` or `main`).
+- Merged with a **merge commit**, as `.claude/rules/git.md` says.

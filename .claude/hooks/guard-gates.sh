@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PreToolUse (Write|Edit|MultiEdit|NotebookEdit): protects approved gate packages and the run state file.
-#  - .claude/delivery/state.json is never edited with file tools (use delivery-state.sh)
+#  - .claude/delivery/state.json and usage.json are never edited with file tools (use delivery-state.sh)
 #  - a file in an approved gate package is editable only while an open change request lists it
 DL_INPUT="$(cat)"
 . "$(dirname "$0")/lib.sh"
@@ -12,7 +12,7 @@ file=$(dl_json '.tool_input.file_path // .tool_input.notebook_path // empty')
 rel=$(dl_rel "$file")
 
 case "$rel" in
-  .claude/delivery/state.json|*/.claude/delivery/state.json)
+  .claude/delivery/state.json|*/.claude/delivery/state.json|.claude/delivery/usage.json|*/.claude/delivery/usage.json)
     dl_block "Blocked: the run state changes only through: bash .claude/skills/deliver/scripts/delivery-state.sh <command>" ;;
 esac
 

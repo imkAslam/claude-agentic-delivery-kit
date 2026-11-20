@@ -33,7 +33,7 @@ Map each high or medium threat to controls from the catalog, with an owner role 
 Implement controls inside the owned paths, or assess an area and report the findings with exploit scenarios and fixes.
 
 ## Process
-Follow the `threat-model` skill Steps 0–5. In build mode, also follow `feature-testing`.
+Follow the `threat-model` skill Steps 0–5. In build mode, `git switch <BRANCH>` from the brief first, then also follow `feature-testing`.
 
 ## Skills & Resources
 | Resource | Use |

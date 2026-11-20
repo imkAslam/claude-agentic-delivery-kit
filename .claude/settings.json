@@ -5,7 +5,8 @@
     "DELIVERY_MAX_ROUNDS": "3",
     "DELIVERY_PROFILE": "standard",
     "DELIVERY_MAX_PARALLEL": "3",
-    "DELIVERY_TOKEN_BUDGET": "0"
+    "DELIVERY_TOKEN_BUDGET": "0",
+    "DELIVERY_FRESH_CONTEXT": "100000"
   },
   "hooks": {
     "SessionStart": [
@@ -40,7 +41,22 @@
         "hooks": [
           { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-coding.sh" }
         ]
+      },
+      {
+        "matcher": "Agent|Task|SendMessage",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-budget.sh", "timeout": 60 }
+        ]
       }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/record-usage.sh", "timeout": 60 } ] }
+    ],
+    "SubagentStop": [
+      { "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/record-usage.sh", "timeout": 60 } ] }
+    ],
+    "SessionEnd": [
+      { "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/record-usage.sh", "timeout": 60 } ] }
     ]
   }
 }

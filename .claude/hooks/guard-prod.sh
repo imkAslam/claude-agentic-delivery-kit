@@ -2,10 +2,27 @@
 # PreToolUse (Bash): enforces "deploys only through CI" and the G3 production gate.
 #  - always blocks: local deploy/apply/submit CLIs, destructive git (force push, reset --hard, clean -f, --no-verify),
 #    migrations against non-local databases, and direct writes to the run state file
+#  - blocks direct pushes to the protected branches (main/default, develop) once they exist on the remote: they change only through a PR/MR
 #  - blocks production pipeline triggers and release-tag pushes unless gate g3 is approved with matching hashes
 DL_INPUT="$(cat)"
 . "$(dirname "$0")/lib.sh"
 dl_has_jq || exit 0
+
+protected_push() { # protected_push <normalized push command>: prints the protected branch it would update directly
+  local prot remote="" dsts="" w words
+  prot=" main master develop $(dl_manifest '.ci.default_branch // empty') "
+  read -r -a words <<< "${1#*push}"
+  for w in ${words[@]+"${words[@]}"}; do
+    case "$w" in -*) continue ;; esac
+    if [ -z "$remote" ]; then remote="$w"; else dsts="$dsts ${w##*:}"; fi
+  done
+  [ -n "$dsts" ] || dsts=$( (dl_enter_cwd; git rev-parse --abbrev-ref HEAD 2>/dev/null) )
+  [ -n "$remote" ] || remote="origin"
+  for w in $dsts; do
+    w="${w#refs/heads/}"
+    case "$prot" in *" $w "*) ( dl_enter_cwd; git rev-parse -q --verify "refs/remotes/$remote/$w" >/dev/null 2>&1 ) && { echo "$w"; return; } ;; esac
+  done
+}
 
 cmd=$(dl_json '.tool_input.command // empty')
 [ -n "$cmd" ] || exit 0
@@ -20,10 +37,10 @@ markers=$(dl_manifest '(.deploy.prod_markers // ["prod","production"]) | join("|
 [ -n "$markers" ] || markers="prod|production"
 prod_re="(^|[^a-z0-9])(${markers})([^a-z0-9]|$)"
 
-# Direct writes to the run state (it changes only through delivery-state.sh)
-if printf '%s' "$cmd" | grep -q '\.claude/delivery/state\.json'; then
+# Direct writes to the run state or the usage ledger (they change only through delivery-state.sh)
+if printf '%s' "$cmd" | grep -Eq '\.claude/delivery/(state|usage)\.json'; then
   if printf '%s' "$cmd" | grep -Eq '(>|tee[[:space:]]|mv[[:space:]]|cp[[:space:]]|sed[[:space:]]+-i|rm[[:space:]]|truncate|perl[[:space:]]+-[a-z]*i)'; then
-    printf '%s' "$cmd" | grep -q 'delivery-state\.sh' || deny "direct modification of .claude/delivery/state.json" "Use: bash .claude/skills/deliver/scripts/delivery-state.sh <command>"
+    printf '%s' "$cmd" | grep -q 'delivery-state\.sh' || deny "direct modification of the run state or the usage ledger (.claude/delivery/)" "Use: bash .claude/skills/deliver/scripts/delivery-state.sh <command>"
   fi
 fi
 
@@ -38,6 +55,8 @@ while IFS= read -r seg; do
   if printf '%s' "$low" | grep -Eq "${git_re}push([[:space:]]|$)"; then
     printf '%s' "$low" | grep -Eq '[[:space:]](-f|--force|--force-with-lease|--force-if-includes)([[:space:]=]|$)|[[:space:]]\+[^[:space:]]+' && deny "force push"
     printf '%s' "$low" | grep -Eq '[[:space:]](--tags|--follow-tags)([[:space:]]|$)|refs/tags/|[[:space:]]v[0-9]+\.[0-9]+' && needs_g3="release tag push"
+    pb=$(protected_push "$s")
+    [ -z "$pb" ] || deny "direct push to the protected branch $pb" "main and develop change only through a PR/MR after their gate (.claude/rules/git.md). Push your own branch and open a PR/MR with the ci skill."
   fi
   printf '%s' "$low" | grep -Eq "${git_re}reset[[:space:]].*--hard" && deny "git reset --hard"
   printf '%s' "$low" | grep -Eq "${git_re}clean[[:space:]]+(-[a-z]*f|--force)" && deny "git clean -f"

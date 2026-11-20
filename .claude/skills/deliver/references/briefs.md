@@ -12,7 +12,7 @@ DONE WHEN: <the checks that must pass: commands, states visible, files present>
 INPUTS: <artifact paths + the sections/IDs that matter>
 TICKET: <id, title, AC-/BR-/TC- refs, contract operations, depends_on>          (build steps only)
 OWNED PATHS: <the globs from project.json roles.<role>.paths>                    (build steps only)
-WORKTREE / BASE: <path or "isolated">, base branch <ms-n/integration>           (build + review steps)
+BRANCH: <branch> from <base>   (from `delivery-state.sh branch ticket <id>`; the engineer runs `git switch <branch>` first; reviewers diff `<base>...<branch>`)   (build + review steps)
 PRIOR FINDINGS: <numbered findings from the last round, verbatim>               (correction rounds)
 INBOX: <M-id from <agent>: message body>, one per line                         (when messages are waiting)
 LESSONS: <≤5 lines for this role from docs/delivery/LESSONS.md>                (build + review steps, when any apply)

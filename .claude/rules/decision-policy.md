@@ -27,7 +27,7 @@ These are never decided by an agent and never wait silently for a later gate. Th
 | Accept a risk | Shipping with known issues, an open High/Critical finding, skipping a planned check | gates (acceptance, g3) |
 | Production | Every release to production, and any destructive data operation outside local Docker | g3 + `guard-prod.sh` |
 | Stuck work | A review loop or ticket reached its cap | the failure report |
-| Token budget reached | `usage add` returned `BUDGET_REACHED` | `delivery-state.sh` (exit 4) |
+| Token budget reached | The provider-reported total reached the budget (`BUDGET_REACHED`) | `guard-budget.sh` blocks new and continued agents; `delivery-state.sh usage check` (exit 4); a new budget needs `usage budget … --approved-by` |
 | Reversing a G1 choice | Changing the architecture style, stack, hosting or the visual direction after G1 | change request on g1 |
 
 ## Agents decide (never ask the human)

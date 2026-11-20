@@ -17,7 +17,7 @@ This is the run cursor. The tracker holds the ticket details; this file holds po
     }
   },
   "change_requests": [],         // { id, gate, paths[], reason, status: open|closed, ts }
-  "tickets": {},                 // "<id>": { title, type, role, milestone, size, status, attempts, depends_on[], branch, tracker_ref,
+  "tickets": {},                 // "<id>": { title, type, role, milestone, size, status, attempts, depends_on[], branch, base, tracker_ref,
                                  //           bug_of, bugs[], severity, found_in, history[{from, to, ts, note?, forced?}] }
                                  // type: feature | chore | spike | bug   size: S | M | L
                                  // status: backlog | ready | in_progress | in_review | changes_requested | approved | done | verified
@@ -25,11 +25,23 @@ This is the run cursor. The tracker holds the ticket details; this file holds po
   "failures": [],                // { ticket, role, attempts, report, ts }
   "notes": [],                   // { ts, text }, e.g. skipped steps and their reasons
   "messages": [],                // { id: "M-n", from, to, type, re, body, blocking, status: open|answered|closed, answer: {from, body, ts}, ts }
-  "usage": [],                   // [{ agent, model, tokens, step: "<lane>/<step>", ts }]  (delivery-state.sh usage add; cost.md)
+  "started_at": null,            // set by init; the usage ledger counts only API calls from this time on
   "agents": {},                  // { "<key, e.g. ticket:T-004 or discovery:product-manager>": "<agent id for SendMessage>" }
-  "release": { "name": null, "artifact": null, "environment": null },
+  "release": { "name": null, "artifact": null, "environment": null },   // + branch: "release/vX.Y.Z" once cut (branch release)
   "validated_at": null,
   "updated_at": null
+}
+```
+
+## Usage ledger: `.claude/delivery/usage.json` (git-ignored; written only by `usage sync` and `usage budget`, under a lock)
+```jsonc
+{
+  "sources": {                   // one per transcript: "<session-id>" (main session) or "<session-id>/agent-<id>" (subagent)
+    "<key>": { agent, kind: "session"|"subagent", file, size, models: { "<model>": { input, cache_write, cache_read, output, calls } }, updated }
+  },
+  "entries": [],                 // { source, agent, kind, model, step: "<lane>/<step>", input, cache_write, cache_read, output, calls, first, last }
+                                 // one per source, model and step; a sync adds only the growth since the source's last totals
+  "budget": null                 // { tokens, approved_by, ts } set by `usage budget`; overrides DELIVERY_TOKEN_BUDGET
 }
 ```
 
@@ -38,3 +50,4 @@ This is the run cursor. The tracker holds the ticket details; this file holds po
 - A path in any `approved` gate package is editable only while an `open` change request lists it (`guard-gates.sh`).
 - `g2` approved → every path matching `project.json → contracts.paths` is read-only for everyone except `solution-architect`, and for it only under an open CR on `g2` (`guard-boundary.sh`).
 - The SessionStart hook prints the `summary` output after startup, resume and compaction.
+- `Stop`, `SubagentStop` and `SessionEnd` run `record-usage.sh` (the ledger above); `guard-budget.sh` blocks Agent, Task and SendMessage once the total reaches the budget.

@@ -14,7 +14,7 @@
 ## ms-1 tickets
 | Ticket | Role | Title | Depends on | Size |
 |---|---|---|---|---|
-| T-001 | devops | CI pipeline: install, lint, typecheck, test, build | — | S |
+| T-001 | devops | CI pipeline: install, lint, typecheck, test, build; pre-push hook; staging deploys from develop and release/** | — | S |
 | T-002 | backend | Scaffold API + health endpoint + codegen wiring | — | S |
 | T-003 | frontend | Scaffold web app + generated client + app shell | — | S |
 | T-004 | devops | Staging deploy of the walking skeleton via CI | T-001, T-002, T-003 | M |
