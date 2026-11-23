@@ -42,9 +42,11 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
   "contracts": { "type": "<openapi|graphql|rpc|…>", "paths": ["contracts/**"], "codegen_cmd": "<cmd>" },
   "pre_build_paths": ["<extra globs allowed before g2, e.g. mock-server config>"],   // optional; guard-coding.sh
   "commands": {                       // repo-wide; used by the integrator and by the commit gate on main-session commits
+                                      // each value is ONE call of the project's own script under its standard name, e.g. "pnpm test",
+                                      // "make test" (setup-docker → PROJECT_COMMANDS.md); never a chain. check-hygiene.sh › commands
     "install": "<cmd>", "dev": "<cmd>", "lint": "<cmd>", "typecheck": "<cmd>",
     "test": "<cmd>", "e2e": "<cmd>", "build": "<cmd>", "migrate": "<cmd>",   // dev, test and build are REQUIRED once the foundation is done: app.sh start|test|build call them
-    "seed": "<optional: sample data>", "services_up": "<optional; default: docker compose up -d --wait>", "services_down": "<optional>",
+    "seed": "<optional: sample data>", "services_up": "<optional: pnpm infra:up; default: docker compose up -d --wait>", "services_down": "<optional: pnpm infra:down>",
     "perf": "<optional: Lighthouse / load-test cmd used by the performance-specialist>",
     "unused": "<optional: unused files/exports/dependencies check, e.g. knip, vulture; used by check-hygiene.sh>"
   },

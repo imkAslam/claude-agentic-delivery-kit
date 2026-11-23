@@ -66,7 +66,7 @@ The return block from `.claude/skills/deliver/references/briefs.md`. FINDINGS us
 
 ## Best Practices
 - Start from a clean tree. Capture the exit code of every command.
-- Stop the dev server after the journey run.
+- Stop the dev server after the journey run with `app.sh stop --app`; never stop or start the local services (`guard-services.sh`).
 
 ## Must Not
 - Fix another role's code, force-push, rewrite history, or pass `--no-verify`.

@@ -8,7 +8,7 @@ allowed-tools: Bash(bash ${CLAUDE_PROJECT_DIR}/.claude/skills/deliver/scripts/ap
 
 # Start the app
 
-1. Run `bash ${CLAUDE_PROJECT_DIR}/.claude/skills/deliver/scripts/app.sh start` (or `stop` / `status` when the user asked for that).
+1. Run `bash ${CLAUDE_PROJECT_DIR}/.claude/skills/deliver/scripts/app.sh start` (or `stop` / `status` / `clean` when the user asked for that; `clean` removes leftover containers, and `clean --volumes` also the unused volumes, after telling the user how many).
 2. Tell the user the result in plain words, in at most five lines:
    - **Started:** the address to open, which mode it runs in (Docker or SQLite), and where the sample accounts are (README, "Run it locally").
    - **No app yet:** say so, and what has to happen first (the run reaches the first build milestone).

@@ -10,7 +10,12 @@
 #   commented  (warning) 3+ consecutive lines of commented-out code
 #   emptydir   (warning) empty folders in the working tree
 #   services   more than one container of the same database in a compose file, a database container for tests,
-#              or a Testcontainers dependency (tests use a test database inside the one development container)
+#              a Testcontainers dependency, or test code and test scripts that start containers (docker run,
+#              compose up): tests use a test database inside the one running container (setup-docker → TEST_DATABASE.md)
+#   commands   a project.json command that chains several steps, or a command with no script of the standard name
+#              in the root package.json or Makefile (setup-docker → PROJECT_COMMANDS.md)
+#   scripts    a shell script nothing uses (no named script, CI job, compose file, Dockerfile, other script or
+#              document mentions it), or a proof/evidence script; (warning) more than 12 shell scripts
 #   comments   (warning) files with many comment lines: one doc comment at the top of a function or class is enough
 #   docs       only the lean document set in docs/delivery/, each within its length limit (skipped when
 #              project.json -> docs.layout is "classic")
@@ -173,6 +178,13 @@ while IFS= read -r f; do
     esac
   done
 done < "$tmp/compose"
+# test code and test scripts that start their own containers
+grep -E '(^|/)(tests?|__tests__|e2e|spec|testing|test-?support)/|\.(test|spec)\.[A-Za-z]+$|(^|/)(conftest\.py|(vitest|jest|playwright)\.config\.[a-z]+|global-?setup\.[a-z]+)$|(^|/)[^/]*test[^/]*\.sh$' "$tmp/files" | grep -vE '\.(md|txt)$' > "$tmp/testfiles" || true
+q="[\"'\`]"
+scan "$tmp/testfiles" "docker[[:space:]]+(run|create|start)([[:space:]]|\$)|(docker[[:space:]]+compose|docker-compose)[[:space:]].*[[:space:]](up|run)([[:space:]]|\$)|${q}docker${q}[[:space:]]*,[[:space:]]*\\[?[[:space:]]*${q}(run|create|start)${q}|${q}--(detach|rm)${q}|GenericContainer|PostgreSqlContainer|[Tt]estcontainers" > "$tmp/r"
+report FAIL services "test code starts a container: use the test database inside the one running container (setup-docker → TEST_DATABASE.md)" < "$tmp/r"
+scan "$tmp/testfiles" "${q}docker${q}" | grep -vF -f <(cut -d: -f1,2 "$tmp/r" | sed 's/$/:/') > "$tmp/r2" || true
+report WARN services "test code calls docker: tests should need only the running services" < "$tmp/r2"
 git ls-files 2>/dev/null | grep -E '(^|/)(package\.json|pyproject\.toml|requirements[^/]*\.txt|go\.mod|pom\.xml|build\.gradle(\.kts)?|[^/]*\.csproj)$' > "$tmp/manifests" || true
 if [ -s "$tmp/manifests" ]; then
   tr '\n' '\0' < "$tmp/manifests" | xargs -0 grep -liE 'testcontainers' 2>/dev/null | while IFS= read -r f; do printf '%s\n' "$f"; done > "$tmp/tc"
@@ -224,6 +236,66 @@ if [ "$layout" = "lean" ] && [ -d docs/delivery ]; then
     [ -f "$f" ] || continue
     n=$(wc -l < "$f" | tr -d ' '); [ "$n" -le "$lim" ] || add "WARN	docs	$f	$n lines, over the limit of $lim"
   done
+fi
+
+# 10. commands: project.json names the project's own scripts, one call each (setup-docker → PROJECT_COMMANDS.md)
+if [ -f "$MAN" ] && command -v jq >/dev/null 2>&1 && { [ -z "$base" ] || grep -qxE '\.claude/project\.json|package\.json|Makefile|justfile' "$tmp/all"; }; then
+  jq -r '[(.commands // {} | to_entries[] | select(.key | IN("install", "dev", "lint", "typecheck", "test", "e2e", "build", "migrate", "seed", "services_up", "services_down", "perf")) | {k: ("commands." + .key), v: .value}),
+          (.roles // {} | to_entries[] | .key as $r | (.value.commands // {}) | to_entries[] | {k: ("roles." + $r + ".commands." + .key), v: .value})]
+         | .[] | select((.v | type) == "string" and (.v | length) > 0) | "\(.k)\t\(.v)"' "$MAN" 2>/dev/null > "$tmp/cmds" || true
+  while IFS='	' read -r k v; do
+    [ -n "$k" ] || continue
+    case "$v" in
+      *'&&'*|*'||'*|*';'*|*'|'*|*'$('*|*'`'*|'('*|*' ('*)
+        add "FAIL	commands	$MAN	$k chains several steps ($(printf '%s' "$v" | cut -c1-60)...): make it one named script in the project's manifest and call that" ;;
+    esac
+  done < "$tmp/cmds"
+  for pair in dev=dev build=build test=test lint=lint typecheck=typecheck e2e=test:e2e migrate=db:migrate seed=db:seed services_up=infra:up services_down=infra:down; do
+    key=${pair%%=*}; script=${pair#*=}
+    jq -e --arg k "$key" '((.commands // {})[$k] // "") | length > 0' "$MAN" >/dev/null 2>&1 || continue
+    if [ -f package.json ]; then
+      jq -e --arg s "$script" '(.scripts // {}) | has($s)' package.json >/dev/null 2>&1 \
+        || add "FAIL	commands	package.json	no \"$script\" script for commands.$key: every task is a package script a developer can run without the kit"
+    elif [ -f Makefile ] || [ -f justfile ]; then
+      t=$(printf '%s' "$script" | tr ':' '-')
+      grep -qE "^${t}[[:space:]]*:" Makefile justfile 2>/dev/null \
+        || add "FAIL	commands	$( [ -f Makefile ] && echo Makefile || echo justfile )	no \"$t\" target for commands.$key: every task is a target a developer can run without the kit"
+    fi
+  done
+fi
+
+# 11. scripts: a shell script only where the stack's tools can't do the job, and each one used by something
+grep -E '\.(sh|bash)$' "$tmp/files" > "$tmp/sh" || true
+if [ -s "$tmp/sh" ]; then
+  git ls-files 2>/dev/null | grep -E '(^|/)(package\.json|Makefile|justfile|[^/]*Dockerfile[^/]*|[^/]*\.ya?ml|[^/]*\.toml|[^/]*\.md|[^/]*\.(sh|bash))$|(^|/)\.husky/' | grep -vE '^(\.claude|docs/delivery|docs/intake)/' > "$tmp/refs" || true
+  # A script is used when another file names it, or when a sibling that is itself named runs the folder with a
+  # pattern (a runner: `for t in tests/*.test.sh`). One pass over the referencing files: "<file>:<name>" lines.
+  git ls-files 2>/dev/null | grep -E '\.(sh|bash)$' | sed 's|.*/||' | sort -u > "$tmp/shnames"
+  tr '\n' '\0' < "$tmp/refs" | xargs -0 grep -oHF -f "$tmp/shnames" 2>/dev/null | sort -u > "$tmp/shrefs" || true
+  named() { # named <path>: another file mentions this script's name
+    awk -v b="$(basename "$1")" -v f="$1" '{ i = length($0) - length(b) } i > 1 && substr($0, i) == ":" b && substr($0, 1, i - 1) != f { found = 1; exit } END { exit !found }' "$tmp/shrefs"
+  }
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    b=$(basename "$f")
+    case "$b" in *proof*|*evidence*)
+      add "FAIL	scripts	$f	a proof or evidence script: evidence goes in the return block, not in a script"; continue ;;
+    esac
+    named "$f" && continue
+    runner=""
+    for s in $(git ls-files -- "$(dirname "$f")" 2>/dev/null | grep -E "^$(dirname "$f" | sed 's/[.[\*^$]/\\&/g')/[^/]+\.(sh|bash)\$"); do
+      [ "$s" != "$f" ] && grep -qE '\*[A-Za-z0-9._-]*\.(sh|bash)' "$s" 2>/dev/null && named "$s" && { runner="$s"; break; }
+    done
+    if [ -z "$runner" ]; then   # or a file outside the folder runs it by pattern: bash "<folder>/${t}.test.sh", <folder>/*.sh
+      d=$(dirname "$f"); de=$(printf '%s' "$d" | sed 's/[.[\*^$]/\\&/g')
+      grep -vE "^${de}/" "$tmp/refs" | tr '\n' '\0' | xargs -0 grep -lE -- "(^|[^A-Za-z0-9_./-])${de}/[\$*{]" 2>/dev/null | grep -q . && runner="pattern"
+    fi
+    [ -n "$runner" ] || add "FAIL	scripts	$f	nothing uses this script (no named script, CI job, compose file, Dockerfile, other script or README mentions it): remove it, or call it from a named script"
+  done < "$tmp/sh"
+  if [ -z "$base" ]; then
+    n=$(wc -l < "$tmp/sh" | tr -d ' ')
+    [ "$n" -le 12 ] || add "WARN	scripts	(repository)	$n shell scripts: prefer the package manager, the framework and ORM CLIs and compose (setup-docker → PROJECT_COMMANDS.md)"
+  fi
 fi
 
 printf '%s' "$out" | grep . | sort -u > "$tmp/out" || true

@@ -47,6 +47,7 @@ user-invocable: false
 - [ ] Transactions cover multi-step writes. No read-modify-write races on counters or balances.
 - [ ] Migrations are safe (backward compatible, reversible or documented) and owned by backend.
 - [ ] Logs are structured, with no PII or secrets.
+- [ ] Tests use the shared test database (`TEST_DATABASE_URL`, one database per worker copied from the template; `setup-docker` → TEST_DATABASE.md). No test, fixture or test script starts a container (`docker run`, Testcontainers, `compose up`).
 
 ## API (architect-reviewer on contracts; backend-reviewer on implementations)
 - [ ] Every operation follows ARCHITECTURE.md › API conventions (naming, methods, status codes, the standard error body with stable codes)
@@ -91,6 +92,7 @@ user-invocable: false
 - [ ] Versions and actions/images are pinned. Caching is correct.
 - [ ] A health check, smoke test, rollback path and backup exist, matching `ARCHITECTURE.md › Operations`.
 - [ ] Nothing was applied or deployed from the workstation. Only dry-run validation was used.
+- [ ] Every task is a named script under the standard name, and `project.json` commands are single calls of them (`setup-docker` → PROJECT_COMMANDS.md). New shell scripts do what no tool can, are used by something, and none is a proof or evidence script. One compose file with a fixed `name:`, one container per service.
 
 ## Security
 - [ ] Authn/session: secure cookie flags or token handling, expiry, rotation, logout.

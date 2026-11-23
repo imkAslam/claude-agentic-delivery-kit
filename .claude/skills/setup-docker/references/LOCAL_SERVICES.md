@@ -26,11 +26,12 @@
 Social sign-in (e.g. Google) has no local substitute. In development, use the mock OIDC server; real provider test credentials are a **remote fallback** item.
 
 ## Standards for the development compose file
-- One `compose.yml` (devops-owned) starts **all** dev services. `project.json → commands.dev` starts it (or the app depends on it).
+- One `compose.yml` (devops-owned) starts **all** dev services, with a fixed top-level `name: <app>`. The `infra:up` / `infra:down` scripts run it (PROJECT_COMMANDS.md), and `project.json → commands.services_up` names `infra:up`.
+- **Started once, shared by everyone.** The orchestrator starts the services from the main checkout before parallel work (`app.sh services`). Agents in their worktrees use the running services and never start, stop or remove containers (`guard-services.sh`); `app.sh` in a worktree does the same. `app.sh clean` removes leftovers.
 - Pinned tags, healthchecks, `depends_on: condition: service_healthy`, named volumes, ports bound to `127.0.0.1` only.
 - Local credentials are obvious dev placeholders defined in `.env.example` (for example `postgres`/`postgres` on localhost). The real `.env` is git-ignored.
 - Seed scripts create synthetic data and buckets/queues on startup (idempotently).
-- **One container per service, shared by development and tests.** Tests use their own **database inside the same database container** (`<app>_test`; the test setup creates and migrates it, one per parallel worker when needed, and drops or truncates it afterwards). The same goes for cache and queues (another logical database or a key prefix). **Never** a second database container, a separate compose project, a "drill" or "test" stack, or Testcontainers. `check-hygiene.sh` (`services` check) fails on duplicates.
+- **One container per service, shared by development and tests.** Tests use their own **database inside the same database container** (`<app>_test`; the test setup creates and migrates it, one per parallel worker when needed, and drops or truncates it afterwards); the pattern is in [TEST_DATABASE.md](TEST_DATABASE.md). The same goes for cache and queues (another logical database or a key prefix). **Never** a second database container, a separate compose project, a "drill" or "test" stack, or Testcontainers. `check-hygiene.sh` (`services` check) fails on duplicates.
 - **No Docker on the machine:** relational projects run on SQLite files instead; see [NO_DOCKER.md](NO_DOCKER.md).
 - Document every service in ARCHITECTURE.md › Operations §0 and `project.json → services`.
 

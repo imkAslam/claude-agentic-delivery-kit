@@ -376,6 +376,27 @@ hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.' && { fail=$((fail+1
 rm -f "$HR/.claude/project.json"; ( cd "$HR" && git rm -rq docs/delivery/BA-ANALYSIS.md docs/delivery/evidence && git commit -qm "lean again" )
 awk 'BEGIN { for (i = 0; i < 701; i++) print "line " i }' > "$HR/docs/delivery/PRD.md"; plant longprd
 hy --no-unused; has '^FAIL.docs.docs/delivery/PRD.md.701 lines, over the limit of 700' "a document over its length limit fails"
+echo "infra hygiene (commands, scripts, test containers)"
+mkdir -p "$HR/api/tests" "$HR/ci/tests" "$HR/.github/workflows"
+printf "import { execFile } from 'node:child_process';\nexecFile('docker', ['run', '--rm', 'postgres:16']);\n" > "$HR/api/tests/db.test.ts"
+printf "import { execFile } from 'node:child_process';\nexecFile('docker', ['image', 'inspect', 'postgres:16']);\n" > "$HR/api/tests/image.test.ts"
+printf '{"commands":{"dev":"pnpm dev","test":"pnpm -r test && (cd ai && uv run pytest)"}}\n' > "$HR/.claude/project.json"
+printf '{"scripts":{"dev":"pnpm -r dev","seed":"bash scripts/used.sh"}}\n' > "$HR/package.json"
+printf '#!/bin/sh\necho used\n' > "$HR/scripts/used.sh"; printf '#!/bin/sh\necho orphan\n' > "$HR/scripts/orphan.sh"
+printf '#!/bin/sh\necho proof\n' > "$HR/scripts/rate-proof.sh"; printf 'run scripts/rate-proof.sh\n' >> "$HR/README.md"
+printf '#!/bin/sh\nfor t in ci/tests/*.test.sh; do sh "$t"; done\n' > "$HR/ci/tests/run-all.sh"; printf '#!/bin/sh\necho ok\n' > "$HR/ci/tests/a.test.sh"
+printf 'jobs:\n  t:\n    steps:\n      - run: sh ci/tests/run-all.sh\n      - run: for t in b; do bash "loop/tests/${t}.test.sh"; done\n' > "$HR/.github/workflows/ci.yml"; mkdir -p "$HR/loop/tests"; printf '#!/bin/sh\necho b\n' > "$HR/loop/tests/b.test.sh"
+plant infra
+hy --no-unused
+has '^FAIL.services.api/tests/db.test.ts:2' "test code that runs a database container fails"
+has '^WARN.services.api/tests/image.test.ts:2' "other docker calls from tests only warn"
+has '^FAIL.commands..claude/project.json.commands.test chains several steps' "a chained project.json command fails"
+has '^FAIL.commands.package.json.no "test" script for commands.test' "a command without its package script fails"
+printf '%s\n' "$out" | grep -q 'no "dev" script' && { fail=$((fail+1)); echo "  FAIL a command with its package script passes"; } || { pass=$((pass+1)); echo "  ok   a command with its package script passes"; }
+has '^FAIL.scripts.scripts/orphan.sh.nothing uses this script' "a shell script nothing uses fails"
+has '^FAIL.scripts.scripts/rate-proof.sh.a proof or evidence script' "a proof script fails even when it is mentioned"
+printf '%s\n' "$out" | grep -qE 'scripts/used\.sh|ci/tests/(a\.test|run-all)\.sh|loop/tests/b\.test\.sh' && { fail=$((fail+1)); echo "  FAIL used scripts and folder runners pass"; printf '%s\n' "$out" | grep scripts | sed 's/^/       /'; } || { pass=$((pass+1)); echo "  ok   used scripts and folder runners pass"; }
+( cd "$HR" && git rm -rq api/tests ci loop .github scripts/used.sh scripts/orphan.sh scripts/rate-proof.sh .claude/project.json && git commit -qm "infra hygiene done" ) 2>/dev/null; rm -f "$HR/.claude/project.json"
 PS="$TMP/plan"; mkdir -p "$PS/.claude"; cp -R "$KIT/skills" "$KIT/hooks" "$PS/.claude/"; ( cd "$PS" && git init -q )
 pst() { out=$(cd "$PS" && CLAUDE_PROJECT_DIR="$PS" bash "$PS/.claude/skills/deliver/scripts/delivery-state.sh" "$@" 2>&1); c=$?; }
 pst init
@@ -488,6 +509,25 @@ rm -f "$TMP/wt-old/wip.txt"
 br handover T-004; [ $c -eq 0 ] && ! git -C "$TMP/wt-old" symbolic-ref -q HEAD >/dev/null; yes $? "handover frees the ticket branch from a clean old worktree"
 git worktree add -q "$TMP/wt-new" "$HB" 2>/dev/null; [ "$(git -C "$TMP/wt-new" branch --show-current 2>/dev/null)" = "$HB" ]; yes $? "a fresh agent can then switch to the ticket branch"
 git worktree remove --force "$TMP/wt-new" 2>/dev/null; git worktree remove --force "$TMP/wt-old" 2>/dev/null
+
+echo "guard-services (agents never manage containers) and app.sh in a worktree"
+check "blocks docker run from an agent"        2 guard-services.sh "$(bash_json "docker run -d postgres:16" backend-engineer)"
+check "blocks compose up from an agent"        2 guard-services.sh "$(bash_json "cd api && docker compose -f infra/compose.yaml up -d" backend-engineer)"
+check "blocks infra:up from an agent"          2 guard-services.sh "$(bash_json "pnpm infra:up" devops-engineer)"
+check "blocks app.sh services from an agent"   2 guard-services.sh "$(bash_json "bash .claude/skills/deliver/scripts/app.sh services" integrator)"
+check "blocks a plain app.sh stop from an agent" 2 guard-services.sh "$(bash_json "bash .claude/skills/deliver/scripts/app.sh stop" integrator)"
+check "allows app.sh stop --app"               0 guard-services.sh "$(bash_json "bash .claude/skills/deliver/scripts/app.sh stop --app" integrator)"
+check "allows app.sh start and test"           0 guard-services.sh "$(bash_json "bash .claude/skills/deliver/scripts/app.sh start && bash .claude/skills/deliver/scripts/app.sh test" integrator)"
+check "allows compose config and docker build" 0 guard-services.sh "$(bash_json "docker compose config --quiet && docker build -t app ." devops-engineer)"
+check "allows compose exec into the database"  0 guard-services.sh "$(bash_json "docker compose exec db psql -c 'select 1'" backend-engineer)"
+check "allows the main session"                0 guard-services.sh "$(bash_json "docker compose up -d --wait" orchestrator)"
+check "allows a session without an agent"      0 guard-services.sh "$(bash_json "docker compose up -d --wait")"
+APP="$REPO/.claude/skills/deliver/scripts/app.sh"; git worktree add -q --detach "$TMP/wt-app" HEAD 2>/dev/null
+out=$(cd "$TMP/wt-app" && bash "$APP" services 2>&1); c=$?; [ $c -eq 1 ] && printf '%s' "$out" | grep -q "main checkout"; yes $? "app.sh services refuses in a worktree"
+out=$(cd "$TMP/wt-app" && bash "$APP" clean 2>&1); c=$?; [ $c -eq 1 ]; yes $? "app.sh clean refuses in a worktree"
+out=$(cd "$TMP/wt-app" && bash "$APP" stop 2>&1); c=$?; [ $c -eq 0 ] && printf '%s' "$out" | grep -q "keep running for everyone"; yes $? "app.sh stop in a worktree stops only the app"
+out=$(bash "$APP" stop --bogus 2>&1); c=$?; [ $c -eq 2 ]; yes $? "app.sh rejects an unknown option"
+git worktree remove --force "$TMP/wt-app" 2>/dev/null
 
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]
