@@ -23,13 +23,23 @@ if command -v npx >/dev/null 2>&1; then
   [ -s "$outabs" ] && { echo "rendered (playwright) ${out} ${w}x${h}"; exit 0; }
 fi
 
+# Headless Chrome lays pages out at least 500 px wide, so a phone width (e.g. 390) would show a cropped
+# desktop-ish layout. Below 500 px, render a frame page whose iframe has the exact width: the page inside
+# then lays out at the real phone width.
+url="file://${abs}${query}" frame=""
+if [ "$w" -lt 500 ]; then
+  frame=$(mktemp "${TMPDIR:-/tmp}/render-frame.XXXXXX") && mv "$frame" "$frame.html" && frame="$frame.html"
+  printf '<!doctype html><meta charset="utf-8"><body style="margin:0;overflow:hidden"><iframe src="%s" width="%s" height="%s" style="border:0;display:block"></iframe>\n' "$url" "$w" "$h" > "$frame"
+  url="file://${frame}"
+fi
 for b in "${CHROME_PATH:-}" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" "/Applications/Chromium.app/Contents/MacOS/Chromium" \
          "$(command -v google-chrome 2>/dev/null)" "$(command -v chromium 2>/dev/null)" "$(command -v chromium-browser 2>/dev/null)"; do
   [ -n "$b" ] && [ -x "$b" ] || continue
   "$b" --headless=new --disable-gpu --hide-scrollbars --no-first-run --no-default-browser-check \
-       --window-size="${w},${h}" --screenshot="$outabs" "file://${abs}${query}" >/dev/null 2>&1
-  [ -s "$outabs" ] && { echo "rendered (chrome headless) ${out} ${w}x${h}"; exit 0; }
+       --window-size="${w},${h}" --screenshot="$outabs" "$url" >/dev/null 2>&1
+  [ -s "$outabs" ] && { [ -n "$frame" ] && rm -f "$frame"; echo "rendered (chrome headless) ${out} ${w}x${h}"; exit 0; }
 done
+[ -n "$frame" ] && rm -f "$frame"
 
 echo "NOT RENDERED: no Playwright browser and no Chrome/Chromium found (install one, or run 'npx playwright install chromium'). Keep the HTML and report it."
 exit 3

@@ -34,7 +34,7 @@ Used by the uiux-agent (self-check), the design-reviewer (designs), and design Q
 Every project has a **dev-only gallery page** (for example `/dev/components`, excluded from production builds) that renders each base and feature component in all its states with realistic content. The frontend engineer adds a component there when it is built; design QA reviews components there and records the scores in `REVIEW.md › Design QA`. It replaces per-state screenshots: one screenshot of the gallery section per component is enough.
 
 ## 5. What makes UI look unprofessional (fix these first)
-Inconsistent spacing · more than one primary button in a view · centered long text · borders and shadows on everything · too many colors or font sizes · unstyled default browser controls · missing empty and loading states · truncated text without a tooltip · modals for everything · walls of fields with no grouping · technical error text shown to users.
+A bare form on a wide empty page (auth screens: AUTH_SCREENS.md) · inconsistent spacing · more than one primary button in a view · centered long text · borders and shadows on everything · too many colors or font sizes · unstyled default browser controls · missing empty and loading states · truncated text without a tooltip · modals for everything · walls of fields with no grouping · technical error text shown to users.
 
 ## 5a. The default AI look (fix on sight)
 Adapted from the MIT-licensed `frontend-ui-engineering` skill (addyosmani/agent-skills), rewritten for this kit.
