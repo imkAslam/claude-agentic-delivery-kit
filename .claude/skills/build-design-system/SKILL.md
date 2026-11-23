@@ -24,9 +24,9 @@ Turns the approved brand into a buildable system: structure first, then tokens, 
 Write `docs/delivery/DESIGN.md › UX` §1–§6 with [UX_STRUCTURE.md](references/UX_STRUCTURE.md): principles, IA and sitemap, a flow per journey, text wireframes for the key screens, the inventory and the states matrix. Send it to the **design-reviewer** (through the orchestrator) before building high-fidelity mockups. Fix structural findings first; they are cheap now and expensive later.
 
 ### Step 2: Tokens
-Write `docs/delivery/tokens.json` (and `tokens.dark.json` if dark mode is in scope) per [DESIGN_TOKENS.md](references/DESIGN_TOKENS.md), using the DESIGN.md › Brand values. Then run:
+Write `docs/delivery/tokens.json` (light) **and** `docs/delivery/tokens.dark.json` per [DESIGN_TOKENS.md](references/DESIGN_TOKENS.md), using the DESIGN.md › Brand values and the tokens the chosen visual style needs (define-brand → VISUAL_STYLES.md §2). Both themes are the default; only a client who asked for one theme (recorded in DESIGN.md › Brand) gets one file. Then run:
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/check-tokens.sh [--theme docs/delivery/tokens.dark.json] docs/delivery/tokens.json
+bash ${CLAUDE_SKILL_DIR}/scripts/check-tokens.sh --theme docs/delivery/tokens.dark.json docs/delivery/tokens.json
 ```
 Fix every failure by adjusting the semantic mapping (pick another primitive step), not by lowering the minimum. Paste the result into DESIGN.md › Brand §3.
 

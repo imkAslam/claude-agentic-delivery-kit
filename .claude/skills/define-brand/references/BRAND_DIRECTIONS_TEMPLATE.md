@@ -17,6 +17,7 @@ Trends seen · table stakes and clichés · what we take (patterns only). Or: "n
 | | A · <name> (safe) | B · <name> (evolved) | C · <name> (bold) |
 |---|---|---|---|
 | In one line | | | |
+| Visual style (VISUAL_STYLES.md; a different one per direction) | Minimalism: where the effect is used, where not, its fallback | | |
 | Mood words | | | |
 | Sliders (classic→modern, serious→playful, calm→energetic, minimal→rich) | 2·2·2·1 | | |
 | Dominant 60 / secondary 30 / accent 10 | neutral-0 / #… / #… | | |
@@ -25,7 +26,8 @@ Trends seen · table stakes and clichés · what we take (patterns only). Or: "n
 | Type (headings / body) | <font> / <font> (license) | | |
 | Shape and density | radius, borders, spacing | | |
 | Iconography / imagery | | | |
-| Contrast + distinctness check | `tokens: n checks pass, 0 failures, n warnings` | | |
+| Contrast + distinctness check (light and dark) | `tokens: n checks pass, 0 failures, n warnings` | | |
+| Device and browser cost of the style | none (flat) · or blur layers, fallbacks | | |
 | Board | brand/directions/A-board.png | | |
 | Cost or licensing impact | none (open fonts) | | |
 
@@ -41,10 +43,10 @@ Direction <X>, because <tie to the personas, goals and the competitor gap>. What
 One self-contained page with these blocks, in this order:
 1. **Header:** direction name, 3–5 mood words, the one-line idea
 2. **Wordmark proposal:** the product name in the heading font, on light and on dark, plus a small mark (favicon size preview at 16/32 px)
-3. **Palette:** swatches sized by their 60/30/10 share (dominant, secondary, accent), then the status colors; each with hex, OKLCH, its role and the contrast ratio of each text pair; the color rationale in one line and the `check-tokens.sh` summary (contrast + distinctness)
-4. **Typography:** the display, heading and body samples with the scale (e.g. 36/30/24/20/16/14)
-5. **Shape and density:** buttons (primary, secondary, ghost), an input with its error state, a card, a badge, a toast
-6. **Key screen:** the product's most important screen (from the BA journeys), at real content density, with its 60/30/10 split labeled
+3. **Palette:** for light and for dark, swatches sized by their 60/30/10 share (dominant, secondary, accent), then the status colors; each with hex, OKLCH, its role and the contrast ratio of each text pair; the color rationale in one line and the `check-tokens.sh` summary (contrast + distinctness, both themes)
+4. **Typography:** the display, heading and body samples with the scale (e.g. 36/30/24/20/16/14); at most two families
+5. **Style, shape and density:** the visual style applied for real (glass over its background, soft extrusion, depth layers, or flat), with its fallback beside it; buttons (primary, secondary, ghost), an input with its error state, a card, a badge, a toast
+6. **Key screen:** the product's most important screen (from the BA journeys), at real content density, with its 60/30/10 split labeled, **in light and in dark** (side by side)
 7. **Imagery and iconography:** the icon style (stroke, corners) and the image or illustration treatment, described or drawn in CSS/SVG (no stock images, no network)
 
 Use the same HTML conventions as the mockups (build-design-system → DESIGN_TOKENS.md for the CSS variables).
