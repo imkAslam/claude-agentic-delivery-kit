@@ -29,7 +29,8 @@ These are **heuristics, not rules**. The **safe** direction stays near the categ
 
 ## 3. Reserve the status hues
 Danger (red), warning (amber/orange), success (green) and info (blue/sky) carry meaning in every product. Brand colors must not be mistaken for them:
-- The primary, secondary and accent colors must be clearly distinct from danger, warning and success. `check-tokens.sh` enforces ΔE ≥ 0.10 in OKLab (DESIGN_TOKENS §5a).
+- The primary, secondary and accent colors must be clearly distinct from danger, warning and success. `check-tokens.sh` enforces ΔE ≥ 0.10 in OKLab (DESIGN_TOKENS §5a). **Danger is always red** (the checker fails any other hue): red means danger to every user.
+- **Pink, magenta, coral and rose brands sit next to red** (the checker warns: "error look-alike"). Keep the brand **and keep danger red**; set errors apart by **lightness** (a deep red, clearly darker than the brand, in the light theme; a strong, more saturated red in the dark theme) and by **presentation**: error badges are a solid red fill with white (or, in dark, near-black) text, every error leads with its icon and the word "Error", and alerts use a red edge with normal text. Check it on the render next to the primary button.
 - If the client's brand *is* red or green (case A), keep the brand and **shift the status color** instead (e.g. danger to a deeper crimson with a stronger icon, or success to teal), and record why on the board and in DESIGN.md › Brand §3.
 - Status colors are always shown with an icon and text, never by color alone.
 
@@ -39,14 +40,14 @@ Every screen uses three roles in roughly this balance:
 | Share | Role | What it covers | Tokens |
 |---|---|---|---|
 | **60%: dominant (main)** | The base that sets the overall tone | Page backgrounds, large surfaces, content areas | `color.bg.*`, `color.surface.*` (neutral, or a light tint of the brand hue) |
-| **30%: secondary** | Supports the dominant without competing with it | Navigation, app bars, headers, section bands, cards, secondary buttons | `color.secondary.default`, `.hover`, `.on`, `.subtle` |
+| **30%: secondary** | Supports the dominant without competing with it | **Light theme:** the light tint `secondary.subtle` fills the large areas (navigation, app bars, headers, section bands, cards) with dark text; the deep `secondary.default` is for text, icons, borders, small fills and secondary buttons. **Dark theme:** the deep steps fill them | `color.secondary.default`, `.hover`, `.on`, `.subtle` |
 | **10%: accent (the loud color)** | The focal point that draws the eye | Primary call to action, key highlights, links, selection, focus | `color.primary.*` (the main action), `color.accent.*` (highlights) |
 
 Rules for applying it:
 - The dominant 60% is almost always a neutral or a very light brand tint. A saturated color across 60% of a screen tires the eye and fights text contrast.
 - The accent is the loudest color and the rarest one. If it doesn't stand out against the dominant, it has failed; if it covers more than ~10%, nothing stands out any more.
 - Text and status colors sit **outside** the ratio: they are functional, not decorative.
-- Allowed variations: when the secondary is a strong neutral (e.g. a dark navigation shell), the dominant and secondary may swap places; tints and shades of the three hues extend the palette without adding new hues.
+- **The light theme reads light.** No dark navigation shell, header or full-width dark band in the light theme: large areas take light tints (`secondary.subtle`, the dominant), and dark fills stay on small controls (a button, Quick exit, a badge). A client who wants a dark look chooses the dark theme or a dark-first direction at G1; it is never the light theme's default. Tints and shades of the three hues extend the palette without adding new hues.
 - It is a guideline per screen type, not a pixel count. Dense data screens (tables, dashboards, clinical charts) can run more neutral; marketing and landing screens can show more secondary. The accent stays near 10% everywhere.
 - Every direction board's key screen and every mockup states its split (e.g. "dominant neutral-0/50 · secondary violet-700 nav + cards · accent brand-600 CTAs"), and the design-reviewer checks it on the rendered PNG.
 

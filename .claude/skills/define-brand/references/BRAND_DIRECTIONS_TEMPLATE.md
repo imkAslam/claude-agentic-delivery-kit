@@ -45,7 +45,7 @@ One self-contained page with these blocks, in this order:
 2. **Wordmark proposal:** the product name in the heading font, on light and on dark, plus a small mark (favicon size preview at 16/32 px)
 3. **Palette:** for light and for dark, swatches sized by their 60/30/10 share (dominant, secondary, accent), then the status colors; each with hex, OKLCH, its role and the contrast ratio of each text pair; the color rationale in one line and the `check-tokens.sh` summary (contrast + distinctness, both themes)
 4. **Typography:** the display, heading and body samples with the scale (e.g. 36/30/24/20/16/14); at most two families
-5. **Style, shape and density:** the visual style applied for real (glass over its background, soft extrusion, depth layers, or flat), with its fallback beside it; buttons (primary, secondary, ghost), an input with its error state, a card, a badge, a toast
+5. **Style, shape and density:** an inline error and an error badge placed right next to the primary button (so the reader sees that an error never looks like the brand); the visual style applied for real (glass over its background, soft extrusion, depth layers, or flat), with its fallback beside it; buttons (primary, secondary, ghost), an input with its error state, a card, a badge, a toast
 6. **Key screen:** the product's most important screen (from the BA journeys), at real content density, with its 60/30/10 split labeled, **in light and in dark** (side by side)
 7. **Imagery and iconography:** the icon style (stroke, corners) and the image or illustration treatment, described or drawn in CSS/SVG (no stock images, no network)
 

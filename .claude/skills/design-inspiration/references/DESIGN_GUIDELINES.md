@@ -47,6 +47,7 @@
 ## Content
 - Write in sentence case. Use plain verbs on buttons ("Save changes", not "Submit").
 - Error messages say what happened and how to fix it ("Card expired. Use another card.").
+- **Errors stand out from everything else, the brand included.** A red error icon and the word ("Error", or the field's problem) lead; the message is `danger.default` on the plain surface or `text.default` beside a red icon and edge. Never red text on a red or pink tint, and never an error that looks like the brand's own buttons (COLOR_METHOD §3).
 - An empty state explains what will appear there and offers the next action.
 - Format numbers, dates and currency for the user's locale.
 
