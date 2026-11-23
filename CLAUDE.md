@@ -15,7 +15,7 @@ Project-specific facts (stack, roles and their paths, commands, hosting) are imp
 - **Tickets:** one cohesive capability of one module for one role, size S/M/L, never split by layer; feature tickets in a milestone are independent and run in parallel against the frozen contract (`plan-delivery`, `plan-check`). Bugs found later are linked to their original ticket (`tracker`).
 - **Local, free-first services:** Docker with one container per service; tests use a test database inside the same container; SQLite through the ORM without Docker (`setup-docker`).
 - **Agents talk through the orchestrator** (`MESSAGES:` in return blocks; `collaboration.md`).
-- **Design is a system the client chooses** (2–3 directions at G1, tokens, components and mockups frozen at G2, design QA per UI milestone; `define-brand`, `build-design-system`).
+- **Design is a system the client chooses** (2–3 directions at G1, each in a different visual style and in light and dark, tokens, components and mockups frozen at G2, design QA per UI milestone; `define-brand`, `build-design-system`).
 - **Few documents:** only the lean set in `.claude/skills/deliver/references/documents.md`; evidence is shown in return blocks, not stored. ADRs only for major decisions. The PRD holds every architecture diagram; `ARCHITECTURE.md` §14 mirrors it (`check-diagrams.sh --mirror`).
 - **Clean and fast:** `check-hygiene.sh` on every diff and integration; the performance-specialist measures against the PRD budgets.
 - **Memory lives in files:** run position in the state file, knowledge in `docs/`, code locations in `docs/CODEMAP.md`, recurring mistakes in `docs/delivery/LESSONS.md` (`memory.md`).

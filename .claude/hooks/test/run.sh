@@ -265,6 +265,11 @@ printf '%s\n' "$out" | grep -q '^FAIL.*distinct color.primary.default.*color.dan
 tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
+jq '. + {material: {glass: {blur: {"$type": "dimension", "$value": "16px"}, opacity: {"$type": "number", "$value": 0.72}}}}' "$TD/tokens.json" > "$TD/glass.json"
+tok --theme "$TD/tokens.dark.json" "$TD/glass.json"; expect 0 "visual-style tokens (glass blur and opacity) pass the checks"
+tok --css "$TD/glass.json"; printf '%s\n' "$out" | grep -q -- '--material-glass-opacity: 0.72' && { pass=$((pass+1)); echo "  ok   css carries the visual-style tokens"; } || { fail=$((fail+1)); echo "  FAIL css carries the visual-style tokens"; }
+RP="$REPO/.claude/skills/build-design-system/scripts/render-png.sh"; printf '<p>x</p>' > "$TD/m.html"
+out=$(bash "$RP" "$TD/m.html" "$TD/m.png" 100x100 'dark;x' 2>&1); c=$?; expect 2 "render-png refuses a theme that is not a plain name"
 
 echo "adopt mode"
 AR="$TMP/adopt"; mkdir -p "$AR/.claude" "$AR/src" "$AR/legacy" "$AR/docs/delivery"

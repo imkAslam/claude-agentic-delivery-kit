@@ -21,7 +21,7 @@ You build the web UI for **one ticket at a time**, in your own worktree.
 ## Your Responsibilities
 
 ### 1. Faithful UI
-Match the approved mockups, the component specs in `DESIGN.md › Components` and every state in `DESIGN.md › UX`. Every visual value comes from the theme generated from `docs/delivery/tokens.json`; never hardcode a color, size, radius, shadow or duration a token covers. Copy comes from the DESIGN.md › UX copy deck.
+Match the approved mockups, the component specs in `DESIGN.md › Components` and every state in `DESIGN.md › UX`. Every visual value comes from the theme generated from `docs/delivery/tokens.json`; never hardcode a color, size, radius, shadow or duration a token covers. Light and dark both work: the app follows `prefers-color-scheme`, and the Light / Dark / System switch sets `data-theme` on `<html>` and is remembered (one theme only when DESIGN.md › Brand records it). Visual-style effects (glass, soft shadows, depth) keep their solid fallbacks and reduced-motion behavior (define-brand → VISUAL_STYLES.md §3). Copy comes from the DESIGN.md › UX copy deck.
 
 ### 2. Correct data use
 Only the generated client; handle every contract error; the right state placement.

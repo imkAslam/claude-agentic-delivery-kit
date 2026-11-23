@@ -4,7 +4,7 @@ Build each from the project's UI library component and theme it with tokens. Siz
 
 | Component | Use it for | Anatomy and sizes | States and behavior | Accessibility | Don't |
 |---|---|---|---|---|---|
-| **Button** | Actions. One primary per view; secondary, ghost, danger and link variants | Heights sm 32, md 40, lg 48 px; horizontal padding = 1.5–2× the vertical; icon 16–20 px with an 8 px gap; label in sentence case, verb + object ("Save changes") | default, hover, focus-visible, active, disabled, loading (spinner replaces or precedes the label, width does not jump, double submit blocked) | Native `<button>`; icon-only needs an accessible name; disabled has a reason nearby | Two primaries side by side; a button that navigates (use a link); vague labels ("OK", "Submit") |
+| **Button** | Actions. One primary per view; secondary, ghost, danger and link variants | Heights sm 32, md 40, lg 48 px; horizontal padding = 1.5–2× the vertical; icon 16–20 px with an 8 px gap; label in sentence case, verb + object ("Save changes") | default, hover, focus-visible, active, disabled, loading (spinner replaces or precedes the label, width does not jump, double submit blocked), success where the action completes in place (a brief check, then back) | The primary button spec below. Native `<button>`; icon-only needs an accessible name; disabled has a reason nearby | Two primaries side by side; a button that navigates (use a link); vague labels ("OK", "Submit") |
 | **Text input** | Short free text | Label above (never placeholder-only); height 40 px; 12 px horizontal padding; helper text below; optional leading icon or trailing action | default, focus (ring token), filled, disabled, read-only, error (red border + message + icon), success only when it helps | `<label for>`; error linked with `aria-describedby`; correct `type`, `autocomplete` and `inputmode` | Placeholder as the label; validating on every keystroke before the user finishes |
 | **Textarea** | Long text | Min 3 rows; grows to a max, then scrolls; a counter when there is a limit | Same as text input; the counter warns near the limit | As text input | Fixed tiny boxes; a silent hard limit |
 | **Select / combobox** | One of many. Native select up to ~7 simple options on mobile; a searchable combobox beyond ~10 | Trigger looks like an input with a chevron; list max height ~320 px; selected item marked | open, closed, option hover and active, selected, disabled option, empty search result, loading options | APG listbox / combobox pattern: arrows move, Enter selects, Esc closes, type-ahead | A select for 2–3 options (use radios); long unsearchable lists |
@@ -20,3 +20,12 @@ Build each from the project's UI library component and theme it with tokens. Siz
 - Validate on blur and on submit; re-validate on change only after a field has shown an error.
 - A message says what is wrong **and how to fix it** ("Enter a date after 1 January 2020"), next to the field, with an icon and not by color alone.
 - Keep what the user typed. Never clear a field because it was invalid.
+
+## Primary button: the six details that make it look finished
+Most cheap-looking primary buttons fail on these, not on their colour.
+1. **Size:** the main action is `lg` (48 px tall) with 24 px side padding (`space.6`); dense desktop tools may use `md` (40 px). Never under 44 px on touch.
+2. **Label:** 16 px semibold (17 px on iOS, the platform size), sentence case, a verb plus an object ("Start my plan").
+3. **Contrast:** the label ≥ 4.5:1 on the fill; the fill or its edge ≥ 3:1 against the surface. A flat grey fill sits near 1.6:1 and vanishes.
+4. **Depth** (when the visual style uses depth): light from above, so a lighter top edge, a recessed track for toggles, and a shadow that falls down; pressed removes the lift. Flat styles rely on fill and contrast alone.
+5. **Detail:** the radius from the token scale (a pill, radius = height ÷ 2, only when the direction's shape uses it); at most one icon, 8 px (`space.2`) from the label.
+6. **Motion:** visible feedback within 100 ms, the whole hover → press → spinner → check sequence done within 300 ms of animation; under reduced motion the states change without animation.

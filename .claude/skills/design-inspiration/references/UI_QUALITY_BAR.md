@@ -7,8 +7,8 @@ Used by the uiux-agent (self-check), the design-reviewer (designs), and design Q
 |---|---|---|---|
 | 1 | **Spacing rhythm** | Every gap is a step of the spacing scale (4/8-based tokens); related things sit closer than unrelated things; padding is even on all sides of a container | Odd values (5, 13, 22 px); elements crammed or floating; uneven padding |
 | 2 | **Alignment** | Edges line up on a visible grid; text baselines align across a row; icons are optically centered with their label | Ragged left edges; an icon 1–2 px off; mixed alignments in one block |
-| 3 | **Type hierarchy** | At most 3–4 sizes on a screen from the type scale; one clear primary per screen; weight and color create hierarchy before size does | Many sizes; everything bold; long lines (over ~75 characters) |
-| 4 | **Color discipline** | The 60-30-10 split holds; one accent action per view; status colors only for status; text contrast passes | Several competing accent buttons; color used as decoration; grey text on grey |
+| 3 | **Type hierarchy and scanning** | At most **2 font families**; about **3 sizes** on a screen (never more than 4) from the type scale; one clear primary per screen; weight and color create hierarchy before size does; the screen scans in an F or Z pattern (DESIGN_GUIDELINES principle 8) | Many sizes or a third font; everything bold; long lines (over ~75 characters); the key fact buried mid-paragraph |
+| 4 | **Color discipline** | A limited palette: primary, secondary and neutrals, with status colors only for status; the 60-30-10 split holds; one accent action per view; text contrast passes in light and dark | Several competing accent buttons; color used as decoration; grey text on grey; a theme that only works in one mode |
 | 5 | **Consistency** | The same component looks and behaves the same everywhere; same radius, border, shadow and icon set throughout | Two button heights; mixed icon sets; a one-off shadow |
 | 6 | **Complete states** | Default, hover, focus-visible, active, disabled, loading, error, empty, and long or missing content all designed | Only the happy state; layout breaks with a long name or no data |
 | 7 | **Density and touch** | Density fits the task (data tools compact, consumer flows roomy); touch targets at least 44×44 px on touch devices, 24×24 minimum elsewhere | Tiny hit areas; a table that needs scrolling for 5 rows |
@@ -22,11 +22,13 @@ Used by the uiux-agent (self-check), the design-reviewer (designs), and design Q
 - Below the bar is `CHANGES` (P2; P1 when check 10 fails or contrast fails). The finding names the check, the place and the fix ("Check 1: card padding is 12 px top and 20 px sides; use space.4 on all sides").
 
 ## 3. How to check
-1. **Look at it rendered,** never only at code: the mockup PNG, or the component on the dev-only gallery page in every state, at desktop and mobile width, in each theme in scope.
+1. **Look at it rendered,** never only at code: the mockup PNG, or the component on the dev-only gallery page in every state, at desktop and mobile width, in light and in dark.
 2. Compare with the library's own documentation for that component and the matching `COMPONENTS_*.md` entry.
 3. Squint test: the primary action and the main content should still stand out when the screen is blurred.
 4. Stress it: the longest realistic text, no data, 1 item, 1,000 items, an error, a slow network.
 5. Tab through it with the keyboard.
+6. Walk the UX laws in DESIGN_GUIDELINES.md (choice overload, short forms, figure-ground, closure, connectedness, banner blindness). A breach lowers the check it touches, usually 3, 7 or 9.
+7. With a glass, soft or spatial style: check the VISUAL_STYLES.md §3 guardrails on the render (text over the busiest background, the solid fallback, 3:1 edges, reduced motion).
 
 ## 4. The component gallery (frontend and mobile)
 Every project has a **dev-only gallery page** (for example `/dev/components`, excluded from production builds) that renders each base and feature component in all its states with realistic content. The frontend engineer adds a component there when it is built; design QA reviews components there and records the scores in `REVIEW.md › Design QA`. It replaces per-state screenshots: one screenshot of the gallery section per component is enough.
@@ -46,3 +48,4 @@ Adapted from the MIT-licensed `frontend-ui-engineering` skill (addyosmani/agent-
 | Placeholder copy | Hides wrapping and overflow problems | Realistic copy from the copy deck |
 | Oversized padding everywhere | Flattens the hierarchy | The spacing scale (check 1) |
 | Shadow-heavy cards | Slows low-end devices and competes with content | Shadows only where the design system specifies them |
+| Glass or soft effects as decoration | Unreadable text, slow pages, a trend with no reason | Only where the chosen direction's visual style puts them (define-brand → VISUAL_STYLES.md), within its guardrails |
