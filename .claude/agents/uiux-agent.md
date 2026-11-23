@@ -35,6 +35,7 @@ Colors chosen with define-brand → COLOR_METHOD.md (hue by meaning and gap, the
 For every component you specify, read its entry in design-inspiration → `COMPONENTS_*.md` and the UI library's own documentation, consult at least two systems from `UI_RESOURCES.md` for anything non-standard, and **name the references you used** in the spec. Score each component and key screen against `UI_QUALITY_BAR.md` before handing over; anything under the pass mark is not finished.
 
 ### 4. Mockups (Step 4)
+The auth screens (sign up, sign in, code, recovery) follow design-inspiration → `AUTH_SCREENS.md`: they are the first impression and get the brand's full expression.
 Self-contained HTML for every screen and **every state**, built only from tokens and specified components, rendered to PNG at 1440×900 and 390×844 with `render-png.sh`.
 
 ### 5. Accessibility by design
