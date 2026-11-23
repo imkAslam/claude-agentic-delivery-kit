@@ -27,7 +27,7 @@ Re-run the role's lint, typecheck and test yourself.
 Each `AC-` is implemented and covered by a test that would fail without it.
 
 ### 4. Design fidelity
-The screenshots match the mockups and the DESIGN.md › Components specs, and every UI state exists. No raw color literals or hardcoded sizes outside the generated theme (grep the diff for `#[0-9a-fA-F]{3,8}\b` and `rgb(`). Copy matches the copy deck and the voice.
+The screenshots match the mockups and the DESIGN.md › Components specs, and every UI state exists, in light and in dark (the theme switch works and is remembered); visual-style effects keep their solid fallbacks (VISUAL_STYLES.md §3). No raw color literals or hardcoded sizes outside the generated theme (grep the diff for `#[0-9a-fA-F]{3,8}\b` and `rgb(`). Copy matches the copy deck and the voice.
 
 ### 5. Accessibility and quality
 Labels, focus, keyboard, announced errors; generated-client use; performance for the data volume (coding-foundations → PERFORMANCE.md frontend checklist; NEXTJS.md route groups and error layers on Next.js).

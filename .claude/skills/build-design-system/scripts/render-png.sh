@@ -1,32 +1,45 @@
 #!/usr/bin/env bash
-# render-png.sh <page.html> <out.png> [WIDTHxHEIGHT]   (default 1440x900)
+# render-png.sh <page.html> <out.png> [WIDTHxHEIGHT] [THEME]   (default 1440x900, the page's own theme)
 # Renders a self-contained HTML mockup, direction board or asset to PNG for review and evidence.
+# THEME (e.g. dark) is passed as ?theme=<THEME>; the mockup skeleton's one-line script sets <html data-theme>.
 # Tries, in order: Playwright (if its browser is installed), then an installed Chrome/Chromium in headless mode.
 # Exit 0 = PNG written · 2 = usage error · 3 = no renderer available (keep the HTML and say "not rendered").
 # Never fabricate a PNG: if this exits non-zero, report it.
 set -uo pipefail
-[ $# -ge 2 ] || { echo "usage: render-png.sh <page.html> <out.png> [WIDTHxHEIGHT]" >&2; exit 2; }
-src="$1" out="$2" size="${3:-1440x900}"
+[ $# -ge 2 ] || { echo "usage: render-png.sh <page.html> <out.png> [WIDTHxHEIGHT] [THEME]" >&2; exit 2; }
+src="$1" out="$2" size="${3:-1440x900}" theme="${4:-}"
 [ -f "$src" ] || { echo "render-png: missing $src" >&2; exit 2; }
 case "$size" in *x*) w="${size%x*}" h="${size#*x}" ;; *) echo "render-png: size must be WIDTHxHEIGHT" >&2; exit 2 ;; esac
+case "$theme" in *[!a-z-]*) echo "render-png: theme must be a lowercase name (e.g. dark)" >&2; exit 2 ;; esac
 abs="$(cd "$(dirname "$src")" && pwd -P)/$(basename "$src")"
+query=""; [ -n "$theme" ] && query="?theme=${theme}"
 mkdir -p "$(dirname "$out")"
 outabs="$(cd "$(dirname "$out")" && pwd -P)/$(basename "$out")"
 rm -f "$outabs"
 
 if command -v npx >/dev/null 2>&1; then
-  npx --no-install playwright screenshot --viewport-size="${w},${h}" "file://${abs}" "$outabs" >/dev/null 2>&1 \
-    || npx -y playwright@1 screenshot --viewport-size="${w},${h}" "file://${abs}" "$outabs" >/dev/null 2>&1 || true
+  npx --no-install playwright screenshot --viewport-size="${w},${h}" "file://${abs}${query}" "$outabs" >/dev/null 2>&1 \
+    || npx -y playwright@1 screenshot --viewport-size="${w},${h}" "file://${abs}${query}" "$outabs" >/dev/null 2>&1 || true
   [ -s "$outabs" ] && { echo "rendered (playwright) ${out} ${w}x${h}"; exit 0; }
 fi
 
+# Headless Chrome lays pages out at least 500 px wide, so a phone width (e.g. 390) would show a cropped
+# desktop-ish layout. Below 500 px, render a frame page whose iframe has the exact width: the page inside
+# then lays out at the real phone width.
+url="file://${abs}${query}" frame=""
+if [ "$w" -lt 500 ]; then
+  frame=$(mktemp "${TMPDIR:-/tmp}/render-frame.XXXXXX") && mv "$frame" "$frame.html" && frame="$frame.html"
+  printf '<!doctype html><meta charset="utf-8"><body style="margin:0;overflow:hidden"><iframe src="%s" width="%s" height="%s" style="border:0;display:block"></iframe>\n' "$url" "$w" "$h" > "$frame"
+  url="file://${frame}"
+fi
 for b in "${CHROME_PATH:-}" "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" "/Applications/Chromium.app/Contents/MacOS/Chromium" \
          "$(command -v google-chrome 2>/dev/null)" "$(command -v chromium 2>/dev/null)" "$(command -v chromium-browser 2>/dev/null)"; do
   [ -n "$b" ] && [ -x "$b" ] || continue
   "$b" --headless=new --disable-gpu --hide-scrollbars --no-first-run --no-default-browser-check \
-       --window-size="${w},${h}" --screenshot="$outabs" "file://${abs}" >/dev/null 2>&1
-  [ -s "$outabs" ] && { echo "rendered (chrome headless) ${out} ${w}x${h}"; exit 0; }
+       --window-size="${w},${h}" --screenshot="$outabs" "$url" >/dev/null 2>&1
+  [ -s "$outabs" ] && { [ -n "$frame" ] && rm -f "$frame"; echo "rendered (chrome headless) ${out} ${w}x${h}"; exit 0; }
 done
+[ -n "$frame" ] && rm -f "$frame"
 
 echo "NOT RENDERED: no Playwright browser and no Chrome/Chromium found (install one, or run 'npx playwright install chromium'). Keep the HTML and report it."
 exit 3

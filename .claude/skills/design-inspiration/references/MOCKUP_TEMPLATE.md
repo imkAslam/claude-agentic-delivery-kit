@@ -8,15 +8,16 @@ Mockups are **static, self-contained HTML** in `docs/delivery/mockups/<screen-id
 ## Skeleton
 ```html
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
+<script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get('theme') || 'light'</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>S-03 Orders list (default)</title>
 <!-- covers: AC-ORD-1, AC-ORD-5 -->
 <style>
-  /* Paste the output of: bash .claude/skills/build-design-system/scripts/check-tokens.sh --css docs/delivery/tokens.json
-     (add --theme docs/delivery/tokens.dark.json when dark mode is in scope). Never type values by hand. */
+  /* Paste the output of: bash .claude/skills/build-design-system/scripts/check-tokens.sh --css --theme docs/delivery/tokens.dark.json docs/delivery/tokens.json
+     (it emits :root for light and [data-theme="dark"] for dark). Never type values by hand. */
   :root { --color-bg-default: #ffffff; --color-text-default: #0f172a; /* … the generated variables … */ }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: var(--font-family-sans); font-size: var(--font-size-base); line-height: var(--font-lineHeight-body); color: var(--color-text-default); background: var(--color-bg-default); }
@@ -38,7 +39,9 @@ The example values are placeholders. The variables always come from `tokens.json
 R=.claude/skills/build-design-system/scripts/render-png.sh
 bash $R docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.png 1440x900
 bash $R docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.mobile.png 390x844
+bash $R docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.dark.png 1440x900 dark
 ```
+Every screen's **default** state is also rendered in dark (`.dark.png`, desktop size); other states in dark only where they look different. Skip the dark render only for a recorded single-theme brand.
 The renderer uses Playwright when its browser is installed, otherwise an installed Chrome/Chromium. Exit 3 = no renderer: keep the HTML and report "not rendered". Never fabricate a PNG.
 
 ## DESIGN.md › UX screen inventory row

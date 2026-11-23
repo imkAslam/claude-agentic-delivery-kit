@@ -264,7 +264,21 @@ tok "$TD/rose.json"; expect 1 "brand color too close to danger fails"
 printf '%s\n' "$out" | grep -q '^FAIL.*distinct color.primary.default.*color.danger.default' && { pass=$((pass+1)); echo "  ok   distinctness failure names the pair"; } || { fail=$((fail+1)); echo "  FAIL distinctness failure names the pair"; }
 tok "$TD/lowcontrast.json"; expect 1 "low-contrast muted text fails"
 tok "$TD/nosecondary.json"; expect 1 "missing secondary (the 30% color) fails"
+jq '.color.brand["600"]["$value"] = "#b62268"' "$TD/tokens.json" > "$TD/pink.json"                 # pink brand: under the 0.10 gap from the template red
+tok "$TD/pink.json"; expect 1 "pink brand too close to the error red fails"
+jq '.color.brand["600"]["$value"] = "#b62268" | .color.red["700"]["$value"] = "#920d03"' "$TD/tokens.json" > "$TD/pinkdeep.json"   # pink brand, deep red error
+tok "$TD/pinkdeep.json"; expect 0 "pink brand with a deep red error passes"
+printf '%s\n' "$out" | grep -q '^WARN.*error look-alike' && { pass=$((pass+1)); echo "  ok   pink brand next to red warns (separate by lightness and presentation)"; } || { fail=$((fail+1)); echo "  FAIL pink brand next to red warns"; }
+jq '.color.red["700"]["$value"] = "#ae4800"' "$TD/tokens.json" > "$TD/orangedanger.json"           # danger moved to orange
+tok "$TD/orangedanger.json"; expect 1 "an error color that is not red fails (danger stays red)"
+jq '.color.violet["50"]["$value"] = "#36274e"' "$TD/tokens.json" > "$TD/darkband.json"            # secondary.subtle made dark
+tok "$TD/darkband.json"; expect 1 "a dark secondary tint in the light theme fails (light theme reads light)"
 tok --css --theme "$TD/tokens.dark.json" "$TD/tokens.json"; printf '%s\n' "$out" | grep -q -- '--color-secondary-default' && printf '%s\n' "$out" | grep -q '^\[data-theme="dark"\]' && { pass=$((pass+1)); echo "  ok   css export has secondary and the dark theme"; } || { fail=$((fail+1)); echo "  FAIL css export has secondary and the dark theme"; }
+jq '. + {material: {glass: {blur: {"$type": "dimension", "$value": "16px"}, opacity: {"$type": "number", "$value": 0.72}}}}' "$TD/tokens.json" > "$TD/glass.json"
+tok --theme "$TD/tokens.dark.json" "$TD/glass.json"; expect 0 "visual-style tokens (glass blur and opacity) pass the checks"
+tok --css "$TD/glass.json"; printf '%s\n' "$out" | grep -q -- '--material-glass-opacity: 0.72' && { pass=$((pass+1)); echo "  ok   css carries the visual-style tokens"; } || { fail=$((fail+1)); echo "  FAIL css carries the visual-style tokens"; }
+RP="$REPO/.claude/skills/build-design-system/scripts/render-png.sh"; printf '<p>x</p>' > "$TD/m.html"
+out=$(bash "$RP" "$TD/m.html" "$TD/m.png" 100x100 'dark;x' 2>&1); c=$?; expect 2 "render-png refuses a theme that is not a plain name"
 
 echo "adopt mode"
 AR="$TMP/adopt"; mkdir -p "$AR/.claude" "$AR/src" "$AR/legacy" "$AR/docs/delivery"

@@ -14,6 +14,9 @@ Every component is built from the project's UI library component, themed by toke
 
 ---
 
+## Auth screens (sign up, sign in, code, recovery)
+The first impression: a split screen on desktop (brand panel + centred form card), a branded header on mobile, reassurance, every step and state. Full pattern: [AUTH_SCREENS.md](AUTH_SCREENS.md).
+
 ## App shell (authenticated product)
 ```
 ┌──────────────────────────────────────────────────────────┐

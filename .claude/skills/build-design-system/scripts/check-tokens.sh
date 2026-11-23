@@ -65,6 +65,14 @@ def oklab: mmul([[0.4122214708, 0.5363325363, 0.0514459929], [0.2119034982, 0.68
            | map(cbrt) | mmul([[0.2104542553, 0.7936177850, -0.0040720468], [1.9779984951, -2.4285922050, 0.4505937099], [0.0259040371, 0.7827717662, -0.8086757660]]);
 def deltaE($a; $b; $k): ($a | rgb | map(lin) | cvd($k) | oklab) as $x | ($b | rgb | map(lin) | cvd($k) | oklab) as $y
                         | [range(3) as $i | ($x[$i] - $y[$i]) | . * .] | add | sqrt;
+# OKLCH chroma and hue (degrees) of a hex color; the hue gap between two hues (0–180).
+def lch: (rgb | map(lin) | oklab) as $o
+         | {c: (($o[1] * $o[1] + $o[2] * $o[2]) | sqrt), h: ((atan2($o[2]; $o[1]) * 180 / 3.141592653589793) as $d | $d - 360 * (($d / 360) | floor))};
+def huegap($x; $y): (($x - $y) | if . < 0 then -. else . end) as $g | if $g > 180 then 360 - $g else $g end;
+# Danger is always red (OKLCH hue about 12-42°): anything else FAILS. A brand in the red family (pink, rose, coral:
+# hue within 45° of danger and ΔE < 0.25) gets a WARN: keep danger red and set it apart by lightness and
+# presentation (solid red badges, icon + the word "Error"), which the design-reviewer checks on the render.
+def STATUS: ["color.success.default", "color.warning.default", "color.info.default", "color.danger.default"];
 def cssval: if type == "array" and length == 4 and all(.[]; type == "number") then "cubic-bezier(\(map(tostring) | join(", ")))"
             elif type == "array" then map(tostring | if test(" ") then "\"" + . + "\"" else . end) | join(", ")
             elif type == "object" and has("offsetX") then "\(.offsetX) \(.offsetY) \(.blur // "0") \(.spread // "0") \(.color)"
@@ -75,8 +83,11 @@ def cssref: if type == "string" and test("^\\{[^{}]+\\}$") then "var(\(.[1:-1] |
 '
 
 DEFAULT_REQUIRED='["color.bg.default","color.surface.default","color.border.default","color.border.strong","color.text.default","color.text.muted","color.primary.default","color.primary.hover","color.primary.on","color.secondary.default","color.secondary.on","color.danger.default","color.danger.on","color.success.default","color.warning.default","color.info.default","color.focus.ring","font.family.sans","font.size.base","space.4","radius.md"]'
-DEFAULT_PAIRS='[{"fg":"color.text.default","bg":"color.bg.default","min":4.5},{"fg":"color.text.default","bg":"color.surface.default","min":4.5},{"fg":"color.text.muted","bg":"color.bg.default","min":4.5},{"fg":"color.text.muted","bg":"color.surface.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.hover","min":4.5},{"fg":"color.primary.default","bg":"color.bg.default","min":3},{"fg":"color.secondary.on","bg":"color.secondary.default","min":4.5},{"fg":"color.danger.default","bg":"color.bg.default","min":4.5},{"fg":"color.danger.on","bg":"color.danger.default","min":4.5},{"fg":"color.border.strong","bg":"color.bg.default","min":3},{"fg":"color.focus.ring","bg":"color.bg.default","min":3}]'
-# Brand colors vs status colors need a clear gap (0.10); status vs status a smaller one (0.08).
+DEFAULT_PAIRS='[{"fg":"color.text.default","bg":"color.bg.default","min":4.5},{"fg":"color.text.default","bg":"color.surface.default","min":4.5},{"fg":"color.text.muted","bg":"color.bg.default","min":4.5},{"fg":"color.text.muted","bg":"color.surface.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.default","min":4.5},{"fg":"color.primary.on","bg":"color.primary.hover","min":4.5},{"fg":"color.primary.default","bg":"color.bg.default","min":3},{"fg":"color.secondary.on","bg":"color.secondary.default","min":4.5},{"fg":"color.danger.default","bg":"color.bg.default","min":4.5},{"fg":"color.danger.on","bg":"color.danger.default","min":4.5},{"fg":"color.border.strong","bg":"color.bg.default","min":3},{"fg":"color.focus.ring","bg":"color.bg.default","min":3},{"fg":"color.text.default","bg":"color.secondary.subtle","min":4.5}]'
+# The last pair keeps the light theme light: large secondary areas use secondary.subtle with normal text,
+# so in the light theme it must be a light tint (dark text on it); in the dark theme the same pair holds with light text.
+# Brand colors vs status colors need a clear gap (0.10), plus the error look-alike rule (lch, huegap) against danger;
+# status vs status a smaller one (0.08).
 DEFAULT_DISTINCT='[{"a":"color.primary.default","b":"color.danger.default","min":0.1},{"a":"color.primary.default","b":"color.success.default","min":0.1},{"a":"color.primary.default","b":"color.warning.default","min":0.1},{"a":"color.secondary.default","b":"color.danger.default","min":0.1},{"a":"color.secondary.default","b":"color.success.default","min":0.1},{"a":"color.secondary.default","b":"color.warning.default","min":0.1},{"a":"color.success.default","b":"color.danger.default","min":0.08},{"a":"color.warning.default","b":"color.danger.default","min":0.08}]'
 
 theme_name() { b=$(basename "$1" .json); b=${b#tokens.}; b=${b#tokens-}; printf '%s' "$b"; }
@@ -111,6 +122,9 @@ run_set() { # $1 = label, $2 = override file or ""
           elif ($k | startswith("color.")) and ($v | length) == 9 then "WARN\t\($t)\t\($k) has alpha; contrast is computed without it"
           else empty end ),
       ( $req[] as $r | select(($m | has($r)) | not) | "FAIL\t\($t)\tmissing required token \($r)" ),
+      ( select($m | has("color.danger.default")) | (try ($m["color.danger.default"]["$value"] | resolve($m)) catch null) as $dv
+        | select($dv != null and ($dv | ishex)) | ($dv | lch) as $dl | select($dl.c >= 0.05 and huegap($dl.h; 27) > 15)
+        | "FAIL\t\($t)\tcolor.danger.default \($dv) is not red (hue \($dl.h | floor)°; red is about 12-42°): danger stays red; set it apart from a red-family brand by lightness and presentation (COLOR_METHOD §3)" ),
       ( $pairs[] | . as $p
         | if (($m | has($p.fg)) and ($m | has($p.bg))) | not then "FAIL\t\($t)\tcontrast pair \($p.fg) on \($p.bg): token missing"
           else (try ([($m[$p.fg]["$value"] | resolve($m)), ($m[$p.bg]["$value"] | resolve($m))]) catch null) as $c
@@ -127,6 +141,11 @@ run_set() { # $1 = label, $2 = override file or ""
             else deltaE($c[0]; $c[1]; "normal") as $d
             | (if $d + 0.0001 < $p.min then "FAIL\t\($t)\tdistinct \($p.a) \($c[0]) ~ \($p.b) \($c[1]) = ΔE \($d | r3) (needs \($p.min)): the colors read as the same"
                else "OK\t\($t)\tdistinct \($p.a) ~ \($p.b) = ΔE \($d | r3) (min \($p.min))" end),
+              ( select((($p.a == "color.danger.default") or ($p.b == "color.danger.default"))
+                       and ((STATUS | index($p.a)) == null or (STATUS | index($p.b)) == null))
+                | ($c[0] | lch) as $l0 | ($c[1] | lch) as $l1 | huegap($l0.h; $l1.h) as $hg
+                | select($l0.c >= 0.04 and $l1.c >= 0.04 and $hg < 45 and $d < 0.25)
+                | "WARN\t\($t)\terror look-alike \($p.a) \($c[0]) ~ \($p.b) \($c[1]): hues \($hg | floor)° apart, ΔE \($d | r3): a red-family brand; keep danger red and set it apart by lightness and presentation (solid red badges, icon + the word Error; COLOR_METHOD §3)" ),
               ( ("protanopia", "deuteranopia") as $k | deltaE($c[0]; $c[1]; $k) as $dk
                 | select($dk + 0.0001 < $cm)
                 | "WARN\t\($t)\tdistinct \($p.a) ~ \($p.b) under \($k) = ΔE \($dk | r3) (below \($cm)): never rely on color alone, add an icon and text" )

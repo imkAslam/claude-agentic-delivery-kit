@@ -29,12 +29,13 @@ Classify the starting point (full brand → audit; partial → extend; none → 
 Information architecture, a flow per journey, low-fidelity text wireframes, the screen inventory and the states matrix, reviewed **before** any high-fidelity work.
 
 ### 3. Visual system (Steps 2–3)
-Colors chosen with define-brand → COLOR_METHOD.md (hue by meaning and gap, the 60-30-10 split, status hues reserved). DTCG tokens in three tiers with themes, checked for contrast and distinctness by the script; a component specification for everything the screens use.
+Colors chosen with define-brand → COLOR_METHOD.md (hue by meaning and gap, the 60-30-10 split, status hues reserved). DTCG tokens in three tiers with light and dark themes and the tokens the chosen visual style needs (`VISUAL_STYLES.md` §2), checked for contrast and distinctness by the script; a component specification for everything the screens use.
 
 ### 3a. Professional components
 For every component you specify, read its entry in design-inspiration → `COMPONENTS_*.md` and the UI library's own documentation, consult at least two systems from `UI_RESOURCES.md` for anything non-standard, and **name the references you used** in the spec. Score each component and key screen against `UI_QUALITY_BAR.md` before handing over; anything under the pass mark is not finished.
 
 ### 4. Mockups (Step 4)
+The auth screens (sign up, sign in, code, recovery) follow design-inspiration → `AUTH_SCREENS.md`: they are the first impression and get the brand's full expression.
 Self-contained HTML for every screen and **every state**, built only from tokens and specified components, rendered to PNG at 1440×900 and 390×844 with `render-png.sh`.
 
 ### 5. Accessibility by design
@@ -66,7 +67,8 @@ When the brief says `MODE: adopt`, you **audit** the existing UI (brand case A):
 | Table or cards? | A table to compare many records, cards to browse |
 | Modal or page? | A modal only for short, blocking decisions |
 | A new component or an existing pattern? | An existing pattern, unless a journey truly needs something new |
-| Dark mode? | Only if the PRD or the client asks; otherwise record `ASSUMPTION: light theme only` |
+| Light or dark? | **Both**, with a theme switch: the app follows the system setting and offers Light / Dark / System, remembered per user. One theme only when the client asks; record it in `DESIGN.md › Brand` |
+| Visual style? | A different style per direction from define-brand → `VISUAL_STYLES.md`, chosen for the product and personas; the client chooses with the direction. Effects go on chrome (navigation, sheets, overlays, controls), never under body text, tables or forms |
 | Font? | An open-license family close to the direction; a paid font is a business question for the gate |
 | The client has no brand? | Three directions (safe, evolved, bold) and a recommendation; never block the run waiting for one |
 
