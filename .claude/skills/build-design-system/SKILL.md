@@ -34,7 +34,7 @@ Fix every failure by adjusting the semantic mapping (pick another primitive step
 Write `docs/delivery/DESIGN.md › Components` with [DESIGN_SYSTEM_TEMPLATE.md](references/DESIGN_SYSTEM_TEMPLATE.md): the foundations, the inventory of components the screens actually use, one spec per component (anatomy, variants, sizes, states, tokens, behavior, accessibility, content), and the patterns.
 
 ### Step 4: High-fidelity mockups
-Follow the design-inspiration MOCKUP_TEMPLATE. Generate each mockup's `:root` from `check-tokens.sh --css`, use only the specified components, and cover every cell of the states matrix. Render every file at both sizes:
+Follow the design-inspiration MOCKUP_TEMPLATE: start from a PAGE_LAYOUTS composition and build from [assets/mockup-kit.css](assets/mockup-kit.css) (copied once to `docs/delivery/mockups/`), after capturing and looking at the anchor references (define-brand → DESIGN_RESEARCH §1). Generate each mockup's `:root` from `check-tokens.sh --css`, use only the specified components, and cover every cell of the states matrix. Render every file at both sizes:
 ```bash
 bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.png 1440x900
 bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders-list-default.html docs/delivery/mockups/S-03-orders-list-default.mobile.png 390x844
@@ -75,6 +75,8 @@ Follow [DESIGN_QA.md](references/DESIGN_QA.md) §B and write `milestones/<ms>/RE
 │   ├── LANDING_PAGE.md            # opt-in landing page (F-LANDING): section sources, copy, SEO/perf baseline, refresh per release
 │   ├── ILLUSTRATIONS_AND_ANIMATION.md  # product-specific animated illustrations (landing, auth, empty states): formats, budgets, motion, generated images on approval
 │   └── DESIGN_QA.md               # design-review checklists + milestone design QA + REVIEW.md › Design QA template
+├── assets/
+│   └── mockup-kit.css             # the token-driven base every mockup is composed from (app shell, cards, KPI tiles, forms, tables, auth)
 └── scripts/
     ├── check-tokens.sh            # validates tokens.json, resolves aliases, WCAG contrast + OKLab distinctness (with CVD simulation) per theme, --css export
     ├── check-assets.sh            # SVG hygiene, reduced-motion block in animated SVGs, size budgets, no GIFs

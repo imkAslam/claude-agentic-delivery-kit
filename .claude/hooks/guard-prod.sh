@@ -63,8 +63,10 @@ while IFS= read -r seg; do
   printf '%s' "$low" | grep -Eq "^git[[:space:]].*--no-verify" && deny "--no-verify bypasses the commit gate"
 
   # local deploy / apply / submit CLIs (CI-only)
-  if printf '%s' "$low" | grep -Eq '^vercel([[:space:]]|$)'; then
-    printf '%s' "$low" | grep -Eq '^vercel[[:space:]]+(whoami|ls|list|inspect|logs|pull|build|link|login|help|--version|--help|-v|env[[:space:]]+(ls|list|pull))([[:space:]]|$)' \
+  # The CLI is typed in lowercase; matching the original case keeps prose such as a table cell naming "Vercel"
+  # (split out of a markdown row on its pipes) from reading as a deploy.
+  if printf '%s' "$s" | grep -Eq '^vercel([[:space:]]|$)'; then
+    printf '%s' "$s" | grep -Eq '^vercel[[:space:]]+(whoami|ls|list|inspect|logs|pull|build|link|login|help|--version|--help|-v|env[[:space:]]+(ls|list|pull))([[:space:]]|$)' \
       || deny "local Vercel deploy or change ('$s')"
   fi
   printf '%s' "$low" | grep -Eq '^(fly|flyctl)[[:space:]]+(deploy|launch|destroy|scale|secrets[[:space:]]+(set|unset|import)|releases[[:space:]]+rollback|machines?[[:space:]]+(run|update|destroy|stop|start|restart)|apps[[:space:]]+destroy|postgres[[:space:]]+(create|destroy|attach))' && deny "local Fly.io change ('$s')"

@@ -588,5 +588,21 @@ has '^FAIL.tree.*tools is in the §13 tree but has no owner' "a top-level folder
 has '^FAIL.routing.*Next.js syntax' "Next.js route groups in a React Router app fail"
 printf '%s\n' "$out" | grep -q 'apps/mobile' && { fail=$((fail+1)); echo "  FAIL a disabled role's paths are ignored"; } || { pass=$((pass+1)); echo "  ok   a disabled role's paths are ignored"; }
 
+echo "UI design kit (mockup base)"
+check "a doc table naming Vercel is not a deploy" 0 guard-prod.sh "$(bash_json "printf '%s\n' '| Geist (Vercel), Linear | patterns only |' >> notes.md")"
+check "the lowercase deploy command is still blocked" 2 guard-prod.sh "$(bash_json "vercel deploy --prod")"
+MKDIR="$TMP/mockup-kit"; mkdir -p "$MKDIR"; BDS="$REPO/.claude/skills/build-design-system"
+awk '/^```json/{f=1;buf="";next} /^```/{if(f){print buf > "'"$MKDIR"'/t.json"; f=0}; next} f{buf=buf $0 "\n"}' "$BDS/references/DESIGN_TOKENS.md"
+bash "$BDS/scripts/check-tokens.sh" --css "$MKDIR/t.json" 2>/dev/null | grep -o -- '--[a-z0-9-]*:' | tr -d ':' | sort -u > "$MKDIR/defined"
+grep -o 'var(--[a-z0-9-]*' "$BDS/assets/mockup-kit.css" | sed 's/var(//' | sort -u > "$MKDIR/used"
+out=$(comm -23 "$MKDIR/used" "$MKDIR/defined"); [ -s "$MKDIR/used" ] && [ -z "$out" ]; yes $? "every token variable mockup-kit.css uses exists in the token output"
+out=$(bash "$BDS/scripts/render-png.sh" "$TMP/no-such.html" "$TMP/x.png" 2>&1); [ $? -eq 2 ]; yes $? "render-png still refuses a missing local file"
+
+DB="$REPO/.claude/skills/define-brand/scripts"; LB="$TMP/logo-board"; mkdir -p "$LB"
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M12 16 C12 46 52 46 52 16" fill="none" stroke="currentColor" stroke-width="6"/></svg>\n' > "$LB/a.svg"
+out=$(bash "$DB/logo-board.sh" "$LB/board.html" "$LB/a.svg" --brand "#4338ca" --name Demo 2>&1); c=$?; [ $c -eq 0 ] && grep -q 'class="tile"' "$LB/board.html" && grep -q 'height:16px' "$LB/board.html"; yes $? "the logo board shows each mark at 16-120 px, on dark, as an app icon and in a header"
+out=$(bash "$DB/logo-board.sh" "$LB/board.html" "$LB/missing.svg" 2>&1); c=$?; [ $c -eq 2 ]; yes $? "the logo board refuses a missing mark"
+out=$(bash "$DB/wordmark.sh" "$LB/no-font.ttf" "Demo" "$LB/w.svg" 2>&1); c=$?; [ $c -eq 2 ]; yes $? "the wordmark tool refuses a missing font file"
+
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]

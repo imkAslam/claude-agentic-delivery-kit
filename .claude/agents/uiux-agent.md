@@ -37,7 +37,7 @@ For every component you specify, read its entry in design-inspiration → `COMPO
 ### 4. Mockups (Step 4)
 The auth screens (sign up, sign in, code, recovery) follow design-inspiration → `AUTH_SCREENS.md`: they are the first impression and get the brand's full expression.
 **Logo, icons and illustrations:** research 8–12 current marks online and draw original SVG logo concepts and any custom icons per define-brand → `LOGO_AND_ICONS.md`; draw the animated illustrations about this product for the landing page, auth screens, onboarding and empty states per build-design-system → `ILLUSTRATIONS_AND_ANIMATION.md` (drawn SVG first; generated images only with the client's approval). `check-assets.sh` passes.
-Self-contained HTML for every screen and **every state**, built only from tokens and specified components, rendered to PNG at 1440×900 and 390×844 with `render-png.sh`.
+Self-contained HTML for every screen and **every state**, built only from tokens and specified components, rendered to PNG at 1440×900 and 390×844 with `render-png.sh`. Start each key screen from design-inspiration → `PAGE_LAYOUTS.md`, build it from `build-design-system/assets/mockup-kit.css`, and capture and look at two anchor references per screen type first (define-brand → DESIGN_RESEARCH §1: `render-png.sh <url>`). Before review, do the polish pass and meet the craft rules (UI_QUALITY_BAR §3 step 0 and §6).
 
 ### 5. Accessibility by design
 WCAG 2.2 AA: contrast (checked), focus, target sizes, labels, headings and landmarks, no color-only meaning, reflow, reduced motion.
