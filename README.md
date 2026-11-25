@@ -460,6 +460,7 @@ Three rules hold across these documents:
   - a component specification;
   - text wireframes and flows;
   - HTML mockups of every screen and state, rendered to PNG;
+  - mockups composed from a token-driven base (`mockup-kit.css`: app shell, cards, KPI tiles, forms, tables, auth) and proven page layouts (`PAGE_LAYOUTS.md`), after the designer captures and looks at real reference pages (`render-png.sh <url>`); each key screen gets a polish pass and must meet measurable craft rules next to its references;
   - the brand asset kit: an original SVG logo and custom icons, drawn after researching 8–12 current marks online (`LOGO_AND_ICONS.md`), and animated illustrations about the product for the landing page, auth screens, onboarding and empty states (`ILLUSTRATIONS_AND_ANIMATION.md`). Drawn SVG is the default; generated images are used only when the client approves the tool's cost and licence at G1. `check-assets.sh` checks SVG safety, reduced motion and size budgets.
 
   The design-reviewer reviews all of it, and it is frozen at G2.
@@ -577,7 +578,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 270 checks against throwaway fixtures, covering:
+It runs 274 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;

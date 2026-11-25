@@ -33,6 +33,26 @@ Professional UI is rarely invented; it is assembled from proven patterns and the
 | Refero | Web app screens by page type and element | https://refero.design |
 | Page Flows | Recorded user flows (onboarding, checkout, upgrade) | https://pageflows.com |
 
+## 3a. Visual galleries: look at excellent work before designing (DESIGN_RESEARCH.md: capture and look, never copy)
+| Resource | Best for | Link |
+|---|---|---|
+| Godly | The most polished current web design; motion and type | https://godly.website |
+| Land-book, Lapa Ninja, SaaS Landing Page | Landing pages by industry and section type | https://land-book.com · https://www.lapa.ninja · https://saaslandingpage.com |
+| Awwwards, Siteinspire | Award-level and curated sites; brand-led layouts | https://www.awwwards.com · https://www.siteinspire.com |
+| Dribbble, Behance | Dashboards, app concepts and brand identities (concept work: check it is buildable) | https://dribbble.com · https://www.behance.net |
+| Collect UI, Screenlane | Single UI patterns and mobile screens | https://collectui.com · https://screenlane.com |
+| Design Systems Surf | Public design systems side by side | https://designsystems.surf |
+
+## 3b. Production-quality blocks to start from (open licence; record it)
+| Resource | Best for | Link |
+|---|---|---|
+| shadcn/ui blocks and examples | Real dashboard, sidebar, login, settings and table layouts in the default stack | https://ui.shadcn.com/blocks · https://ui.shadcn.com/examples |
+| Tremor | Dashboard building blocks: KPI cards, charts, tables | https://tremor.so |
+| Untitled UI | A large, consistent component and page reference (free tier) | https://www.untitledui.com |
+| Geist (Vercel), Linear, Stripe | Restrained, high-craft product UI to learn hierarchy and density from (patterns only) | https://vercel.com/geist |
+| Aceternity UI, Magic UI | Motion-rich landing sections and effects (use sparingly: MOTION_AND_3D.md) | https://ui.aceternity.com · https://magicui.design |
+| HyperUI, Preline, Flowbite | Tailwind sections and components for marketing and app pages | https://www.hyperui.dev · https://preline.co · https://flowbite.com |
+
 ## 4. Principles (why a design works)
 | Resource | Best for | Link |
 |---|---|---|
@@ -54,6 +74,8 @@ Professional UI is rarely invented; it is assembled from proven patterns and the
 | Illustration and animation | Draw your own SVG first; dotLottie player for Lottie; open-licence references (unDraw, Open Peeps): record the licence of each | https://dotlottie.io · https://undraw.co · https://www.openpeeps.com |
 | 3D | three.js docs and examples, React Three Fiber + drei, glTF-Transform for compression, Poly Haven (CC0 environment maps and models) | https://threejs.org · https://r3f.docs.pmnd.rs · https://gltf-transform.dev · https://polyhaven.com |
 | Fonts | Google Fonts, Fontshare | https://fonts.google.com · https://www.fontshare.com |
+| Type pairings | Typewolf, Fonts In Use: real pairings in shipped products | https://www.typewolf.com · https://fontsinuse.com |
+| Colour tools | Realtime Colors (a palette on a real page), Huemint, uicolors.app (Tailwind-style scales), the OKLCH picker | https://www.realtimecolors.com · https://huemint.com · https://uicolors.app · https://oklch.com |
 | Color scales | Radix Colors, the Tailwind palette (starting points; the brand decides, COLOR_METHOD.md) | https://www.radix-ui.com/colors · https://tailwindcss.com/docs/colors |
 | Tables | TanStack Table (headless: sorting, filtering, pagination, virtualization) | https://tanstack.com/table |
 | Charts | Recharts, Chart.js (themed with the token colors) | https://recharts.org · https://www.chartjs.org |

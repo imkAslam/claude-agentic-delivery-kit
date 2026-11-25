@@ -18,10 +18,11 @@ Used by the uiux-agent (self-check), the design-reviewer (designs), and design Q
 
 ## 2. Passing
 - **Component:** at least **16 of 20**, with no check at 0. Checks 6 and 10 must be 2 for interactive components.
-- **Key screen:** at least **16 of 20**, with no check at 0.
+- **Key screen:** at least **16 of 20**, with no check at 0. It also meets every craft rule in §6, and next to its two anchor reference captures (DESIGN_RESEARCH §1) it reads as finished product design, not a wireframe: the reviewer says why in one line.
 - Below the bar is `CHANGES` (P2; P1 when check 10 fails or contrast fails). The finding names the check, the place and the fix ("Check 1: card padding is 12 px top and 20 px sides; use space.4 on all sides").
 
 ## 3. How to check
+0. **Polish pass (the designer, before asking for review):** render the screen, read the PNG next to its anchor references, write down the three biggest gaps (hierarchy, spacing, density, colour, content), fix them, and render again. Repeat once if a gap remains.
 1. **Look at it rendered,** never only at code: the mockup PNG, or the component on the dev-only gallery page in every state, at desktop and mobile width, in light and in dark.
 2. Compare with the library's own documentation for that component and the matching `COMPONENTS_*.md` entry.
 3. Squint test: the primary action and the main content should still stand out when the screen is blurred.
@@ -49,3 +50,15 @@ Adapted from the MIT-licensed `frontend-ui-engineering` skill (addyosmani/agent-
 | Oversized padding everywhere | Flattens the hierarchy | The spacing scale (check 1) |
 | Shadow-heavy cards | Slows low-end devices and competes with content | Shadows only where the design system specifies them |
 | Glass or soft effects as decoration | Unreadable text, slow pages, a trend with no reason | Only where the chosen direction's visual style puts them (define-brand → VISUAL_STYLES.md), within its guardrails |
+
+## 6. Craft rules (measured on the render; each failure is a check-1, 2 or 3 deduction)
+1. The screen starts from a PAGE_LAYOUTS.md composition, and mockups are built from `mockup-kit.css` (no hand-rolled base styles).
+2. One clear focal point: the page title and the one primary action stand out in the squint test; at most one primary button per view.
+3. Controls share one height (40 px default); auth primary buttons are full card width.
+4. One depth level: no card inside a card, no border around every element; sections are separated by space first.
+5. Type has hierarchy: at most 3 sizes per card; headings semibold; numbers tabular; KPI values 30–36 px.
+6. KPI tiles carry a label, a value and context (a change, a target or a status), and there are at most 4 in a row.
+7. The brand shows beyond the primary button: the selected navigation item, highlights and empty-state icons use the brand tints (60-30-10).
+8. Empty, loading and error states sit inside their card in the same visual language; never a full-bleed red block.
+9. Real content with realistic lengths; no placeholder text, "Item 1" or empty boxes; the fold is used (no half-empty screen with a lone card).
+10. Navigation fits the product: a sidebar once there are more than 5 sections; the theme switch lives in the account menu.

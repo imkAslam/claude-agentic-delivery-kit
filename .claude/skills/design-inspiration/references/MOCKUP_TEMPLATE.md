@@ -5,6 +5,9 @@ Mockups are **static, self-contained HTML** in `docs/delivery/mockups/<screen-id
 ## Naming
 `<screen-id>-<state>.html` → `S-03-orders-list-default.html`, `S-03-orders-list-empty.html`, `S-03-orders-list-error.html`. Every screen in the `DESIGN.md › UX` inventory has at least default, empty/loading and error variants where they apply.
 
+## Build from the kit
+Start every key screen from a design-inspiration → `PAGE_LAYOUTS.md` composition, and compose it from **`mockup-kit.css`**: copy `.claude/skills/build-design-system/assets/mockup-kit.css` once to `docs/delivery/mockups/mockup-kit.css` and link it right after the token `<style>` block (`<link rel="stylesheet" href="mockup-kit.css">`). The kit gives the app shell, page header, cards, KPI tiles, buttons, fields, badges, tables, tabs, alerts, empty states and the auth split, all from the tokens; a screen's own `<style>` only adds what its component spec needs. Before review, do the polish pass (UI_QUALITY_BAR §3 step 0).
+
 ## Skeleton
 ```html
 <!doctype html>
