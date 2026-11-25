@@ -19,7 +19,7 @@ The sign-in and sign-up screens are the product's **first impression** and the m
 └──────────────────────────────┴─────────────────────────────────┘
 ```
 - The **form card** is 400–440 px wide, centred vertically and horizontally on its side, with 32–40 px padding, on the surface color with a hairline border or the style's card treatment.
-- The **brand panel** uses the light secondary tint or a soft brand gradient in the light theme (never a full dark panel in light, COLOR_METHOD §4), the brand's shapes or an illustration, and real words, not lorem.
+- The **brand panel** uses the light secondary tint or a soft brand gradient in the light theme (never a full dark panel in light, COLOR_METHOD §4), the brand's shapes or an illustration, and real words, not lorem. The illustration is **about this product** and gently animated (build-design-system → ILLUSTRATIONS_AND_ANIMATION.md): calmer than the landing page, it slows or stops while a field has focus, shows its static frame under reduced motion, and never moves on the mobile header.
 - **Tablet (640–1023 px):** the brand panel becomes a band above the card (promise + one reassurance line).
 - **Mobile (< 640 px):** a short branded header (name, one-line promise, brand tint or shape), then the form full width with 16–24 px gutters; the primary button within thumb reach; no brand panel content below the fold that the user must scroll past.
 

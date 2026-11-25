@@ -49,12 +49,15 @@ Professional UI is rarely invented; it is assembled from proven patterns and the
 ## 6. Assets and building blocks (open licenses; record the license)
 | Need | Resource | Link |
 |---|---|---|
-| Icons | Lucide (the shadcn default), Phosphor, Heroicons: pick **one** set per product | https://lucide.dev · https://phosphoricons.com · https://heroicons.com |
+| Icons | Lucide (the shadcn default), Phosphor, Tabler, Heroicons, Iconoir: pick **one** set per product; custom icons match its grid (define-brand → LOGO_AND_ICONS.md) | https://lucide.dev · https://phosphoricons.com · https://tabler.io/icons · https://heroicons.com · https://iconoir.com |
+| Logo references (patterns only) | Logobook, Brand New, Dribbble and Behance category searches; Simple Icons for provider marks | https://logobook.com · https://www.underconsideration.com/brandnew · https://simpleicons.org |
+| Illustration and animation | Draw your own SVG first; dotLottie player for Lottie; open-licence references (unDraw, Open Peeps): record the licence of each | https://dotlottie.io · https://undraw.co · https://www.openpeeps.com |
+| 3D | three.js docs and examples, React Three Fiber + drei, glTF-Transform for compression, Poly Haven (CC0 environment maps and models) | https://threejs.org · https://r3f.docs.pmnd.rs · https://gltf-transform.dev · https://polyhaven.com |
 | Fonts | Google Fonts, Fontshare | https://fonts.google.com · https://www.fontshare.com |
 | Color scales | Radix Colors, the Tailwind palette (starting points; the brand decides, COLOR_METHOD.md) | https://www.radix-ui.com/colors · https://tailwindcss.com/docs/colors |
 | Tables | TanStack Table (headless: sorting, filtering, pagination, virtualization) | https://tanstack.com/table |
 | Charts | Recharts, Chart.js (themed with the token colors) | https://recharts.org · https://www.chartjs.org |
-| Motion | CSS first; Motion for complex transitions | https://motion.dev |
+| Motion | CSS first; Motion for React transitions and gestures; GSAP for long timelines (coding-foundations → MOTION_AND_3D.md §2) | https://motion.dev · https://gsap.com |
 
 ## Rules
 - The project's UI library is the first reference and the base of every component. Other systems inform the spec; they are not copied in.

@@ -9,6 +9,8 @@ Engineering principle 1 applies: **correct, then secure, then simple, then fast.
 | Web, responsiveness | INP (interaction to next paint) | ≤ 200 ms |
 | Web, stability | CLS (layout shift) | ≤ 0.1 |
 | Web, payload | JavaScript per route (compressed) | ≤ 200 kB first load; a regression over 10% needs a reason |
+| Web, motion | Frame time during animations (4× CPU slowdown) | No frame over 16 ms; 3D scenes ≤ 16 ms on a mid-range phone, ≤ 250 kB extra JavaScript on their route (MOTION_AND_3D.md) |
+| Web, imagery | Illustration and media size | Within check-assets.sh budgets: SVG ≤ 60 kB, Lottie ≤ 150 kB, video ≤ 1.5 MB, AVIF/WebP ≤ 200 kB |
 | API, reads | p95 latency | ≤ 300 ms |
 | API, writes | p95 latency | ≤ 500 ms |
 | API, efficiency | Queries per request | No N+1; a fixed number per operation |

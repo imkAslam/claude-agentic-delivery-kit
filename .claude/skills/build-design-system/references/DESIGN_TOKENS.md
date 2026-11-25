@@ -120,8 +120,8 @@ The generated theme is checked in under the role's owned paths; a test (or lint 
   "space":  { "$type": "dimension", "1": { "$value": "4px" }, "2": { "$value": "8px" }, "3": { "$value": "12px" }, "4": { "$value": "16px" }, "6": { "$value": "24px" }, "8": { "$value": "32px" }, "12": { "$value": "48px" } },
   "radius": { "$type": "dimension", "sm": { "$value": "4px" }, "md": { "$value": "8px" }, "lg": { "$value": "12px" }, "full": { "$value": "9999px" } },
   "shadow": { "$type": "shadow", "sm": { "$value": { "offsetX": "0", "offsetY": "1px", "blur": "2px", "spread": "0", "color": "#0f172a14" } } },
-  "motion": { "duration": { "$type": "duration", "fast": { "$value": "120ms" }, "base": { "$value": "200ms" } },
-              "easing": { "$type": "cubicBezier", "standard": { "$value": [0.2, 0, 0, 1] } } },
+  "motion": { "duration": { "$type": "duration", "fast": { "$value": "120ms" }, "base": { "$value": "200ms" }, "slow": { "$value": "320ms" } },
+              "easing": { "$type": "cubicBezier", "standard": { "$value": [0.2, 0, 0, 1] }, "enter": { "$value": [0.05, 0.7, 0.1, 1] }, "exit": { "$value": [0.3, 0, 0.8, 0.15] } } },
   "button": {
     "primary": { "bg": { "$value": "{color.primary.default}" }, "bgHover": { "$value": "{color.primary.hover}" }, "fg": { "$value": "{color.primary.on}" }, "radius": { "$value": "{radius.md}" } }
   }

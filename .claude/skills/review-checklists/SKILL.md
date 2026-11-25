@@ -38,6 +38,7 @@ user-invocable: false
 - [ ] API calls use the generated client, handle every contract error, and don't trust client-side checks for security.
 - [ ] Forms (FORMS_AND_VALIDATION.md): the project's form and schema library, the shared/contract schema, validation on blur and submit, first-invalid focus, accessible errors, server field errors mapped, no double submit, schema tests with boundary values.
 - [ ] No needless re-renders, waterfalls or unbounded lists. Assets are sized.
+- [ ] Motion follows MOTION_AND_3D.md: the technique fits the need, only `transform`/`opacity` animate, timing from the motion tokens, reduced motion honoured; illustrations, Lottie, video and 3D load lazily behind a static frame; 3D only where the direction or PRD calls for it, with pixel ratio capped, render on demand, disposal and a WebGL fallback.
 
 ## Backend
 - [ ] Every input rule is enforced server-side and matches the form rules exactly (FORMS_AND_VALIDATION.md); unknown fields rejected; validation errors use the contract's `validation_failed` body with per-field details.
@@ -112,6 +113,7 @@ user-invocable: false
 - [ ] Every component shown is specified in DESIGN.md › Components, with all its states, and looks the same everywhere.
 - [ ] Every component and key screen passes design-inspiration → `UI_QUALITY_BAR.md` (16 of 20, no zero) and follows its `COMPONENTS_*.md` entry; built components are on the dev-only gallery page.
 - [ ] Every screen state exists at desktop and mobile size, as a real render.
+- [ ] Logo and custom icons: researched references recorded, original, readable at 16 px, custom icons on the set's grid (LOGO_AND_ICONS.md). Illustrations are about this product, animated calmly with a reduced-motion frame, within budget; generated images only with recorded approval. `check-assets.sh` passes.
 - [ ] Copy follows the brand voice, the word list and the BA glossary; client copy is marked.
 - [ ] Accessibility: contrast, visible focus, targets, labels, landmarks and headings, no color-only meaning, 320 px reflow, reduced motion.
 - [ ] Nothing imitates another company's identity; fonts and images have recorded licenses.

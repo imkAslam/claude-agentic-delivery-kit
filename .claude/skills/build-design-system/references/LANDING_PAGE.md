@@ -7,7 +7,7 @@ The page is assembled from approved artifacts, never invented. Each section has 
 
 | Section | Source | Notes |
 |---|---|---|
-| Hero (headline, subline, primary CTA) | DESIGN.md › Brand §1 positioning and purpose; the PRD sign-up or contact journey | One promise in plain words; one primary CTA (the 10% accent color) |
+| Hero (headline, subline, primary CTA) | DESIGN.md › Brand §1 positioning and purpose; the PRD sign-up or contact journey | One promise in plain words; one primary CTA (the 10% accent color); an animated illustration of the product's core job ([ILLUSTRATIONS_AND_ANIMATION.md](ILLUSTRATIONS_AND_ANIMATION.md)) |
 | Problem → outcome | PRD §1 goals, BA personas' needs | The change the product makes, in the users' terms |
 | Features | `docs/delivery/PLAN.md › Features` rows with status **released** (or **accepted** for the release being prepared) and `Landing: shown` | 3–6 features, benefit first; never a planned or deferred feature |
 | How it works | The BA primary journey (J-1), 3–4 steps | Uses the real product screenshots once built |
@@ -26,7 +26,7 @@ In a Next.js app the page lives in the `(marketing)` route group (FOLDER_STRUCTU
 
 ## 4. Technical baseline (the F-LANDING acceptance criteria)
 - **SEO:** a unique `<title>` and meta description; canonical URL; Open Graph and Twitter card using the brand social image (`brand/assets/og-image.html` → 1200×630 PNG); schema.org `SoftwareApplication` or `Organization` JSON-LD; `sitemap.xml` and `robots.txt`; one `h1`, logical headings. Full rules: [SEO.md](SEO.md).
-- **Performance:** server-rendered or static; Lighthouse ≥ 90 for performance, accessibility, best practices and SEO on mobile; images sized and lazy-loaded; no blocking third-party scripts.
+- **Performance:** server-rendered or static; Lighthouse ≥ 90 for performance, accessibility, best practices and SEO on mobile; images sized and lazy-loaded; no blocking third-party scripts. The hero text or the illustration's static first frame is the LCP element; motion starts after the page is ready and stays within coding-foundations → MOTION_AND_3D.md (no long frames, reduced motion honoured); 3D only when the direction is Spatial or the PRD states the benefit.
 - **Accessibility:** WCAG 2.2 AA like every screen (contrast by `check-tokens.sh`, focus, landmarks, alt text, reduced motion).
 - **Privacy:** no analytics or tracking without the consent the client's privacy policy requires; analytics vendors are a client decision (cost and DPA).
 - **Separation:** the landing page never shows authenticated data and never calls private API operations; it links to sign-up or sign-in.
