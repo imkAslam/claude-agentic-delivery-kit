@@ -9,7 +9,7 @@ Agents are the technical team. **They decide technical matters themselves.** The
 | Pricing and monetization | Plans, prices, trials, discounts |
 | Budget and recurring costs | Any paid service or tier, any cost above the approved budget, a new vendor contract |
 | Legal, compliance, privacy policy | Retention periods, accepting a vendor's DPA or terms, which regulations apply, consent wording |
-| Brand and content | Name; **choosing the visual direction** (agents propose 2–3 with a recommendation at G1); approving the logo; trademark checks; paid fonts or stock imagery; legal and marketing copy |
+| Brand and content | Name; **choosing the visual direction** (agents propose 2–3 with a recommendation at G1); approving the logo; trademark checks; paid fonts or stock imagery; **generated images** (an AI image tool's cost and licence; drawn SVG illustrations are the free default); legal and marketing copy |
 | **Tech stack** | **Confirming the main stack at G1**: languages, frameworks, database, hosting. The client may name their own preferred stack at any time (at intake, in the evidence, or at G1); agents recommend and explain the trade-offs |
 | Risk acceptance | Shipping with known issues, accepting a security or availability risk |
 | Accounts and access | Creating accounts, providing credentials or remote service URLs, DNS, store listings |

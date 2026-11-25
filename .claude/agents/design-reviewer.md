@@ -37,6 +37,7 @@ Contrast (by the script), visible focus, target sizes, labels, headings and land
    - `bash .claude/skills/build-design-system/scripts/check-tokens.sh --theme docs/delivery/tokens.dark.json docs/delivery/tokens.json` (without `--theme` only for a recorded single-theme brand)
    - `grep -nE '#[0-9a-fA-F]{3,8}\b|rgb\(' docs/delivery/mockups/*.html` outside the `:root` block (raw values)
    - every mockup HTML has its `.png` and `.mobile.png`, every `*-default.html` also has its `.dark.png`, and every PNG is newer than its HTML
+   - `bash .claude/skills/build-design-system/scripts/check-assets.sh` (logo, icons and illustrations: SVG hygiene, reduced motion, size budgets)
 3. Look at the PNGs (read the images); compare them with the specs and with each other for consistency.
 4. Apply `build-design-system/references/DESIGN_QA.md` §A. Consolidate findings by root cause.
 

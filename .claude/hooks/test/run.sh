@@ -529,5 +529,33 @@ out=$(cd "$TMP/wt-app" && bash "$APP" stop 2>&1); c=$?; [ $c -eq 0 ] && printf '
 out=$(bash "$APP" stop --bogus 2>&1); c=$?; [ $c -eq 2 ]; yes $? "app.sh rejects an unknown option"
 git worktree remove --force "$TMP/wt-app" 2>/dev/null
 
+echo "check-assets (logo, icons, animated illustrations)"
+CA="$REPO/.claude/skills/build-design-system/scripts/check-assets.sh"
+mkfix() { mkdir -p "$TMP/$1/docs/delivery/brand/assets/icons" "$TMP/$1/docs/delivery/brand/assets/illustrations"; ( cd "$TMP/$1" && git init -q ); printf '%s' "$TMP/$1/docs/delivery/brand/assets"; }
+ca() { out=$(bash "$CA" --root "$TMP/$1" 2>&1); c=$?; }
+OK=$(mkfix assets-ok)
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M4 4h40v40H4z"/></svg>\n' > "$OK/logo-mark.svg"
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h20" stroke="currentColor"/></svg>\n' > "$OK/icons/visit.svg"
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><style>.s{animation:fill 6s ease-in-out infinite}@keyframes fill{to{opacity:1}}@media (prefers-reduced-motion: reduce){.s{animation:none}}</style><rect class="s" width="10" height="10"/></svg>\n' > "$OK/illustrations/hero.svg"
+ca assets-ok; expect 0 "a clean logo, icon and animated illustration pass"
+BAD=$(mkfix assets-bad)
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><style>.s{animation:pulse 4s infinite}@keyframes pulse{to{opacity:0}}</style><rect class="s"/></svg>\n' > "$BAD/illustrations/auth.svg"
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle r="4"><animate attributeName="r" values="4;5" dur="2s" repeatCount="indefinite"/></circle></svg>\n' > "$BAD/illustrations/smil.svg"
+printf '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script><image href="data:image/png;base64,AAAA"/></svg>\n' > "$BAD/logo.svg"
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><use href="https://cdn.example.com/i.svg#a"/></svg>\n' > "$BAD/icons/remote.svg"
+{ printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'; awk 'BEGIN { for (i = 0; i < 120; i++) printf "<path d=\"M%d 0h1v1h-1z\"/>", i }'; printf '</svg>\n'; } > "$BAD/icons/heavy.svg"
+printf 'GIF89a' > "$BAD/illustrations/loop.gif"
+head -c 1700000 /dev/zero > "$BAD/illustrations/demo.webm"
+ca assets-bad; expect 1 "asset problems fail the check"
+has '^FAIL.svg.*illustrations/auth.svg.animated without a prefers-reduced-motion block' "an animation without reduced motion fails"
+has '^FAIL.svg.*illustrations/smil.svg.SMIL animation' "SMIL animation fails (it can't honour reduced motion)"
+has '^FAIL.svg.*/logo.svg.no viewBox' "an SVG without a viewBox fails"
+has '^FAIL.svg.*/logo.svg.script or event handler' "a script inside an SVG fails"
+has '^FAIL.svg.*/logo.svg.an embedded raster' "an embedded raster fails"
+has '^FAIL.svg.*icons/remote.svg.an external reference' "an external reference fails"
+has '^FAIL.size.*icons/heavy.svg' "an icon over 2 KB fails"
+has '^FAIL.format.*illustrations/loop.gif' "a GIF fails"
+has '^FAIL.size.*illustrations/demo.webm' "a video over 1.5 MB fails"
+
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]

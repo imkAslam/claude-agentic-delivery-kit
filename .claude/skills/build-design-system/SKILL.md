@@ -41,6 +41,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/render-png.sh docs/delivery/mockups/S-03-orders
 ```
 
 For a landing page or any other public page, also follow [references/SEO.md](references/SEO.md) for metadata, canonical URLs, sitemap and robots.
+The landing hero, the auth brand panel, onboarding and empty states show an **animated illustration about this product** ([references/ILLUSTRATIONS_AND_ANIMATION.md](references/ILLUSTRATIONS_AND_ANIMATION.md): subject from the PRD, the lightest format, calm motion, reduced-motion frame); mockups render its first and last frame, and `bash ${CLAUDE_SKILL_DIR}/scripts/check-assets.sh` passes.
 Exit 3 means no renderer was available: keep the HTML and report "not rendered". Finish DESIGN.md › UX §7–§10 (behavior, responsive, accessibility, copy deck). Keep the 60-30-10 color split on every screen (define-brand → COLOR_METHOD §4). If the PRD has `F-LANDING`, design the landing page with [LANDING_PAGE.md](references/LANDING_PAGE.md) (every section, both sizes, copy marked `CLIENT COPY (draft)`).
 
 ### Step 5: Design review loop
@@ -72,8 +73,10 @@ Follow [DESIGN_QA.md](references/DESIGN_QA.md) §B and write `milestones/<ms>/RE
 │   ├── DESIGN_TOKENS.md           # DTCG tokens: tiers, naming, required tokens, contrast pairs, themes, platform mapping, templates
 │   ├── DESIGN_SYSTEM_TEMPLATE.md  # DESIGN.md › Components: foundations, component specs, patterns, governance
 │   ├── LANDING_PAGE.md            # opt-in landing page (F-LANDING): section sources, copy, SEO/perf baseline, refresh per release
+│   ├── ILLUSTRATIONS_AND_ANIMATION.md  # product-specific animated illustrations (landing, auth, empty states): formats, budgets, motion, generated images on approval
 │   └── DESIGN_QA.md               # design-review checklists + milestone design QA + REVIEW.md › Design QA template
 └── scripts/
     ├── check-tokens.sh            # validates tokens.json, resolves aliases, WCAG contrast + OKLab distinctness (with CVD simulation) per theme, --css export
+    ├── check-assets.sh            # SVG hygiene, reduced-motion block in animated SVGs, size budgets, no GIFs
     └── render-png.sh              # HTML → PNG (Playwright, else installed Chrome/Chromium); exit 3 = not rendered
 ```

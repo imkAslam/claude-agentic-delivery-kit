@@ -58,7 +58,7 @@ Main features:
 - **No coding without approval:** code, scaffolding, code commits and build agents are blocked until you approve G2.
 - **Your stack or ours:** you can name a preferred tech stack at any time (in the evidence, at intake, or at G1). The architect scores it honestly and uses it unless it fails a must-have requirement. Otherwise the architect recommends one. Either way, you confirm the stack at G1.
 - **Engineering standards for every role:** engineering principles, coding standards (naming, size and complexity limits, typed boundaries, error handling, logging, async, performance), database design rules, secure coding, testing and documentation. Reviewers check against them.
-- **Brand and design system:** design research from current design galleries, visual directions, brand guidelines, W3C design tokens (contrast-checked), component specs, mockups of every state, and design QA per milestone.
+- **Brand and design system:** design research from current design galleries, visual directions, brand guidelines, W3C design tokens (contrast-checked), an original SVG logo and icons, animated illustrations about the product, smooth and optimized motion (Three.js only when it earns its place), component specs, mockups of every state, and design QA per milestone.
 - **Complete documentation:** PRD with every architecture diagram inline (mirrored into the architecture document), ADRs, data model, feature catalog, database document, as-built system flows, code map, README, CHANGELOG.
 - **Modern frontend defaults:** Next.js App Router with route groups and a defined folder tree, Tailwind CSS + shadcn/ui as the default UI layer (you can name another), components built library-first and themed by the design tokens.
 - **Performance built in:** measurable budgets in the PRD, a performance guide for every engineer, and a performance-specialist that measures each milestone and the release candidate.
@@ -459,10 +459,10 @@ Three rules hold across these documents:
   - a component specification;
   - text wireframes and flows;
   - HTML mockups of every screen and state, rendered to PNG;
-  - the brand asset kit.
+  - the brand asset kit: an original SVG logo and custom icons, drawn after researching 8–12 current marks online (`LOGO_AND_ICONS.md`), and animated illustrations about the product for the landing page, auth screens, onboarding and empty states (`ILLUSTRATIONS_AND_ANIMATION.md`). Drawn SVG is the default; generated images are used only when the client approves the tool's cost and licence at G1. `check-assets.sh` checks SVG safety, reduced motion and size budgets.
 
   The design-reviewer reviews all of it, and it is frozen at G2.
-- **During the build,** components use semantic tokens only (raw values are a review finding). Each UI milestone gets a design QA against the mockups before its Milestone Build Review.
+- **During the build,** components use semantic tokens only (raw values are a review finding). Motion follows `MOTION_AND_3D.md`: the right technique for each need (CSS, Motion, View Transitions, scroll-driven CSS, GSAP, Lottie), only compositor properties, motion tokens and reduced motion, no long frames; 3D (Three.js) only when the direction is Spatial or the PRD names the benefit, then loaded late, compressed, render-on-demand and with a fallback. Each UI milestone gets a design QA against the mockups before its Milestone Build Review.
 
 ---
 
@@ -576,7 +576,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 241 checks against throwaway fixtures, covering:
+It runs 260 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;
@@ -585,6 +585,7 @@ It runs 241 checks against throwaway fixtures, covering:
 - red and green commits;
 - the usage ledger (provider-reported usage, each API call once, idempotent syncs) and the budget guard;
 - infrastructure: no container started by an agent or a test, commands as named project scripts, no unused shell scripts, app.sh in a worktree;
+- brand assets: SVG hygiene, reduced motion in animated SVGs, size budgets, no GIFs;
 - the ticket lifecycle (illegal transitions, history, bugs linked to their original);
 - checkpoints;
 - ownership.

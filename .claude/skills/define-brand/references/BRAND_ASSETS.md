@@ -1,6 +1,6 @@
 # Brand asset kit
 
-Sources live in `docs/delivery/brand/assets/` (SVG, or HTML for composed images), with a PNG render next to each where a raster is needed. Engineers copy or generate the platform files from these sources in the design-foundation tickets of `ms-1`; the sources remain the single origin.
+Sources live in `docs/delivery/brand/assets/` (SVG, or HTML for composed images), with a PNG render next to each where a raster is needed. The logo and custom icons are researched and drawn per [LOGO_AND_ICONS.md](LOGO_AND_ICONS.md); the illustrations per build-design-system → ILLUSTRATIONS_AND_ANIMATION.md. Engineers copy or generate the platform files from these sources in the design-foundation tickets of `ms-1`; the sources remain the single origin.
 
 | Asset | Source | Exports (who wires it in) | Notes |
 |---|---|---|---|
@@ -12,6 +12,8 @@ Sources live in `docs/delivery/brand/assets/` (SVG, or HTML for composed images)
 | Splash / launch screen | `splash.svg` | Per the mobile framework's splash config (mobile) | Background = `color.bg.default`, mark centered |
 | Social preview (Open Graph) | `og-image.html` | 1200×630 PNG (frontend) | Product name + one-line value; text ≥ 48 px |
 | Email header/footer | `email-header.html` | Inline-styled HTML, 600 px wide, PNG logo at 2× (backend email templates) | Works with images off (alt text, background colors) |
+| Custom icons | `icons/<kebab-name>.svg`, only for ideas the chosen set lacks | Inline SVG components (frontend, mobile) | Same grid and stroke as the set; `currentColor` (LOGO_AND_ICONS §3) |
+| Illustrations | `illustrations/<slot>.svg` (animated with CSS), `.lottie`, a poster, or approved generated rasters | Components with lazy loading (frontend) | About this product; reduced-motion frame; budgets in ILLUSTRATIONS_AND_ANIMATION §2 |
 | Error pages | 404 / 500 mockups | Screens (frontend) | Voice: honest and helpful |
 | Store listing (if mobile) | Screenshot frames | Sizes per store; the store listing text is client copy (business) | The listing itself is an account action for the client |
 
@@ -19,3 +21,4 @@ Sources live in `docs/delivery/brand/assets/` (SVG, or HTML for composed images)
 - Every asset uses tokens.json colors and the DESIGN.md › Brand fonts; nothing loads from the network.
 - Raster exports are rendered with `bash .claude/skills/build-design-system/scripts/render-png.sh <source.html> <out.png> <WxH>` (wrap an SVG in a minimal HTML page first); report the command and its exit code. Never fabricate a file.
 - Agent-made marks are proposals until the client approves the logo at G2.
+- `bash .claude/skills/build-design-system/scripts/check-assets.sh` passes on the folder (SVG hygiene, reduced motion, size budgets). Generated images are used only with the client's recorded approval (tool, cost, licence).

@@ -13,7 +13,7 @@ Tables of indicators: [detection.md](references/detection.md).
 2. **Toolchain:** for each tool in the toolchain table, run `command -v <tool>` and `<tool> --version` (first line only). Mark each one present or missing.
 3. **Access (status only):** `gh auth status`, `glab auth status`, and the status/whoami command of the deploy target from `project.json`. **Never print token values.** Redact anything that looks like a token in the output before writing it.
 4. **CI secrets by name:** if a CI CLI is authenticated and `project.json` exists, list the secret or variable **names**. Compare them with `deploy.required_secrets` and list the missing ones.
-5. **Claude capabilities:** list `.claude/agents/*.md` (names) and `.claude/skills/*/SKILL.md` (names). For MCP servers, run `claude mcp list` if it's available. Otherwise note "MCP list unavailable from shell". Flag tracker (e.g. Linear) and quality (e.g. SonarQube) integrations.
+5. **Claude capabilities:** list `.claude/agents/*.md` (names) and `.claude/skills/*/SKILL.md` (names). For MCP servers, run `claude mcp list` if it's available. Otherwise note "MCP list unavailable from shell". Flag tracker (e.g. Linear) and quality (e.g. SonarQube) integrations, and any **image or video generation** tool (an MCP server or skill): its presence lets the orchestrator offer generated images to the client at G1 (build-design-system → ILLUSTRATIONS_AND_ANIMATION §4).
 6. **Gaps and user actions:** for the chosen tracker, CI and deploy target, list what's missing, plus the exact command the user should run (an install or login). Never run installs or logins yourself.
 
 ## Output: `docs/delivery/SYSTEM-PROFILE.md`
