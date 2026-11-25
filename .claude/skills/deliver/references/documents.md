@@ -6,12 +6,12 @@ A run writes **few documents, each with one owner and a length limit.** Everythi
 | Document | Sections (who writes them) | Limit (lines) | Gate |
 |---|---|---|---|
 | `Intake-Readiness.md` | Evidence, agreed decisions, gaps, score (intake-agent) | 80 | intake |
-| `PRD.md` | §1–§9 requirements (product-manager) · **Analysis**: personas and permissions, journeys, business rules, entities, acceptance criteria (ba-agent) · §10–§12 architecture summary and every diagram (solution-architect) · **Research notes**: only when the researcher ran, one table (researcher-agent) | 700 | g1 |
-| `ARCHITECTURE.md` | §0–§14 (solution-architect) · **Research**: the candidates and why, one table (the detail goes in the stack ADR) · **Integrations** (integration-engineer) · **Operations**: environments, pipeline, hosting, backups, secrets by name (devops-engineer) · **API conventions**: only what differs from the kit's API rules (api-designer) · **Security**: trust boundaries, controls, abuse cases (cybersecurity-agent) | 600 | g1, g2 |
+| `PRD.md` | §1–§9 requirements (product-manager) · **Analysis**: personas and permissions, journeys, business rules, entities, acceptance criteria (ba-agent) · §10–§12 architecture summary and every diagram (solution-architect) · **Research notes**: only when the researcher ran, one table (researcher-agent) | 900 | g1 |
+| `ARCHITECTURE.md` | §0–§14 (solution-architect) · **Research**: the candidates and why, one table (the detail goes in the stack ADR) · **Integrations** (integration-engineer) · **Operations**: environments, pipeline, hosting, backups, secrets by name (devops-engineer) · **API conventions**: only what differs from the kit's API rules (api-designer) · **Security**: trust boundaries, controls, abuse cases (cybersecurity-agent) | 750 | g1, g2 |
 | `THREAT-MODEL.md` | **Only** when the product handles payments, health data or other sensitive personal data; otherwise the Security section above is enough | 250 | g1 |
 | `DATA-MODEL.md` | database-architect | 500 | g2 |
 | Contracts (`contracts.paths`) | api-designer | — | g2 |
-| `DESIGN.md` | **Directions** (for G1; the chosen one stays, the others are deleted after G1) · **Brand** · **UX**: flows, screen inventory, states matrix, copy · **Components**: only what differs from the UI library (uiux-agent) | 500 | g1 (Directions), g2 |
+| `DESIGN.md` | **Directions** (for G1; the chosen one stays, the others are deleted after G1) · **Brand** · **UX**: flows, screen inventory, states matrix, copy · **Components**: only what differs from the UI library (uiux-agent) | 800 | g1 (Directions), g2 |
 | `tokens.json` (+ themes), `mockups/` (key screens: default + one unhappy state), `brand/` | uiux-agent | — | g2 |
 | `PLAN.md` | **Milestones** · **Tickets** (one short block per ticket: role, scope, AC ids, paths, checklist) · **Quality**: checks and thresholds · **Test cases**: one line per AC, the journeys for end-to-end (qa-agent) · **Features**: status table (docs-writer) | 400 + 12 per ticket | g2 |
 | `milestones/<ms>/REVIEW.md` | **Build** (what was built) · **Tickets** (one row each: commit, verdict, commands and results) · **Checks** · **Run guide** · **Design QA** · **Performance** · **Improvement report** (orchestrator) | 200 | mbr |
@@ -40,7 +40,7 @@ A run writes **few documents, each with one owner and a length limit.** Everythi
 ## 4. Writing rules
 - Every document opens with a **plain summary of at most five lines** that a non-engineer can read.
 - Tables and short lines beat paragraphs. Say a thing once, in the document that owns it; elsewhere, point to it.
-- Stay inside the limit. When a document is at its limit, cut what is no longer needed before adding.
+- Stay inside the limit. When a document is at its limit, cut what is no longer needed before adding. **Never cut a required format to fit** (a template section, a table, a tree, a diagram the kit requires): if the required content doesn't fit, keep it, and report it in your return block as `NEEDS: <document> is over its limit with required content (<sections>)`; the orchestrator decides with the human whether to raise that project's limit (`project.json → docs.limits`) or move content.
 - Several agents write sections of the same file. Each agent edits **only its own section**; the orchestrator runs them one after another when two would touch the same file.
 
 ## 5. Checking

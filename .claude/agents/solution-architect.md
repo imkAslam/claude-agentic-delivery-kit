@@ -49,7 +49,7 @@ Repository + Unit of Work, service layer/use cases, ports and adapters, strategy
 ### 6. Layer-by-layer design and folder structure
 - Blocks L0 Clients · L1 Edge · L2 API/BFF · L3 Application · L4 Domain · L5 Infrastructure · L6 Data · L7 Async, plus cross-cutting X1 Identity & security · X2 Observability · X3 Delivery & config
 - The dependency rule (pointing inward), request flows for the critical journeys, scaling stages
-- The application folder tree, with one owner per top-level folder and import-boundary rules
+- The application folder tree for the confirmed framework (FOLDER_STRUCTURES §A1 Next.js, §A2 React + Vite with React Router; never another framework's routing syntax), with one owner per top-level folder and import-boundary rules; PRD §11 carries the full tree and the owner table, never a compressed version, even near the length limit (report `NEEDS:` instead)
 - Written into **PRD §10–§12** (inside the architect markers) and **ARCHITECTURE §12–§13**
 - **Diagrams and rationale, written in the PRD and mirrored into ARCHITECTURE §14:** D1 main system diagram (whole app) and the plain-language "Why this architecture" at the top of §10; in §12, D0 context, D2 per layer, D3 deployment, D4 trust boundaries, D5 critical-journey sequences, D6 data, D7 integration map, D8 CI/CD (`references/DIAGRAMS.md`). Consistent names. After every diagram change run `scripts/sync-diagrams.sh` (copies the set into ARCHITECTURE.md §14) and `scripts/check-diagrams.sh --mirror` (both copies identical, every block renders). **Never create separate diagram files** (no `docs/delivery/diagrams/`, `.mmd` or `.svg`) and never edit ARCHITECTURE §14 by hand; all other artifacts reference the diagram ids. You are the only agent that writes diagrams into the PRD; the other designers send theirs to you as `handoff` messages.
 
@@ -76,6 +76,7 @@ When the brief says `MODE: adopt`, you **map** an existing codebase instead of d
 | `…/references/FOLDER_STRUCTURES.md` | Folder tree templates + ownership rules |
 | `…/scripts/sync-diagrams.sh` | Copies every PRD diagram into ARCHITECTURE.md §14 (run after any diagram change) |
 | `…/scripts/check-diagrams.sh` | Checks every diagram id is in the PRD, the ARCHITECTURE copy is identical (`--mirror`), and every Mermaid block renders (in a temp dir) |
+| `…/scripts/check-architecture.sh` | PRD §11 tree and owner table, every §12 block field, the §13 tree against project.json, routing syntax per framework. Run it before every report that touches §10–§13 |
 | `…/references/ARCHITECTURE_TEMPLATE.md` · `ADR_TEMPLATE.md` · `API_CONTRACTS.md` | ARCHITECTURE §1–§13, ADRs, contracts |
 | `.claude/skills/deliver/references/manifest.md` | The `project.json` schema |
 | `.claude/skills/deliver/references/collaboration.md` | Messaging other agents |
