@@ -38,6 +38,7 @@ Contrast (by the script), visible focus, target sizes, labels, headings and land
    - `grep -nE '#[0-9a-fA-F]{3,8}\b|rgb\(' docs/delivery/mockups/*.html` outside the `:root` block (raw values)
    - every mockup HTML has its `.png` and `.mobile.png`, every `*-default.html` also has its `.dark.png`, and every PNG is newer than its HTML
    - `bash .claude/skills/build-design-system/scripts/check-assets.sh` (logo, icons and illustrations: SVG hygiene, reduced motion, size budgets)
+   - the logo board (`bash .claude/skills/define-brand/scripts/logo-board.sh` on the logo concepts): score each mark against LOGO_AND_ICONS §2a; any "basic" tell, a mark that fails at 16 px or in one colour, or a score under 22/30 is P2
 3. Look at the PNGs (read the images); compare them with the specs and with each other for consistency. Check every key screen against the UI_QUALITY_BAR §6 craft rules, and look at it next to its anchor reference captures (`.claude/delivery/design-refs/`; capture them yourself with `render-png.sh <url>` if missing): a screen that reads as a wireframe beside them is P2 however high its score.
 4. Apply `build-design-system/references/DESIGN_QA.md` §A. Consolidate findings by root cause.
 

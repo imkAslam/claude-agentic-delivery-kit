@@ -598,5 +598,11 @@ grep -o 'var(--[a-z0-9-]*' "$BDS/assets/mockup-kit.css" | sed 's/var(//' | sort 
 out=$(comm -23 "$MKDIR/used" "$MKDIR/defined"); [ -s "$MKDIR/used" ] && [ -z "$out" ]; yes $? "every token variable mockup-kit.css uses exists in the token output"
 out=$(bash "$BDS/scripts/render-png.sh" "$TMP/no-such.html" "$TMP/x.png" 2>&1); [ $? -eq 2 ]; yes $? "render-png still refuses a missing local file"
 
+DB="$REPO/.claude/skills/define-brand/scripts"; LB="$TMP/logo-board"; mkdir -p "$LB"
+printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M12 16 C12 46 52 46 52 16" fill="none" stroke="currentColor" stroke-width="6"/></svg>\n' > "$LB/a.svg"
+out=$(bash "$DB/logo-board.sh" "$LB/board.html" "$LB/a.svg" --brand "#4338ca" --name Demo 2>&1); c=$?; [ $c -eq 0 ] && grep -q 'class="tile"' "$LB/board.html" && grep -q 'height:16px' "$LB/board.html"; yes $? "the logo board shows each mark at 16-120 px, on dark, as an app icon and in a header"
+out=$(bash "$DB/logo-board.sh" "$LB/board.html" "$LB/missing.svg" 2>&1); c=$?; [ $c -eq 2 ]; yes $? "the logo board refuses a missing mark"
+out=$(bash "$DB/wordmark.sh" "$LB/no-font.ttf" "Demo" "$LB/w.svg" 2>&1); c=$?; [ $c -eq 2 ]; yes $? "the wordmark tool refuses a missing font file"
+
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]
