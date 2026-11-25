@@ -8,7 +8,7 @@ Choose the template that matches the chosen style, adapt the names to the stack'
 ├── apps/
 │   ├── web/                    # L0 web client                → frontend
 │   │   └── src/
-│   │       ├── app/            # routes/pages (framework routing convention; Next.js: use tree A1 below)
+│   │       ├── app/            # routes in the framework's own convention: Next.js → tree A1, React + Vite (React Router) → tree A2
 │   │       ├── features/       # one folder per business capability
 │   │       │   └── <feature>/{components,hooks,api,tests}
 │   │       ├── components/ui/  # reusable design-system components
@@ -107,6 +107,39 @@ Import rules (enforced by the import-boundary lint where the stack has one):
 4. Server data lives in the query cache or Server Components, never in `stores/`.
 5. The whole tree is owned by the frontend role; `packages/contracts` stays with the api-designer.
 
+### A2. React + Vite single-page app with React Router (the `apps/web` tree when the frontend is not Next.js)
+Replaces the generic `apps/web/src` block above. Areas are **plain folders** and **layout routes**: parentheses in folder names mean nothing to Vite or React Router (that is Next.js syntax, rule 9). Rules: coding-foundations → REACT.md and TYPESCRIPT.md.
+```text
+apps/web/
+├── index.html
+├── vite.config.ts                    # build, aliases, dev proxy to the API
+├── src/
+│   ├── main.tsx                      # mounts the app: providers + the router
+│   ├── app/                          # routing only: route modules stay thin and compose feature components
+│   │   ├── router.tsx                # the route table (createBrowserRouter), lazy() per route module
+│   │   ├── layouts/
+│   │   │   ├── auth-layout.tsx       # public sign-in area: split screen with the brand panel (AUTH_SCREENS.md)
+│   │   │   ├── app-layout.tsx        # app shell (sidebar, navbar) wrapped in the sign-in guard
+│   │   │   └── marketing-layout.tsx  # public pages (only with F-LANDING)
+│   │   ├── guards/require-auth.tsx   # redirects to sign-in; the API still enforces every permission
+│   │   └── routes/
+│   │       ├── auth/                 # login.tsx, register.tsx, forgot-password.tsx, verify-email.tsx
+│   │       ├── app/                  # dashboard.tsx, settings.tsx, <feature>/{list,detail,new}.tsx
+│   │       ├── marketing/            # landing.tsx, pricing.tsx (prerendered for SEO when F-LANDING)
+│   │       └── not-found.tsx · error-boundary.tsx
+│   ├── components/{ui,features/<feature>,layout,shared,providers}/   # as in A1
+│   ├── hooks/{api,use-*.ts}          # server state over the generated contract client; UI hooks
+│   ├── lib/{api,auth,utils}/         # client wiring, session helpers, formatters
+│   ├── stores/  types/  config/      # UI state only · app-level types · site, navigation, route constants
+│   └── styles/                       # generated token theme (tokens.json → CSS variables), themes
+├── public/                           # brand asset kit exports, icons, manifest
+└── tests/                            # integration tests; unit tests sit next to their unit
+```
+Notes:
+1. A single-page app has no server: the sign-in guard is a convenience, and the API enforces every permission (L2/L3).
+2. With `F-LANDING`, prerender the `marketing/` routes at build time (React Router's prerender option, or the Vite SSG plugin the architect pins), so the landing page meets LANDING_PAGE §4 (SEO, LCP).
+3. When the architect picks React Router's **framework mode** instead, follow its own `app/routes.ts` route config and file layout, and record it in the stack ADR. The A1 import rules apply unchanged.
+
 ## B. Single backend service: clean / hexagonal (Python, Go, Java, .NET, Node)
 ```text
 <service>/
@@ -161,3 +194,5 @@ infra/
 6. Keep `shared/` small. When it grows, promote the code to a module, or to a package when rule 7 applies, with an owner.
 7. **`packages/` holds only reusable, non-deployable libraries that two or more apps use.** Deployable apps and services live in `apps/`. Each package has one job and one owner; code starts in the app that owns it and moves to `packages/` only when a second app needs it; apps import packages, never the other way round; no catch-all `common` package. A provider adapter that two deployables need (for example `apps/api` and `apps/worker`) becomes `packages/integration-<provider>/`, with an ADR. Provider emulators for local work (for example Mailpit) are services in `infra/docker` compose, not packages.
 8. **Nested owners are listed folder by folder.** When the integration role is enabled, the backend's `paths` name its folders under `apps/api` (`src/modules/**`, `src/shared/**`, `src/platform/**`, `src/workers/**`, `migrations/**`, `tests/**`, plus its manifest files) and the integration role owns `apps/api/src/integrations/**`, so no two roles' paths overlap (`deliver/references/manifest.md`).
+9. **Routing follows the confirmed framework only.** Next.js route groups (`(auth)/`), dynamic segments (`[id]/`) and file names (`page.tsx`, `layout.tsx`) exist only in Next.js (A1). React Router uses a route table or its framework-mode config (A2); other frameworks use their own convention. Never mix them; `check-architecture.sh` fails Next.js route groups in a stack that isn't Next.js.
+10. **The tree shows everything project.json owns:** every role path and shared file (root config files, hooks, per-app manifests) appears in the tree, and every top-level folder has an owner (`check-architecture.sh`).

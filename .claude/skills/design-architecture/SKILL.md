@@ -41,7 +41,7 @@ Using the catalog in ARCHITECTURE_PATTERNS §2–§6, choose the frontend, backe
 Fill [LAYERED_BLUEPRINT.md](references/LAYERED_BLUEPRINT.md): blocks L0–L7 and X1–X3 (responsibility, components, technology/ADR, owner role, folders, talks-to, scaling, failure handling, key NFRs), the **dependency rule**, a **request-flow** sequence for each critical journey, and the **scaling stages**. Draw the **D2 diagrams** (overview + one per layer) and the **D5 sequence diagrams** for the critical journeys ([DIAGRAMS.md](references/DIAGRAMS.md)), with the same node names as D1, **directly into PRD §12**. Write the full text version to `ARCHITECTURE.md §12`, which references the diagrams by id. Never create separate diagram files.
 
 ### Step 5: Application folder structure
-Choose and adapt a template from [FOLDER_STRUCTURES.md](references/FOLDER_STRUCTURES.md). Give every top-level folder exactly one owner, and define the import-boundary rules. Write the full version to `ARCHITECTURE.md §13`.
+Choose and adapt a template from [FOLDER_STRUCTURES.md](references/FOLDER_STRUCTURES.md) **for the confirmed framework**: §A1 for Next.js, §A2 for React + Vite with React Router, otherwise the framework's own routing convention. Never borrow another framework's routing syntax (rule 9). Give every top-level folder exactly one owner, and define the import-boundary rules. Write the full version to `ARCHITECTURE.md §13`, and the same tree with its folder → owner table to PRD §11 (never compressed, even near the PRD's length limit: documents.md).
 
 ### Step 6: Write the PRD architecture sections
 Between `<!-- architect:begin -->` and `<!-- architect:end -->` in `PRD.md`, write **§10 Solution architecture (layer by layer)**, **§11 Application folder structure** and **§12 Architecture diagrams**, using the "PRD section format" in LAYERED_BLUEPRINT.md. §10 opens with D1 and "Why this architecture". §12 holds the index and the rest of the set, **D0 and D2–D8, complete at G1** (D6 conceptual, D7 and D8 as drafts that Lane 2 refines). Touch nothing outside the markers. Changes to the PM's sections are requested through `MESSAGES:`.
@@ -49,13 +49,14 @@ After Step 7 has written ARCHITECTURE.md, mirror the diagrams into it and check 
 ```bash
 bash ${CLAUDE_SKILL_DIR}/scripts/sync-diagrams.sh docs/delivery/PRD.md docs/delivery/ARCHITECTURE.md
 bash ${CLAUDE_SKILL_DIR}/scripts/check-diagrams.sh --require "D0 D1 D2 D3 D4 D5 D6 D7 D8" --mirror docs/delivery/ARCHITECTURE.md docs/delivery/PRD.md
+bash ${CLAUDE_SKILL_DIR}/scripts/check-architecture.sh   # PRD §11 tree + owner table, every §12 block field, §13 vs project.json, routing syntax
 ```
 
 ### Step 7: Architecture overview (for G1)
 [ARCHITECTURE_TEMPLATE.md](references/ARCHITECTURE_TEMPLATE.md) §0–§6: the overview (linking PRD §10 · D1 and the rationale), drivers, context and containers (referencing D0 and D1), stack, deployment topology for `deploy.target` (D3), scale/cost/risks. ARCHITECTURE.md **carries the full diagram set in §14**, generated from the PRD by `sync-diagrams.sh` (never typed or edited there); its text sections reference the ids ([DIAGRAMS.md](references/DIAGRAMS.md) → "Two homes, one source"). Re-run the sync whenever a PRD diagram changes.
 
 ### Step 8: Shared boundaries (lane plan, first step)
-Write `.claude/project.json` per `.claude/skills/deliver/references/manifest.md`. The roles' `paths` and `shared_files` **must match the §13 folder tree exactly**. Use real `commands`, including the import-boundary lint rule and the formatter, linter (complexity limits) and strict type checker per `.claude/rules/coding-standards.md`, and set `roles.<role>.guides` to the `coding-foundations` stack guides that apply (write a short guide in the same format into PROJECT.md for a stack without one). Also write the `.claude/PROJECT.md` summary (the confirmed stack, the **coding conventions and tools for this stack** (including the **form and validation libraries**: one form library and one schema library per app, with an ADR; FORMS_AND_VALIDATION.md §2) and the "Coding guides" per role, layers, roles → folders, commands, ADR links). Send a `handoff` message to the design runners.
+Write `.claude/project.json` per `.claude/skills/deliver/references/manifest.md`. The roles' `paths` and `shared_files` **must match the §13 folder tree exactly**. Anything project.json owns that the tree doesn't show yet (root config files, hooks, per-app manifests, a new folder) is added to §13 and PRD §11 in the `prd-sync` change request (Step 9b); `check-architecture.sh` lists every gap. Use real `commands`, including the import-boundary lint rule and the formatter, linter (complexity limits) and strict type checker per `.claude/rules/coding-standards.md`, and set `roles.<role>.guides` to the `coding-foundations` stack guides that apply (write a short guide in the same format into PROJECT.md for a stack without one). Also write the `.claude/PROJECT.md` summary (the confirmed stack, the **coding conventions and tools for this stack** (including the **form and validation libraries**: one form library and one schema library per app, with an ADR; FORMS_AND_VALIDATION.md §2) and the "Coding guides" per role, layers, roles → folders, commands, ADR links). Send a `handoff` message to the design runners.
 
 ### Step 9: Detailed design (lane plan)
 The **database-architect** owns the data model (`DATA-MODEL.md`, via the `design-database` skill) and hands you the ERD for ARCHITECTURE §7. You design the modules mapped to layers and folders, on top of that model, and complete contracts in `contracts.paths` per [API_CONTRACTS.md](references/API_CONTRACTS.md), with a `codegen_cmd`. Fill ARCHITECTURE §7–§11.
@@ -65,12 +66,13 @@ The PRD is approved at G1, so the orchestrator first opens a change request limi
 1. Collect the `handoff` messages with Mermaid sources: D6-erd and D6-states-* (database-architect), D7 (integration-engineer), D8 and D3 changes (devops-engineer), D4 corrections (cybersecurity-agent), plus your own D1/D2/D5 updates from the module design.
 2. Replace the matching blocks in PRD §12 (and D1 in §10 only if a component changed). Keep the ids and node names consistent. Add one revision-log row: "Lane 2 diagram refinements; no requirement change".
 3. Change **nothing else** in the PRD. If a refinement implies a requirement change, stop and report it as `NEEDS_HUMAN` with a business-framed decision.
-4. Run `sync-diagrams.sh` so ARCHITECTURE §14 gets the same refinements, then `check-diagrams.sh … --mirror docs/delivery/ARCHITECTURE.md` and report the result. Delete any diagram copies the *other* artifacts still hold, replacing them with the diagram id.
+4. Run `sync-diagrams.sh` so ARCHITECTURE §14 gets the same refinements, then `check-diagrams.sh … --mirror docs/delivery/ARCHITECTURE.md` and report the result. In the same change, bring §13 and PRD §11 in line with project.json, then run `check-architecture.sh` and report it: it must pass before G2. Delete any diagram copies the *other* artifacts still hold, replacing them with the diagram id.
 
 ### Step 10: Architect-reviewer checklists
 - **DevOps plan:** environments match the topology; checks gate every deploy; production is protected and promotes one artifact; secrets are referenced by name with least privilege; every stateful component has a backup and rollback; cost is consistent.
 - **Design alignment:** every screen field ↔ a contract field; every `AC-` ↔ a TC plus a screen or operation; the naming, error model and auth agree across the artifacts.
 - **Layer and folder conformance:** components sit in their declared layer, dependencies point inward, the folders match `project.json`, and no owned paths overlap.
+- **Architecture before G1** (loop `arch-review`): research with at least 5 fetched sources, 3 candidates and the style ADR; PRD §10 in the section format (D1, "Why this architecture", the stack table, the layer table); §11 the full tree in the confirmed framework's conventions with the owner table; §12 every block with all nine fields, the dependency rule, a request flow per critical journey and the scaling stages; `check-architecture.sh` and `check-diagrams.sh --mirror` pass.
 - **Diagrams:** the full D0–D8 set is in the PRD (D1 in §10, the rest in §12) **and identically in ARCHITECTURE §14**; `check-diagrams.sh --mirror` passes (or reports "not checked"), names match D1, each diagram has a purpose line and "What to notice", and no diagram exists in a separate file or as a copy in any other artifact.
 
 ## Rules
@@ -103,5 +105,6 @@ The PRD is approved at G1, so the orchestrator first opens a change request limi
     └── API_CONTRACTS.md          # contract rules, error model, OpenAPI skeleton
 └── scripts/
     ├── check-diagrams.sh         # every diagram id present in the PRD + the ARCHITECTURE copy identical (--mirror) + every Mermaid block renders (temp dir)
+    ├── check-architecture.sh     # PRD §11 tree + owner table, §12 block fields, §13 tree vs project.json, routing syntax per framework
     └── sync-diagrams.sh          # copies every PRD diagram section into ARCHITECTURE.md §14 (--check: report missing or different diagrams)
 ```

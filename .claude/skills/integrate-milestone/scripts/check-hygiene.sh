@@ -217,11 +217,12 @@ if [ "$layout" = "lean" ] && [ -d docs/delivery ]; then
     esac
   done > "$tmp/extra"
   while IFS= read -r f; do [ -n "$f" ] && add "FAIL	docs	$f	not in the lean document set: put it in a section of the document that owns it, or remove it"; done < "$tmp/extra"
-  for pair in Intake-Readiness.md:80 PRD.md:700 ARCHITECTURE.md:600 THREAT-MODEL.md:250 DATA-MODEL.md:500 DESIGN.md:500 ACCEPTANCE.md:300 RELEASE.md:250 BASELINE.md:300; do
+  for pair in Intake-Readiness.md:80 PRD.md:900 ARCHITECTURE.md:750 THREAT-MODEL.md:250 DATA-MODEL.md:500 DESIGN.md:800 ACCEPTANCE.md:300 RELEASE.md:250 BASELINE.md:300; do
     f="docs/delivery/${pair%%:*}"; lim=${pair##*:}
+    over=$( [ -f "$MAN" ] && jq -r --arg d "${pair%%:*}" '(.docs.limits // {})[$d] // empty' "$MAN" 2>/dev/null ); case "$over" in ''|*[!0-9]*) : ;; *) lim=$over ;; esac   # a project's own limit (project.json → docs.limits)
     [ -f "$f" ] || continue
     n=$(wc -l < "$f" | tr -d ' ')
-    [ "$n" -le "$lim" ] || add "FAIL	docs	$f	$n lines, over the limit of $lim: cut what is no longer needed"
+    [ "$n" -le "$lim" ] || add "FAIL	docs	$f	$n lines, over the limit of $lim: cut what is no longer needed, never a required format (raise this project's limit in project.json → docs.limits when required content needs the room)"
   done
   if [ -f docs/delivery/PLAN.md ]; then
     n=$(wc -l < docs/delivery/PLAN.md | tr -d ' '); t=$(grep -c '^### T-' docs/delivery/PLAN.md || true); lim=$((400 + 12 * t))

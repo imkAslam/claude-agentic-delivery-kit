@@ -179,7 +179,7 @@ Step ids come from `.claude/skills/deliver/references/workflow.md`, the source o
 | `intake-gate` | **you** | Start, update, provisional scope or hold (80% readiness threshold) |
 | `research` (conditional) | researcher-agent | `PRD.md › Research notes`: 5 comparable products, table stakes, pitfalls |
 | `ba` | ba-agent | `PRD.md › Analysis`: personas, permissions, journeys, business rules, entities, NFRs, Given/When/Then AC |
-| `discovery` | product-manager ⇄ product-owner-reviewer, solution-architect, cybersecurity-agent (cond.), uiux-agent (brand) ⇄ design-reviewer | `PRD.md` (complete, with every diagram D0–D8 inline), `ARCHITECTURE.md › Research`, `ARCHITECTURE.md`, `THREAT-MODEL.md`, `DESIGN.md › Directions`, ADRs |
+| `discovery` | product-manager ⇄ product-owner-reviewer, solution-architect ⇄ architect-reviewer, cybersecurity-agent (cond.), uiux-agent (brand) ⇄ design-reviewer | `PRD.md` (complete, with every diagram D0–D8 inline), `ARCHITECTURE.md › Research`, `ARCHITECTURE.md`, `THREAT-MODEL.md`, `DESIGN.md › Directions`, ADRs |
 | `g1` | **you** | Approve the PRD and architecture direction, **confirm the tech stack** (or name your own), and **pick the visual direction**. Does not start coding |
 
 ### 2 · Plan & Design (lane `plan`)
@@ -319,7 +319,7 @@ Questions reach you only at gates, at most 5 per gate, in plain language, each w
 | | integration-engineer | sonnet | Third-party integrations catalog and adapters |
 | | uiux-agent | sonnet | Design research, brand directions, UX structure, tokens, design system, mockups, assets, design QA |
 | | design-reviewer | sonnet | Independent design review incl. the WCAG contrast check |
-| | architect-reviewer | sonnet | DevOps plan review, cross-design alignment |
+| | architect-reviewer | sonnet | Architecture review before G1, DevOps plan review, cross-design alignment |
 | | delivery-planner | sonnet | Milestones, tickets, dependencies, the tracker |
 | | docs-writer | haiku | Docs index, features, database doc, system flows, ADR index, code map, README, CHANGELOG |
 | Build | frontend-engineer / frontend-reviewer | sonnet | Web UI |
@@ -357,6 +357,7 @@ Skills follow the Claude Code skill format (`SKILL.md` with frontmatter, referen
 
 Bundled scripts:
 - `check-diagrams.sh`: every required diagram exists in the PRD, the copy in ARCHITECTURE.md is identical (`--mirror`), and each one renders.
+- `check-architecture.sh`: PRD §11 holds the full folder tree and its owner table, every layer block in ARCHITECTURE §12 has all nine fields, the §13 tree shows everything `project.json` owns, and no Next.js route groups appear in another framework.
 - `sync-diagrams.sh`: copies every diagram from the PRD into ARCHITECTURE.md §14.
 - `check-tokens.sh`: validates the DTCG token file, resolves aliases, checks WCAG contrast and OKLab distinctness (brand vs status colors, with protanopia/deuteranopia simulation) per theme, and emits CSS variables.
 - `render-png.sh`: mockups to PNG with Playwright, falling back to Chrome headless.
@@ -440,7 +441,7 @@ docs/
 README.md  CHANGELOG.md            quick start and commands; user-visible changes (Keep a Changelog)
 ```
 
-The full list with owners and length limits is in `.claude/skills/deliver/references/documents.md`. `check-hygiene.sh` fails on any file outside this set. A run that started before the lean set keeps its documents (`project.json → docs.layout: "classic"`).
+The full list with owners and length limits is in `.claude/skills/deliver/references/documents.md`. A required format is never cut to fit: when required content needs more room, the human can raise that project's limit in `project.json → docs.limits`. `check-hygiene.sh` fails on any file outside this set. A run that started before the lean set keeps its documents (`project.json → docs.layout: "classic"`).
 
 Three rules hold across these documents:
 - **Evidence is shown, not stored.** Each result names the command that produced it; there are no log files or per-ticket evidence folders, only one screenshot per screen.
@@ -576,7 +577,7 @@ bash .claude/skills/deliver/scripts/delivery-state.sh <command>
 ```bash
 bash .claude/hooks/test/run.sh
 ```
-It runs 260 checks against throwaway fixtures, covering:
+It runs 270 checks against throwaway fixtures, covering:
 - secrets: fake keys, tokens, credentialed URLs;
 - production commands, force-push, triggers before and after G3;
 - edits to approved packages;

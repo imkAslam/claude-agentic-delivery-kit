@@ -50,7 +50,8 @@ The **solution-architect** writes this file at the `boundaries` step (lane plan)
     "perf": "<optional: Lighthouse / load-test cmd used by the performance-specialist>",
     "unused": "<optional: unused files/exports/dependencies check, e.g. knip, vulture; used by check-hygiene.sh>"
   },
-  "docs": { "layout": "lean" },         // "lean" (default; deliver/references/documents.md) | "classic" (a run that started before the lean set keeps its documents)
+  "docs": { "layout": "lean", "limits": {} },   // layout: "lean" (default; deliver/references/documents.md) | "classic" (a run that started before the lean set keeps its documents)
+                                      // limits: this project's own line limits, e.g. { "PRD.md": 1000 }; the human decides (documents.md: never cut a required format)
   "hygiene": { "allow": [ { "path": "<glob>", "reason": "<why this file or folder is a deliberate exception>" } ] },   // optional; read by integrate-milestone/scripts/check-hygiene.sh. An entry without a reason fails the check
   "dev_url": "http://localhost:<port>",
   "services": [                        // backing services for dev/test (see setup-docker → LOCAL_SERVICES.md)

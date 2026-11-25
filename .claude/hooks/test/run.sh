@@ -374,8 +374,9 @@ hy --no-unused; has '^FAIL.docs.docs/delivery/BA-ANALYSIS.md' "a document outsid
 printf '{"docs":{"layout":"classic"}}\n' > "$HR/.claude/project.json"
 hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.' && { fail=$((fail+1)); echo "  FAIL the classic layout skips the documents check"; } || { pass=$((pass+1)); echo "  ok   the classic layout skips the documents check"; }
 rm -f "$HR/.claude/project.json"; ( cd "$HR" && git rm -rq docs/delivery/BA-ANALYSIS.md docs/delivery/evidence && git commit -qm "lean again" )
-awk 'BEGIN { for (i = 0; i < 701; i++) print "line " i }' > "$HR/docs/delivery/PRD.md"; plant longprd
-hy --no-unused; has '^FAIL.docs.docs/delivery/PRD.md.701 lines, over the limit of 700' "a document over its length limit fails"
+awk 'BEGIN { for (i = 0; i < 901; i++) print "line " i }' > "$HR/docs/delivery/PRD.md"; plant longprd
+hy --no-unused; has '^FAIL.docs.docs/delivery/PRD.md.901 lines, over the limit of 900' "a document over its length limit fails"
+printf '{"docs":{"limits":{"PRD.md":1000}}}\n' > "$HR/.claude/project.json"; hy --no-unused; printf '%s\n' "$out" | grep -q '^FAIL.docs.docs/delivery/PRD.md' && { fail=$((fail+1)); echo "  FAIL a project's own limit (docs.limits) is honoured"; } || { pass=$((pass+1)); echo "  ok   a project's own limit (docs.limits) is honoured"; }
 echo "infra hygiene (commands, scripts, test containers)"
 mkdir -p "$HR/api/tests" "$HR/ci/tests" "$HR/.github/workflows"
 printf "import { execFile } from 'node:child_process';\nexecFile('docker', ['run', '--rm', 'postgres:16']);\n" > "$HR/api/tests/db.test.ts"
@@ -556,6 +557,36 @@ has '^FAIL.svg.*icons/remote.svg.an external reference' "an external reference f
 has '^FAIL.size.*icons/heavy.svg' "an icon over 2 KB fails"
 has '^FAIL.format.*illustrations/loop.gif' "a GIF fails"
 has '^FAIL.size.*illustrations/demo.webm' "a video over 1.5 MB fails"
+
+echo "check-architecture (PRD §11, §12 layer blocks, §13 tree vs project.json, routing)"
+CK="$REPO/.claude/skills/design-architecture/scripts/check-architecture.sh"
+archfix() { # archfix <dir> <good|bad>
+  local d="$TMP/$1"; mkdir -p "$d/docs/delivery" "$d/.claude"
+  if [ "$2" = good ]; then
+    printf '## 11. Application folder structure\n```text\n.\n├── apps/\n│   ├── web/\n│   └── api/\n├── packages/\n│   └── contracts/\n└── e2e/\n```\n| Folder | Owner role |\n|---|---|\n| apps/web | frontend |\n| apps/api | backend |\n## 12. Architecture diagrams\n' > "$d/docs/delivery/PRD.md"
+  else
+    printf '## 11. Application folder structure\n```text\napps/web/{src,tests} → frontend · apps/api → backend\n```\n## 12. Architecture diagrams\n' > "$d/docs/delivery/PRD.md"
+  fi
+  { printf '## 4. Stack\nReact with Vite and React Router; FastAPI.\n## 12. Layer-by-layer architecture\n'
+    for id in L0 L1 L2 L3 L4 L5 L6 L7 X1 X2 X3; do
+      printf '### %s Block\n- **Responsibility:** r\n- **Components:** c\n- **Technology:** t\n- **Owner role:** o\n- **Folder(s):** f\n- **Talks to:** x\n' "$id"
+      [ "$2" = bad ] && [ "$id" = L4 ] || printf -- '- **Scaling:** s\n'
+      printf -- '- **Failure handling:** h\n- **Key NFRs:** n\n'
+    done
+    printf '## 13. Application folder structure\n```text\n.\n├── apps/\n│   ├── web/                # L0\n│   │   └── src/app/%s\n│   └── api/\n├── packages/\n│   └── contracts/\n├── e2e/\n├── infra/{docker,scripts}/\n%s\n└── package.json pnpm-lock.yaml\n```\n## 14. Architecture diagrams\n' \
+      "$( [ "$2" = bad ] && echo '(auth)/' || echo 'routes/' )" "$( [ "$2" = bad ] && echo '├── tools/' || echo '├── .husky/pre-push' )"
+  } > "$d/docs/delivery/ARCHITECTURE.md"
+  printf '{"roles":{"frontend":{"paths":["apps/web/**"]},"backend":{"paths":["apps/api/**"]},"qa":{"paths":["e2e/**"]},"devops":{"paths":["infra/**"]},"mobile":{"enabled":false,"paths":["apps/mobile/**"]}},"contracts":{"paths":["packages/contracts/**"]},"shared_files":{"package.json":"integrator","pnpm-lock.yaml":"integrator",".husky/pre-push":"devops"}}\n' > "$d/.claude/project.json"
+}
+archfix arch-ok good; out=$(bash "$CK" --root "$TMP/arch-ok" 2>&1); c=$?; expect 0 "a complete architecture passes (tree, owner table, every layer field, tree = project.json)"
+archfix arch-bad bad; out=$(bash "$CK" --root "$TMP/arch-bad" 2>&1); c=$?; expect 1 "architecture gaps fail the check"
+has '^FAIL.prd11.*no drawn folder tree' "a compressed PRD §11 tree fails"
+has '^FAIL.prd11.*no folder → owner role table' "a PRD §11 without an ownership table fails"
+has '^FAIL.layers.*§12 L4 is missing: Scaling' "a layer block missing a field fails"
+has '^FAIL.tree.*does not show .husky/pre-push' "a shared file missing from the §13 tree fails"
+has '^FAIL.tree.*tools is in the §13 tree but has no owner' "a top-level folder without an owner fails"
+has '^FAIL.routing.*Next.js syntax' "Next.js route groups in a React Router app fail"
+printf '%s\n' "$out" | grep -q 'apps/mobile' && { fail=$((fail+1)); echo "  FAIL a disabled role's paths are ignored"; } || { pass=$((pass+1)); echo "  ok   a disabled role's paths are ignored"; }
 
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]
