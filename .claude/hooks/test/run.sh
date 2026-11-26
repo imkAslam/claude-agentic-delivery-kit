@@ -604,5 +604,18 @@ out=$(bash "$DB/logo-board.sh" "$LB/board.html" "$LB/a.svg" --brand "#4338ca" --
 out=$(bash "$DB/logo-board.sh" "$LB/board.html" "$LB/missing.svg" 2>&1); c=$?; [ $c -eq 2 ]; yes $? "the logo board refuses a missing mark"
 out=$(bash "$DB/wordmark.sh" "$LB/no-font.ttf" "Demo" "$LB/w.svg" 2>&1); c=$?; [ $c -eq 2 ]; yes $? "the wordmark tool refuses a missing font file"
 
+echo "Self-driven: routine work is never a stop"
+grep -q '^## Routine work: act, don.t ask' "$REPO/.claude/rules/decision-policy.md"; yes $? "the decision policy lists the routine work done without asking"
+grep -q 'git init -b main' "$REPO/.claude/skills/deliver/SKILL.md"; yes $? "preflight creates a missing git repository itself"
+! grep -q 'show the user the exact commands to run and stop' "$REPO/.claude/skills/deliver/SKILL.md"; yes $? "preflight no longer stops for a gap the kit can fix"
+! grep -q 'ask the human to commit or stash' "$REPO/.claude/skills/deliver/references/workflow.md"; yes $? "adopt no longer stops on uncommitted changes"
+grep -q 'Shall I continue' "$REPO/.claude/agents/orchestrator.md"; yes $? "the orchestrator never asks to go on to the next step"
+SET="$REPO/.claude/settings.json"
+jq -e '.permissions.allow as $a | ["Bash(git init:*)","Bash(git commit:*)","Bash(bash .claude/*)","Bash(pnpm:*)","Edit(./**)"] | all(. as $x | $a | index($x))' "$SET" >/dev/null; yes $? "routine commands (git init, commits, kit scripts, project scripts, edits) run without a prompt"
+jq -e '.permissions.deny as $d | ["Bash(git push --force:*)","Bash(git reset --hard:*)","Bash(git clean -f:*)","Bash(sudo:*)","Read(./.env)"] | all(. as $x | $d | index($x))' "$SET" >/dev/null; yes $? "force-push, reset --hard, clean -f, sudo and reading .env are always refused"
+out=$(jq -r '.permissions.allow[] | select(test("^Bash\\((rm|sudo|gh api|vercel|git reset|git clean|git rebase|docker run|docker compose (up|down))"))' "$SET"); [ -z "$out" ]; yes $? "nothing destructive, deploying or container-starting is pre-approved"
+jq -e '.permissions | has("defaultMode") | not' "$SET" >/dev/null; yes $? "the kit leaves the user's permission mode alone"
+check "a pre-approved push is still checked by the hooks" 2 guard-prod.sh "$(bash_json "git push --force origin main")"
+
 echo; echo "passed: $pass  failed: $fail"
 [ $fail -eq 0 ]

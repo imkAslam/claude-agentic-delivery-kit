@@ -523,6 +523,9 @@ How it stays within the context window on a long, real project:
 | `DELIVERY_TOKEN_BUDGET` | `0` | Token budget for the run (0 = none) |
 | `DELIVERY_FRESH_CONTEXT` | `100000` | Above this context size (tokens), a correction round goes to a fresh agent with a handover instead of continuing the old one |
 
+### Permissions (`.claude/settings.json → permissions`)
+The kit drives itself between gates, so routine commands run without a prompt: file edits inside the project, web search and fetch, the kit's scripts, everyday git and PR/MR commands, the package managers' scripts, read-only Docker status and basic shell tools. Force-push, `reset --hard`, `clean -f`, `sudo` and reading `.env` files are always refused. The guard hooks still check every command, pre-approved or not: deploys, pushes to `main`/`develop`, release tags before G3, coding before G2 and secrets stay blocked. The kit sets no permission mode, so yours (default, accept-edits or auto) is kept. The kit asks only for what is yours: the gates, major decisions, logins and accounts, paid items, installing software on your computer, and your own uncommitted work (decision-policy → "Routine work: act, don't ask").
+
 ### Project manifest (`.claude/project.json`, written by the solution-architect)
 The single source of project commands and paths. Agents never guess them. The full schema is in `.claude/skills/deliver/references/manifest.md`.
 
@@ -610,7 +613,7 @@ It runs 277 checks against throwaway fixtures, covering:
 ## Repository layout
 ```
 .claude/
-├── settings.json              hooks registration and DELIVERY_* settings
+├── settings.json              hooks registration, routine-command permissions and DELIVERY_* settings
 ├── agents/                    34 role subagents (the orchestrator is the project's default agent)
 ├── skills/                    36 skills (each: SKILL.md + references/ + scripts/)
 │   └── deliver/

@@ -35,7 +35,7 @@ Compare the secret or variable names with `deploy.required_secrets` and list the
 The agents and skills in `.claude/`; the MCP servers (tracker and quality integrations flagged).
 
 ### 6. Gaps and user actions
-Each gap with the exact install or login command **for the human to run**.
+Each gap with its kind and the step that first needs it. **kit** gaps (no repository, no first commit, missing kit `.gitignore` lines) are fixed by the orchestrator without asking. **human** gaps (an install, a login, an account, a git identity) come with the exact command for the human to run. Only a human gap the current step needs is blocking.
 
 ## Process
 Follow the `detect-system` skill step by step, then write `docs/delivery/SYSTEM-PROFILE.md` in its output format.
@@ -63,7 +63,7 @@ End with the return block from `.claude/skills/deliver/references/briefs.md`: `R
 
 ## Best Practices
 - Report only what you observed, together with the command that showed it.
-- Separate **blocking** gaps (no tracker or CI access for the chosen kind) from nice-to-have ones.
+- Separate **blocking** gaps (a human gap the current step needs) from later ones (for example a tracker or CI login, first needed at planning) and from kit gaps the orchestrator fixes itself. A missing repository is a kit gap, never a blocker.
 - Keep the profile short and tabular; other agents read it often.
 
 ## Must Not

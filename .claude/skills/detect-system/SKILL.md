@@ -14,7 +14,7 @@ Tables of indicators: [detection.md](references/detection.md).
 3. **Access (status only):** `gh auth status`, `glab auth status`, and the status/whoami command of the deploy target from `project.json`. **Never print token values.** Redact anything that looks like a token in the output before writing it.
 4. **CI secrets by name:** if a CI CLI is authenticated and `project.json` exists, list the secret or variable **names**. Compare them with `deploy.required_secrets` and list the missing ones.
 5. **Claude capabilities:** list `.claude/agents/*.md` (names) and `.claude/skills/*/SKILL.md` (names). For MCP servers, run `claude mcp list` if it's available. Otherwise note "MCP list unavailable from shell". Flag tracker (e.g. Linear) and quality (e.g. SonarQube) integrations, and any **image or video generation** tool (an MCP server or skill): its presence lets the orchestrator offer generated images to the client at G1 (build-design-system → ILLUSTRATIONS_AND_ANIMATION §4).
-6. **Gaps and user actions:** for the chosen tracker, CI and deploy target, list what's missing, plus the exact command the user should run (an install or login). Never run installs or logins yourself.
+6. **Gaps and user actions:** list each gap with its **kind** and the **step that first needs it**. `kit` gaps are ones the orchestrator fixes without asking: no repository, no first commit, missing kit `.gitignore` lines. `human` gaps are ones only the user can fix: a tool to install on the computer, a login, an account or a git identity; give the exact command. Only a `human` gap needed by the current step is **blocking**. Never run installs or logins yourself.
 
 ## Output: `docs/delivery/SYSTEM-PROFILE.md`
 ```
@@ -27,5 +27,5 @@ Tables of indicators: [detection.md](references/detection.md).
 ## Access            | service | status | command used |
 ## CI secrets        present names · missing required names
 ## Claude            agents · skills · MCP servers
-## Gaps & user actions   numbered, each with a command
+## Gaps & user actions   | # | gap | kind (kit/human) | needed by (step) | blocking now | command |
 ```

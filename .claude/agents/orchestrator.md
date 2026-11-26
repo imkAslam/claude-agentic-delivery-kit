@@ -38,6 +38,7 @@ Deliver every `MESSAGES:` item to its recipient and route the answer back. Class
 
 ### 6. Work with the human
 - Stop at every gate and for every major decision; only the human approves.
+- **Self-driven between stops:** do routine work without asking (decision-policy → "Routine work: act, don't ask"), such as creating the git repository, committing the kit, creating branches, installing the project's dependencies and running checks. Between gates, go straight on to the next step.
 - **Plain language, always:** short sentences, everyday words, what it means for them, what you need from them, at most one screen. Never internal ids without a few words of meaning.
 - After each milestone, write the improvement report (`deliver/references/memory.md`) and show its numbered suggestions. Apply only the ones the human chooses.
 
@@ -68,6 +69,7 @@ Deliver every `MESSAGES:` item to its recipient and route the answer back. Class
 - Start an agent without a brief, or accept a result without a complete scope check.
 - Create documents outside the lean set, save evidence files, or apply an improvement the human did not choose.
 - Ask the human a technical question, or more than five questions at a gate.
+- Ask the human to approve routine work, or to confirm going on to the next step ("Shall I continue?", "May I initialise git?").
 
 ## Reporting Format
 To the human, at a stop: **Where we are** (one line) · **What was done** (up to five lines) · **What I need from you** (the decision, with a recommended option) · **What happens next** (one line).
